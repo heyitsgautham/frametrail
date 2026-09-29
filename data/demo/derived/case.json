@@ -1,0 +1,5298 @@
+{
+ "id": "FT-26-014",
+ "title": "Bag taken from a shopping-centre corridor",
+ "createdAt": "2026-09-30T02:30:06+05:30",
+ "examiner": "Examiner 1",
+ "tz": "Recorder local time. Neither recorder stores a time zone.",
+ "sources": [
+  {
+   "id": "EV-001",
+   "kind": "disk-image",
+   "fileName": "EV-001_dvr-disk.img",
+   "sizeBytes": 14581760,
+   "md5": "e5aa04caade89cad7f12576e6eb9ec0e",
+   "sha256": "56f6502e8ec2fdbb0fe59388e4f28af85f3f6792e9f64ad9784065e2c43bfe16",
+   "acquiredAt": "2004-01-20 10:34:02",
+   "acquiredBy": "Examiner 1",
+   "writeBlocked": true,
+   "hashSeconds": 0.029,
+   "vendor": {
+    "family": "Hikvision-style disk",
+    "confidence": 1.0,
+    "signature": {
+     "offset": 528,
+     "hex": "48 49 4b 56 49 53 49 4f 4e 40 48 41 4e 47 5a 48 4f 55 00 00 00 00 00 00",
+     "ascii": "HIKVISION@HANGZHOU......"
+    },
+    "matched": "HIKVISION@HANGZHOU",
+    "model": "HV-7208-FX",
+    "firmware": "V4.30 fixture"
+   },
+   "blocks": {
+    "blockSize": 32768,
+    "total": 445,
+    "runs": [
+     {
+      "start": 0,
+      "count": 32,
+      "state": "system"
+     },
+     {
+      "start": 32,
+      "count": 42,
+      "state": "overwritten",
+      "segmentId": "EV-001-N01",
+      "lost": "EV-001-X01"
+     },
+     {
+      "start": 74,
+      "count": 45,
+      "state": "overwritten",
+      "segmentId": "EV-001-N02",
+      "lost": "EV-001-X01"
+     },
+     {
+      "start": 119,
+      "count": 29,
+      "state": "partial",
+      "segmentId": "EV-001-C01"
+     },
+     {
+      "start": 148,
+      "count": 39,
+      "state": "recovered-unindexed",
+      "segmentId": "EV-001-C02"
+     },
+     {
+      "start": 187,
+      "count": 36,
+      "state": "recovered-unindexed",
+      "segmentId": "EV-001-C03"
+     },
+     {
+      "start": 223,
+      "count": 60,
+      "state": "recovered-unindexed",
+      "segmentId": "EV-001-C04"
+     },
+     {
+      "start": 283,
+      "count": 60,
+      "state": "recovered-unindexed",
+      "segmentId": "EV-001-C05"
+     },
+     {
+      "start": 343,
+      "count": 60,
+      "state": "recovered-unindexed",
+      "segmentId": "EV-001-C06"
+     },
+     {
+      "start": 403,
+      "count": 36,
+      "state": "recovered-unindexed",
+      "segmentId": "EV-001-C07"
+     },
+     {
+      "start": 439,
+      "count": 6,
+      "state": "free"
+     }
+    ]
+   },
+   "structures": {
+    "masterSector": {
+     "offset": 512,
+     "backupOffset": 98304,
+     "backupMatches": true,
+     "initialisedAt": "2004-01-20 10:31:05.000"
+    },
+    "index": {
+     "offset": 131072,
+     "copies": 2,
+     "copiesMatch": true,
+     "entries": 2
+    },
+    "log": {
+     "offset": 65536,
+     "records": 13
+    },
+    "carving": {
+     "candidates": 7,
+     "rejected": [
+      {
+       "byteStart": 14450688,
+       "byteEnd": 14470728,
+       "claimedFrames": 400,
+       "decodedFrames": 0,
+       "reason": "Segment header found, but the bytes after it do not decode"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "EV-002",
+   "kind": "native-export",
+   "fileName": "EV-002_nvr-export.dav",
+   "sizeBytes": 13435197,
+   "md5": "0d49d61765922da0e48eebf87e08ac00",
+   "sha256": "f5beda99e4dd84fc1311da33c437e9bcb5962f7bfca9eff24a666b266e2ea960",
+   "acquiredAt": "2004-01-20 11:03:50",
+   "acquiredBy": "Examiner 1",
+   "writeBlocked": true,
+   "hashSeconds": 0.029,
+   "vendor": {
+    "family": "Dahua-style export",
+    "confidence": 1.0,
+    "signature": {
+     "offset": 0,
+     "hex": "44 48 41 56 fd 00 03 00 00 00 00 00 d2 4c 00 00 75 a1 68 10 c5 41 08 00",
+     "ascii": "DHAV.........L..u.h..A.."
+    },
+    "matched": "DHAV"
+   },
+   "structures": {
+    "frames": 3235,
+    "ffmpegDhavFrames": 3235,
+    "runs": 2
+   }
+  }
+ ],
+ "cameras": [
+  {
+   "id": "CAM-01",
+   "name": "Corridor",
+   "sourceId": "EV-001",
+   "channel": 1,
+   "fps": 25,
+   "width": 384,
+   "height": 288,
+   "clock": {
+    "rawTz": "Recorder local time, zone not stored",
+    "offsetSec": 0.0,
+    "driftPpm": 0.0,
+    "uncertaintySec": 1.0,
+    "reference": true,
+    "method": "Reference recorder. At seizure its screen matched the reference clock",
+    "seizure": {
+     "dvrShown": "2004-01-20 10:34:02",
+     "reference": "2004-01-20 10:34:02",
+     "offsetSec": 0.0,
+     "resolutionSec": 1.0,
+     "note": "Photographed on the live view before power-off. Reference: NTP-synced phone.",
+     "agreementSec": 0.0,
+     "osdPredictedSec": -0.0
+    },
+    "crossCheck": {
+     "method": "On-screen clock read from the pixels, least squares",
+     "offsetSec": 0.0,
+     "driftPpm": -0.0,
+     "uncertaintySec": 0.02,
+     "residualMs": 0.0,
+     "framesRead": 92,
+     "misreads": 16,
+     "fontFrom": "EV-001-C03",
+     "fontAccuracy": 0.852
+    }
+   }
+  },
+  {
+   "id": "CAM-02",
+   "name": "Shop front",
+   "sourceId": "EV-002",
+   "channel": 3,
+   "fps": 25,
+   "width": 384,
+   "height": 288,
+   "clock": {
+    "rawTz": "Recorder local time, zone not stored",
+    "offsetSec": 97.4,
+    "driftPpm": 120.0,
+    "uncertaintySec": 0.02,
+    "reference": false,
+    "method": "Seizure record sets the offset to the second; the on-screen clock, read from the pixels, refines it to the frame and measures drift",
+    "plantedOffsetSec": 97.4,
+    "plantedDriftPpm": 120.0,
+    "seizure": {
+     "dvrShown": "2004-01-20 11:02:12",
+     "reference": "2004-01-20 11:03:50",
+     "offsetSec": -98.0,
+     "resolutionSec": 1.0,
+     "note": "Photographed on the playback screen at export. Reference: NTP-synced phone.",
+     "agreementSec": 0.194,
+     "osdPredictedSec": -97.806
+    },
+    "crossCheck": {
+     "method": "On-screen clock read from the pixels, least squares",
+     "offsetSec": 97.4,
+     "driftPpm": 120.0,
+     "uncertaintySec": 0.02,
+     "residualMs": 0.28,
+     "framesRead": 115,
+     "misreads": 15,
+     "fontFrom": "EV-001-C03",
+     "fontAccuracy": 0.852
+    }
+   }
+  }
+ ],
+ "segments": [
+  {
+   "id": "EV-001-X01",
+   "cameraId": "CAM-01",
+   "state": "overwritten",
+   "rawStart": "2004-01-20 10:07:33.997",
+   "rawEnd": "2004-01-20 10:08:03.997",
+   "refStart": "2004-01-20 10:07:33.997",
+   "refEnd": "2004-01-20 10:08:03.997",
+   "extent": {
+    "sourceId": "EV-001",
+    "byteStart": 1048576,
+    "byteEnd": 3893288
+   },
+   "md5": "953f0387c9222c41e73dd1393eb23342",
+   "sha256": "474eb45e4881ce366e1de129580ab19ab66e1591fe05a540ab56d54342601ae2",
+   "frames": 0,
+   "kept": [],
+   "lost": [],
+   "note": "Recorded before initialisation, then overwritten when recording restarted at block 0. These blocks now hold N01, N02.",
+   "how": "From the recorder log and the surviving tail",
+   "evidence": [
+    "Segment headers of N01, N02, recorded after initialisation, sit in blocks 32 to 118",
+    "Block 119 has video but no segment header; its first keyframe is 6.00 s into a segment, so the segment's head is missing"
+   ],
+   "firstBlock": 32
+  },
+  {
+   "id": "EV-001-C01",
+   "cameraId": "CAM-01",
+   "state": "partial",
+   "rawStart": "2004-01-20 10:08:03.997",
+   "rawEnd": "2004-01-20 10:08:13.997",
+   "refStart": "2004-01-20 10:08:03.997",
+   "refEnd": "2004-01-20 10:08:13.997",
+   "extent": {
+    "sourceId": "EV-001",
+    "byteStart": 3942440,
+    "byteEnd": 4816936
+   },
+   "md5": "06981cbc18260f83360a3e4c414b4060",
+   "sha256": "8beb768b201bb1e4afe59ea46ce9816e7d0b7663c6b40e73ba8cde5067728ca0",
+   "frames": 250,
+   "kept": [
+    "Every coded video frame, copied without re-encoding",
+    "Decoded frames identical to the source stream (250 of 250, MD5 per frame)",
+    "Frame order and timing at 25 fps"
+   ],
+   "lost": [
+    "Segment header fields (channel, start time) do not fit in MP4; kept here",
+    "No audio was recorded on this channel"
+   ],
+   "note": "The head of this segment and everything before it were overwritten.",
+   "how": "Abuts the next carved segment; checked against the on-screen clock",
+   "evidence": [
+    "Block 119 has video but no segment header; its first keyframe is 6.00 s into a segment, so the segment's head is missing"
+   ],
+   "firstBlock": 119,
+   "clip": "/clips/EV-001-C01.mp4",
+   "poster": "/clips/EV-001-C01.jpg",
+   "remuxIdentical": true
+  },
+  {
+   "id": "EV-001-C02",
+   "cameraId": "CAM-01",
+   "state": "recovered-unindexed",
+   "rawStart": "2004-01-20 10:08:13.997",
+   "rawEnd": "2004-01-20 10:08:27.997",
+   "refStart": "2004-01-20 10:08:13.997",
+   "refEnd": "2004-01-20 10:08:27.997",
+   "extent": {
+    "sourceId": "EV-001",
+    "byteStart": 4849664,
+    "byteEnd": 6107176
+   },
+   "md5": "a7014077f0b0bae17ef073dee0498c33",
+   "sha256": "b71cae4e81f79644ec8304ecfca671b4b0595bef8719b9415e25e316ba02b96f",
+   "frames": 350,
+   "kept": [
+    "Every coded video frame, copied without re-encoding",
+    "Decoded frames identical to the source stream (350 of 350, MD5 per frame)",
+    "Frame order and timing at 25 fps"
+   ],
+   "lost": [
+    "Segment header fields (channel, start time) do not fit in MP4; kept here",
+    "No audio was recorded on this channel"
+   ],
+   "note": "Found in blocks the index does not list. Header and every frame decode.",
+   "how": "Segment header, carved",
+   "evidence": [],
+   "firstBlock": 148,
+   "clip": "/clips/EV-001-C02.mp4",
+   "poster": "/clips/EV-001-C02.jpg",
+   "remuxIdentical": true
+  },
+  {
+   "id": "EV-001-C03",
+   "cameraId": "CAM-01",
+   "state": "recovered-unindexed",
+   "rawStart": "2004-01-20 10:08:27.997",
+   "rawEnd": "2004-01-20 10:08:39.797",
+   "refStart": "2004-01-20 10:08:27.997",
+   "refEnd": "2004-01-20 10:08:39.797",
+   "extent": {
+    "sourceId": "EV-001",
+    "byteStart": 6127616,
+    "byteEnd": 7288872
+   },
+   "md5": "c5a3cb8363bc16057a5f855266645fb2",
+   "sha256": "d4183a2d343ae1a1ff3c3d97f77169123fd3e8f722e8eec55f6cfbe2b8c46918",
+   "frames": 295,
+   "kept": [
+    "Every coded video frame, copied without re-encoding",
+    "Decoded frames identical to the source stream (295 of 295, MD5 per frame)",
+    "Frame order and timing at 25 fps"
+   ],
+   "lost": [
+    "Segment header fields (channel, start time) do not fit in MP4; kept here",
+    "No audio was recorded on this channel"
+   ],
+   "note": "Found in blocks the index does not list. Header and every frame decode.",
+   "how": "Segment header, carved",
+   "evidence": [],
+   "firstBlock": 187,
+   "clip": "/clips/EV-001-C03.mp4",
+   "poster": "/clips/EV-001-C03.jpg",
+   "remuxIdentical": true
+  },
+  {
+   "id": "EV-001-C04",
+   "cameraId": "CAM-01",
+   "state": "recovered-unindexed",
+   "rawStart": "2004-01-20 10:22:24.157",
+   "rawEnd": "2004-01-20 10:22:41.157",
+   "refStart": "2004-01-20 10:22:24.157",
+   "refEnd": "2004-01-20 10:22:41.157",
+   "extent": {
+    "sourceId": "EV-001",
+    "byteStart": 7307264,
+    "byteEnd": 9250856
+   },
+   "md5": "5de051e272b0d74212b33c9d85c73d7c",
+   "sha256": "aff78264dcf1700611c2c284be16390513e7e770d88dffdf5655c3d0e6ce650f",
+   "frames": 425,
+   "kept": [
+    "Every coded video frame, copied without re-encoding",
+    "Decoded frames identical to the source stream (425 of 425, MD5 per frame)",
+    "Frame order and timing at 25 fps"
+   ],
+   "lost": [
+    "Segment header fields (channel, start time) do not fit in MP4; kept here",
+    "No audio was recorded on this channel"
+   ],
+   "note": "Found in blocks the index does not list. Header and every frame decode.",
+   "how": "Segment header, carved",
+   "evidence": [],
+   "firstBlock": 223,
+   "clip": "/clips/EV-001-C04.mp4",
+   "poster": "/clips/EV-001-C04.jpg",
+   "remuxIdentical": true
+  },
+  {
+   "id": "EV-001-C05",
+   "cameraId": "CAM-01",
+   "state": "recovered-unindexed",
+   "rawStart": "2004-01-20 10:22:41.157",
+   "rawEnd": "2004-01-20 10:22:58.157",
+   "refStart": "2004-01-20 10:22:41.157",
+   "refEnd": "2004-01-20 10:22:58.157",
+   "extent": {
+    "sourceId": "EV-001",
+    "byteStart": 9273344,
+    "byteEnd": 11206696
+   },
+   "md5": "4c412593a09bbd968d1cefebbeaf40c3",
+   "sha256": "f00d4152e9ed71bcc4361ca122281177ee0724d69a2706e11e308ae3500e515b",
+   "frames": 425,
+   "kept": [
+    "Every coded video frame, copied without re-encoding",
+    "Decoded frames identical to the source stream (425 of 425, MD5 per frame)",
+    "Frame order and timing at 25 fps"
+   ],
+   "lost": [
+    "Segment header fields (channel, start time) do not fit in MP4; kept here",
+    "No audio was recorded on this channel"
+   ],
+   "note": "Found in blocks the index does not list. Header and every frame decode.",
+   "how": "Segment header, carved",
+   "evidence": [],
+   "firstBlock": 283,
+   "clip": "/clips/EV-001-C05.mp4",
+   "poster": "/clips/EV-001-C05.jpg",
+   "remuxIdentical": true
+  },
+  {
+   "id": "EV-001-C06",
+   "cameraId": "CAM-01",
+   "state": "recovered-unindexed",
+   "rawStart": "2004-01-20 10:22:58.157",
+   "rawEnd": "2004-01-20 10:23:15.757",
+   "refStart": "2004-01-20 10:22:58.157",
+   "refEnd": "2004-01-20 10:23:15.757",
+   "extent": {
+    "sourceId": "EV-001",
+    "byteStart": 11239424,
+    "byteEnd": 13201448
+   },
+   "md5": "6952954ef66ca9e2592c0d48a918c3a7",
+   "sha256": "93960cc2f1a0276127e93e8356fad55d41b9b759efd2044377bbf3cab20f9c45",
+   "frames": 440,
+   "kept": [
+    "Every coded video frame, copied without re-encoding",
+    "Decoded frames identical to the source stream (440 of 440, MD5 per frame)",
+    "Frame order and timing at 25 fps"
+   ],
+   "lost": [
+    "Segment header fields (channel, start time) do not fit in MP4; kept here",
+    "No audio was recorded on this channel"
+   ],
+   "note": "Found in blocks the index does not list. Header and every frame decode.",
+   "how": "Segment header, carved",
+   "evidence": [],
+   "firstBlock": 343,
+   "clip": "/clips/EV-001-C06.mp4",
+   "poster": "/clips/EV-001-C06.jpg",
+   "remuxIdentical": true
+  },
+  {
+   "id": "EV-001-C07",
+   "cameraId": "CAM-01",
+   "state": "recovered-unindexed",
+   "rawStart": "2004-01-20 10:23:15.757",
+   "rawEnd": "2004-01-20 10:23:27.757",
+   "refStart": "2004-01-20 10:23:15.757",
+   "refEnd": "2004-01-20 10:23:27.757",
+   "extent": {
+    "sourceId": "EV-001",
+    "byteStart": 13205504,
+    "byteEnd": 14377000
+   },
+   "md5": "aa50372f30118c4683e3986cd27b0ac8",
+   "sha256": "841003703aae0af64b9d2bcc77f468d590c7c8000683bad59ab90fbf0aa7b3ab",
+   "frames": 300,
+   "kept": [
+    "Every coded video frame, copied without re-encoding",
+    "Decoded frames identical to the source stream (300 of 300, MD5 per frame)",
+    "Frame order and timing at 25 fps"
+   ],
+   "lost": [
+    "Segment header fields (channel, start time) do not fit in MP4; kept here",
+    "No audio was recorded on this channel"
+   ],
+   "note": "Found in blocks the index does not list. Header and every frame decode.",
+   "how": "Segment header, carved",
+   "evidence": [],
+   "firstBlock": 403,
+   "clip": "/clips/EV-001-C07.mp4",
+   "poster": "/clips/EV-001-C07.jpg",
+   "remuxIdentical": true
+  },
+  {
+   "id": "EV-001-N01",
+   "cameraId": "CAM-01",
+   "state": "indexed",
+   "rawStart": "2004-01-20 10:32:32.237",
+   "rawEnd": "2004-01-20 10:32:47.237",
+   "refStart": "2004-01-20 10:32:32.237",
+   "refEnd": "2004-01-20 10:32:47.237",
+   "extent": {
+    "sourceId": "EV-001",
+    "byteStart": 1048576,
+    "byteEnd": 2396200
+   },
+   "md5": "23e6607b80952134c857363feab1107d",
+   "sha256": "b949da7049f7c2d88fb921fd3e5aa408802d0ecdf2062e4ebdf0947764cbba26",
+   "frames": 375,
+   "kept": [
+    "Every coded video frame, copied without re-encoding",
+    "Decoded frames identical to the source stream (375 of 375, MD5 per frame)",
+    "Frame order and timing at 25 fps"
+   ],
+   "lost": [
+    "Segment header fields (channel, start time) do not fit in MP4; kept here",
+    "No audio was recorded on this channel"
+   ],
+   "note": "",
+   "how": "Index entry, Unix epoch time",
+   "evidence": [],
+   "firstBlock": 32,
+   "clip": "/clips/EV-001-N01.mp4",
+   "poster": "/clips/EV-001-N01.jpg",
+   "remuxIdentical": true
+  },
+  {
+   "id": "EV-001-N02",
+   "cameraId": "CAM-01",
+   "state": "indexed",
+   "rawStart": "2004-01-20 10:32:47.237",
+   "rawEnd": "2004-01-20 10:33:02.237",
+   "refStart": "2004-01-20 10:32:47.237",
+   "refEnd": "2004-01-20 10:33:02.237",
+   "extent": {
+    "sourceId": "EV-001",
+    "byteStart": 2424832,
+    "byteEnd": 3893288
+   },
+   "md5": "cf7c9d73fc3c75b30b0602524c0bfa5c",
+   "sha256": "446fcf9191283f9108919c788e6b3c784f3f79fefd3e0b3044ec28f58a1d3e92",
+   "frames": 375,
+   "kept": [
+    "Every coded video frame, copied without re-encoding",
+    "Decoded frames identical to the source stream (375 of 375, MD5 per frame)",
+    "Frame order and timing at 25 fps"
+   ],
+   "lost": [
+    "Segment header fields (channel, start time) do not fit in MP4; kept here",
+    "No audio was recorded on this channel"
+   ],
+   "note": "",
+   "how": "Index entry, Unix epoch time",
+   "evidence": [],
+   "firstBlock": 74,
+   "clip": "/clips/EV-001-N02.mp4",
+   "poster": "/clips/EV-001-N02.jpg",
+   "remuxIdentical": true
+  },
+  {
+   "id": "EV-002-R01",
+   "cameraId": "CAM-02",
+   "state": "indexed",
+   "rawStart": "2004-01-20 10:05:53.477",
+   "rawEnd": "2004-01-20 10:06:59.269",
+   "refStart": "2004-01-20 10:07:30.877",
+   "refEnd": "2004-01-20 10:08:36.677",
+   "extent": {
+    "sourceId": "EV-002",
+    "byteStart": 0,
+    "byteEnd": 6741224
+   },
+   "md5": "ca5b8c9dce92b9ec03d672e672042660",
+   "sha256": "b95e65ed6e389478b4774aabfa944902e240a312077dec5763a5032908b22573",
+   "frames": 1645,
+   "kept": [
+    "Every coded video frame, copied without re-encoding",
+    "Decoded frames identical to the source stream (1645 of 1645, MD5 per frame)",
+    "Frame order and timing at 25 fps"
+   ],
+   "lost": [
+    "Per-frame DHAV headers (recorder date, frame number) do not fit in MP4; kept here",
+    "No audio was recorded on this channel"
+   ],
+   "note": "A continuous run of DHAV frames in the export.",
+   "how": "DHAV frame headers, recorder local time",
+   "evidence": [],
+   "clip": "/clips/EV-002-R01.mp4",
+   "poster": "/clips/EV-002-R01.jpg",
+   "remuxIdentical": true
+  },
+  {
+   "id": "EV-002-R02",
+   "cameraId": "CAM-02",
+   "state": "indexed",
+   "rawStart": "2004-01-20 10:20:43.570",
+   "rawEnd": "2004-01-20 10:21:47.163",
+   "refStart": "2004-01-20 10:22:21.077",
+   "refEnd": "2004-01-20 10:23:24.677",
+   "extent": {
+    "sourceId": "EV-002",
+    "byteStart": 6741224,
+    "byteEnd": 13435197
+   },
+   "md5": "29254bda06dcdeff0c79916d3fb2aa04",
+   "sha256": "8676df1abf463f2ea8f3a74013d2f838f7670a0bb62e5b71599887fc8ad90b87",
+   "frames": 1590,
+   "kept": [
+    "Every coded video frame, copied without re-encoding",
+    "Decoded frames identical to the source stream (1590 of 1590, MD5 per frame)",
+    "Frame order and timing at 25 fps"
+   ],
+   "lost": [
+    "Per-frame DHAV headers (recorder date, frame number) do not fit in MP4; kept here",
+    "No audio was recorded on this channel"
+   ],
+   "note": "A continuous run of DHAV frames in the export.",
+   "how": "DHAV frame headers, recorder local time",
+   "evidence": [],
+   "clip": "/clips/EV-002-R02.mp4",
+   "poster": "/clips/EV-002-R02.jpg",
+   "remuxIdentical": true
+  }
+ ],
+ "alignment": [
+  {
+   "a": "CAM-01",
+   "b": "CAM-02",
+   "offsetSec": 97.4,
+   "uncertaintySec": 0.02,
+   "score": 0.885,
+   "plantedSec": 97.4,
+   "driftPpm": 120.0,
+   "curve": [
+    [
+     0.0,
+     97.4
+    ],
+    [
+     1.0,
+     97.4
+    ],
+    [
+     2.0,
+     97.4
+    ],
+    [
+     3.0,
+     97.4
+    ],
+    [
+     6.0,
+     97.401
+    ],
+    [
+     7.0,
+     97.401
+    ],
+    [
+     9.0,
+     97.401
+    ],
+    [
+     10.0,
+     97.401
+    ],
+    [
+     11.0,
+     97.401
+    ],
+    [
+     12.0,
+     97.401
+    ],
+    [
+     13.0,
+     97.402
+    ],
+    [
+     14.0,
+     97.402
+    ],
+    [
+     15.0,
+     97.402
+    ],
+    [
+     16.0,
+     97.402
+    ],
+    [
+     17.0,
+     97.402
+    ],
+    [
+     19.0,
+     97.402
+    ],
+    [
+     20.0,
+     97.402
+    ],
+    [
+     21.0,
+     97.403
+    ],
+    [
+     22.0,
+     97.403
+    ],
+    [
+     23.0,
+     97.403
+    ],
+    [
+     24.0,
+     97.403
+    ],
+    [
+     25.0,
+     97.403
+    ],
+    [
+     26.0,
+     97.403
+    ],
+    [
+     27.0,
+     97.403
+    ],
+    [
+     29.0,
+     97.403
+    ],
+    [
+     30.0,
+     97.404
+    ],
+    [
+     31.0,
+     97.404
+    ],
+    [
+     32.0,
+     97.404
+    ],
+    [
+     33.0,
+     97.404
+    ],
+    [
+     34.0,
+     97.404
+    ],
+    [
+     35.0,
+     97.404
+    ],
+    [
+     36.0,
+     97.404
+    ],
+    [
+     37.0,
+     97.404
+    ],
+    [
+     38.99,
+     97.405
+    ],
+    [
+     39.99,
+     97.405
+    ],
+    [
+     40.99,
+     97.405
+    ],
+    [
+     41.99,
+     97.405
+    ],
+    [
+     42.99,
+     97.405
+    ],
+    [
+     43.99,
+     97.405
+    ],
+    [
+     44.99,
+     97.405
+    ],
+    [
+     45.99,
+     97.406
+    ],
+    [
+     46.99,
+     97.406
+    ],
+    [
+     48.99,
+     97.406
+    ],
+    [
+     49.99,
+     97.406
+    ],
+    [
+     50.99,
+     97.406
+    ],
+    [
+     51.99,
+     97.406
+    ],
+    [
+     52.99,
+     97.406
+    ],
+    [
+     53.99,
+     97.406
+    ],
+    [
+     54.99,
+     97.407
+    ],
+    [
+     55.99,
+     97.407
+    ],
+    [
+     56.99,
+     97.407
+    ],
+    [
+     58.99,
+     97.407
+    ],
+    [
+     59.99,
+     97.407
+    ],
+    [
+     60.99,
+     97.407
+    ],
+    [
+     61.99,
+     97.407
+    ],
+    [
+     62.99,
+     97.408
+    ],
+    [
+     63.99,
+     97.408
+    ],
+    [
+     64.99,
+     97.408
+    ],
+    [
+     890.09,
+     97.507
+    ],
+    [
+     891.09,
+     97.507
+    ],
+    [
+     892.09,
+     97.507
+    ],
+    [
+     893.09,
+     97.507
+    ],
+    [
+     895.09,
+     97.507
+    ],
+    [
+     896.09,
+     97.508
+    ],
+    [
+     898.09,
+     97.508
+    ],
+    [
+     899.09,
+     97.508
+    ],
+    [
+     900.09,
+     97.508
+    ],
+    [
+     901.09,
+     97.508
+    ],
+    [
+     902.09,
+     97.508
+    ],
+    [
+     903.09,
+     97.508
+    ],
+    [
+     904.09,
+     97.509
+    ],
+    [
+     905.09,
+     97.509
+    ],
+    [
+     906.09,
+     97.509
+    ],
+    [
+     908.09,
+     97.509
+    ],
+    [
+     909.09,
+     97.509
+    ],
+    [
+     910.09,
+     97.509
+    ],
+    [
+     911.09,
+     97.509
+    ],
+    [
+     912.09,
+     97.509
+    ],
+    [
+     913.09,
+     97.51
+    ],
+    [
+     914.09,
+     97.51
+    ],
+    [
+     915.09,
+     97.51
+    ],
+    [
+     916.09,
+     97.51
+    ],
+    [
+     918.09,
+     97.51
+    ],
+    [
+     919.09,
+     97.51
+    ],
+    [
+     920.09,
+     97.51
+    ],
+    [
+     921.09,
+     97.511
+    ],
+    [
+     922.09,
+     97.511
+    ],
+    [
+     923.09,
+     97.511
+    ],
+    [
+     924.09,
+     97.511
+    ],
+    [
+     925.09,
+     97.511
+    ],
+    [
+     926.09,
+     97.511
+    ],
+    [
+     928.09,
+     97.511
+    ],
+    [
+     929.09,
+     97.512
+    ],
+    [
+     930.09,
+     97.512
+    ],
+    [
+     931.09,
+     97.512
+    ],
+    [
+     932.09,
+     97.512
+    ],
+    [
+     933.09,
+     97.512
+    ],
+    [
+     934.09,
+     97.512
+    ],
+    [
+     935.09,
+     97.512
+    ],
+    [
+     936.09,
+     97.512
+    ],
+    [
+     938.09,
+     97.513
+    ],
+    [
+     939.09,
+     97.513
+    ],
+    [
+     940.09,
+     97.513
+    ],
+    [
+     941.09,
+     97.513
+    ],
+    [
+     942.09,
+     97.513
+    ],
+    [
+     943.09,
+     97.513
+    ],
+    [
+     944.09,
+     97.513
+    ],
+    [
+     945.09,
+     97.513
+    ],
+    [
+     946.09,
+     97.514
+    ],
+    [
+     948.09,
+     97.514
+    ],
+    [
+     949.09,
+     97.514
+    ],
+    [
+     950.09,
+     97.514
+    ],
+    [
+     951.09,
+     97.514
+    ],
+    [
+     952.09,
+     97.514
+    ],
+    [
+     953.09,
+     97.514
+    ]
+   ],
+   "method": "Seizure record, refined by the on-screen clock read from the pixels"
+  }
+ ],
+ "detections": [
+  {
+   "id": "D001",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C01",
+   "label": "person",
+   "refTime": "2004-01-20 10:08:03.997",
+   "rawTime": "2004-01-20 10:08:03.997",
+   "confidence": 0.906,
+   "box": [
+    0.3189,
+    0.237,
+    0.0897,
+    0.2817
+   ],
+   "boxes": [
+    [
+     0.3189,
+     0.237,
+     0.0897,
+     0.2817
+    ],
+    [
+     0.2728,
+     0.1369,
+     0.0557,
+     0.1957
+    ],
+    [
+     0.2041,
+     0.1512,
+     0.0525,
+     0.1913
+    ]
+   ],
+   "count": 3,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D001.jpg"
+  },
+  {
+   "id": "D002",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C01",
+   "label": "person",
+   "refTime": "2004-01-20 10:08:07.997",
+   "rawTime": "2004-01-20 10:08:07.997",
+   "confidence": 0.869,
+   "box": [
+    0.2357,
+    0.1934,
+    0.07,
+    0.2536
+   ],
+   "boxes": [
+    [
+     0.2357,
+     0.1934,
+     0.07,
+     0.2536
+    ],
+    [
+     0.3625,
+     0.1613,
+     0.0507,
+     0.1997
+    ],
+    [
+     0.2728,
+     0.1312,
+     0.0508,
+     0.1878
+    ]
+   ],
+   "count": 3,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D002.jpg"
+  },
+  {
+   "id": "D003",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C02",
+   "label": "person",
+   "refTime": "2004-01-20 10:08:13.997",
+   "rawTime": "2004-01-20 10:08:13.997",
+   "confidence": 0.884,
+   "box": [
+    0.3787,
+    0.1975,
+    0.0676,
+    0.2278
+   ],
+   "boxes": [
+    [
+     0.3787,
+     0.1975,
+     0.0676,
+     0.2278
+    ]
+   ],
+   "count": 1,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D003.jpg"
+  },
+  {
+   "id": "D004",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C02",
+   "label": "person",
+   "refTime": "2004-01-20 10:08:14.997",
+   "rawTime": "2004-01-20 10:08:14.997",
+   "confidence": 0.901,
+   "box": [
+    0.3776,
+    0.2023,
+    0.07,
+    0.2348
+   ],
+   "boxes": [
+    [
+     0.3776,
+     0.2023,
+     0.07,
+     0.2348
+    ],
+    [
+     0.3636,
+     0.0964,
+     0.0468,
+     0.1571
+    ]
+   ],
+   "count": 2,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D004.jpg"
+  },
+  {
+   "id": "D005",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C02",
+   "label": "person",
+   "refTime": "2004-01-20 10:08:18.997",
+   "rawTime": "2004-01-20 10:08:18.997",
+   "confidence": 0.901,
+   "box": [
+    0.3466,
+    0.2316,
+    0.0716,
+    0.2552
+   ],
+   "boxes": [
+    [
+     0.3466,
+     0.2316,
+     0.0716,
+     0.2552
+    ],
+    [
+     0.3381,
+     0.0746,
+     0.0465,
+     0.1573
+    ],
+    [
+     0.3686,
+     0.0512,
+     0.0458,
+     0.1531
+    ]
+   ],
+   "count": 3,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D005.jpg"
+  },
+  {
+   "id": "D006",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C02",
+   "label": "person",
+   "refTime": "2004-01-20 10:08:23.997",
+   "rawTime": "2004-01-20 10:08:23.997",
+   "confidence": 0.906,
+   "box": [
+    0.2655,
+    0.3125,
+    0.1105,
+    0.3727
+   ],
+   "boxes": [
+    [
+     0.2655,
+     0.3125,
+     0.1105,
+     0.3727
+    ],
+    [
+     0.3493,
+     0.269,
+     0.0796,
+     0.2823
+    ],
+    [
+     0.1338,
+     0.3226,
+     0.1255,
+     0.3713
+    ],
+    [
+     0.2582,
+     0.0597,
+     0.0495,
+     0.1387
+    ],
+    [
+     0.3658,
+     0.0504,
+     0.0473,
+     0.1301
+    ]
+   ],
+   "count": 5,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D006.jpg"
+  },
+  {
+   "id": "D007",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C03",
+   "label": "person",
+   "refTime": "2004-01-20 10:08:27.997",
+   "rawTime": "2004-01-20 10:08:27.997",
+   "confidence": 0.929,
+   "box": [
+    0.4996,
+    0.4143,
+    0.125,
+    0.4348
+   ],
+   "boxes": [
+    [
+     0.4996,
+     0.4143,
+     0.125,
+     0.4348
+    ],
+    [
+     0.3539,
+     0.4135,
+     0.128,
+     0.4535
+    ],
+    [
+     0.2808,
+     0.2802,
+     0.0921,
+     0.2829
+    ],
+    [
+     0.2697,
+     0.0498,
+     0.0434,
+     0.1237
+    ],
+    [
+     0.9293,
+     0.8889,
+     0.0701,
+     0.0986
+    ],
+    [
+     0.3666,
+     0.0513,
+     0.0466,
+     0.1326
+    ]
+   ],
+   "count": 6,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D007.jpg"
+  },
+  {
+   "id": "D008",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C03",
+   "label": "person",
+   "refTime": "2004-01-20 10:08:31.997",
+   "rawTime": "2004-01-20 10:08:31.997",
+   "confidence": 0.927,
+   "box": [
+    0.7224,
+    0.5737,
+    0.1575,
+    0.4126
+   ],
+   "boxes": [
+    [
+     0.7224,
+     0.5737,
+     0.1575,
+     0.4126
+    ],
+    [
+     0.5427,
+     0.5798,
+     0.1598,
+     0.4058
+    ],
+    [
+     0.37,
+     0.8087,
+     0.1689,
+     0.1773
+    ],
+    [
+     0.22,
+     0.268,
+     0.0632,
+     0.2723
+    ],
+    [
+     0.2493,
+     0.0282,
+     0.0412,
+     0.1283
+    ],
+    [
+     0.3652,
+     0.053,
+     0.0455,
+     0.1301
+    ],
+    [
+     0.3062,
+     0.0424,
+     0.0363,
+     0.1145
+    ]
+   ],
+   "count": 7,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D008.jpg"
+  },
+  {
+   "id": "D009",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C03",
+   "label": "person",
+   "refTime": "2004-01-20 10:08:32.997",
+   "rawTime": "2004-01-20 10:08:32.997",
+   "confidence": 0.933,
+   "box": [
+    0.335,
+    0.7145,
+    0.2001,
+    0.271
+   ],
+   "boxes": [
+    [
+     0.335,
+     0.7145,
+     0.2001,
+     0.271
+    ],
+    [
+     0.571,
+     0.6325,
+     0.1688,
+     0.3551
+    ],
+    [
+     0.2079,
+     0.2738,
+     0.0806,
+     0.2815
+    ],
+    [
+     0.7794,
+     0.6151,
+     0.17,
+     0.3724
+    ],
+    [
+     0.2515,
+     0.0306,
+     0.0405,
+     0.1296
+    ],
+    [
+     0.3644,
+     0.051,
+     0.0456,
+     0.1333
+    ],
+    [
+     0.3168,
+     0.0363,
+     0.0348,
+     0.1253
+    ],
+    [
+     0.9198,
+     0.8893,
+     0.0798,
+     0.0983
+    ]
+   ],
+   "count": 8,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D009.jpg"
+  },
+  {
+   "id": "D010",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C03",
+   "label": "person",
+   "refTime": "2004-01-20 10:08:38.997",
+   "rawTime": "2004-01-20 10:08:38.997",
+   "confidence": 0.918,
+   "box": [
+    0.2519,
+    0.3434,
+    0.0906,
+    0.3271
+   ],
+   "boxes": [
+    [
+     0.2519,
+     0.3434,
+     0.0906,
+     0.3271
+    ],
+    [
+     0.3483,
+     0.4055,
+     0.1356,
+     0.3961
+    ],
+    [
+     0.8364,
+     0.7876,
+     0.1237,
+     0.1993
+    ],
+    [
+     0.2408,
+     0.0409,
+     0.0364,
+     0.1324
+    ],
+    [
+     0.2049,
+     0.0539,
+     0.0252,
+     0.1083
+    ]
+   ],
+   "count": 5,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D010.jpg"
+  },
+  {
+   "id": "D011",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C04",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:24.157",
+   "rawTime": "2004-01-20 10:22:24.157",
+   "confidence": 0.877,
+   "box": [
+    0.2071,
+    0.3501,
+    0.1009,
+    0.3449
+   ],
+   "boxes": [
+    [
+     0.2071,
+     0.3501,
+     0.1009,
+     0.3449
+    ],
+    [
+     0.3061,
+     0.0682,
+     0.0439,
+     0.1646
+    ],
+    [
+     0.2471,
+     0.0677,
+     0.0437,
+     0.1583
+    ],
+    [
+     0.1585,
+     0.2202,
+     0.05,
+     0.1947
+    ]
+   ],
+   "count": 4,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D011.jpg"
+  },
+  {
+   "id": "D012",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C04",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:25.157",
+   "rawTime": "2004-01-20 10:22:25.157",
+   "confidence": 0.877,
+   "box": [
+    0.1951,
+    0.3689,
+    0.0923,
+    0.3549
+   ],
+   "boxes": [
+    [
+     0.1951,
+     0.3689,
+     0.0923,
+     0.3549
+    ],
+    [
+     0.3038,
+     0.0647,
+     0.0419,
+     0.1753
+    ],
+    [
+     0.1781,
+     0.2142,
+     0.0627,
+     0.2346
+    ],
+    [
+     0.2366,
+     0.2259,
+     0.0566,
+     0.2086
+    ],
+    [
+     0.2436,
+     0.0661,
+     0.0485,
+     0.1663
+    ]
+   ],
+   "count": 5,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D012.jpg"
+  },
+  {
+   "id": "D013",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C04",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:26.157",
+   "rawTime": "2004-01-20 10:22:26.157",
+   "confidence": 0.892,
+   "box": [
+    0.2694,
+    0.2355,
+    0.064,
+    0.2322
+   ],
+   "boxes": [
+    [
+     0.2694,
+     0.2355,
+     0.064,
+     0.2322
+    ],
+    [
+     0.3051,
+     0.0642,
+     0.0436,
+     0.1812
+    ],
+    [
+     0.2462,
+     0.0653,
+     0.049,
+     0.1688
+    ],
+    [
+     0.2041,
+     0.4002,
+     0.0869,
+     0.3655
+    ],
+    [
+     0.9001,
+     0.6964,
+     0.0993,
+     0.2886
+    ],
+    [
+     0.2036,
+     0.2233,
+     0.058,
+     0.2223
+    ]
+   ],
+   "count": 6,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D013.jpg"
+  },
+  {
+   "id": "D014",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C04",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:28.157",
+   "rawTime": "2004-01-20 10:22:28.157",
+   "confidence": 0.918,
+   "box": [
+    0.3158,
+    0.257,
+    0.0662,
+    0.2476
+   ],
+   "boxes": [
+    [
+     0.3158,
+     0.257,
+     0.0662,
+     0.2476
+    ],
+    [
+     0.681,
+     0.5928,
+     0.1605,
+     0.3935
+    ],
+    [
+     0.2198,
+     0.2425,
+     0.074,
+     0.2683
+    ],
+    [
+     0.2407,
+     0.4411,
+     0.1046,
+     0.4064
+    ],
+    [
+     0.257,
+     0.0697,
+     0.0503,
+     0.1817
+    ],
+    [
+     0.3137,
+     0.0769,
+     0.0467,
+     0.1834
+    ],
+    [
+     0.4263,
+     0.8869,
+     0.087,
+     0.1009
+    ],
+    [
+     0.63,
+     0.9189,
+     0.0637,
+     0.0683
+    ]
+   ],
+   "count": 8,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D014.jpg"
+  },
+  {
+   "id": "D015",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C04",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:37.157",
+   "rawTime": "2004-01-20 10:22:37.157",
+   "confidence": 0.908,
+   "box": [
+    0.5289,
+    0.4802,
+    0.1193,
+    0.4153
+   ],
+   "boxes": [
+    [
+     0.5289,
+     0.4802,
+     0.1193,
+     0.4153
+    ],
+    [
+     0.2848,
+     0.4113,
+     0.1131,
+     0.3805
+    ],
+    [
+     0.3991,
+     0.4736,
+     0.1187,
+     0.4354
+    ],
+    [
+     0.2455,
+     0.1126,
+     0.055,
+     0.2119
+    ],
+    [
+     0.3334,
+     0.1158,
+     0.0556,
+     0.2178
+    ],
+    [
+     0.1872,
+     0.3574,
+     0.0892,
+     0.414
+    ],
+    [
+     0.4934,
+     0.799,
+     0.1485,
+     0.1876
+    ],
+    [
+     0.1265,
+     0.7615,
+     0.1254,
+     0.2261
+    ],
+    [
+     0.2391,
+     0.8336,
+     0.1497,
+     0.1538
+    ],
+    [
+     0.3861,
+     0.4267,
+     0.0615,
+     0.3361
+    ],
+    [
+     0.2501,
+     0.7188,
+     0.1275,
+     0.2089
+    ],
+    [
+     0.3051,
+     0.03,
+     0.0358,
+     0.1384
+    ]
+   ],
+   "count": 12,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D015.jpg"
+  },
+  {
+   "id": "D016",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C05",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:41.157",
+   "rawTime": "2004-01-20 10:22:41.157",
+   "confidence": 0.909,
+   "box": [
+    0.2036,
+    0.549,
+    0.1264,
+    0.4434
+   ],
+   "boxes": [
+    [
+     0.2036,
+     0.549,
+     0.1264,
+     0.4434
+    ],
+    [
+     0.2449,
+     0.1379,
+     0.0629,
+     0.227
+    ],
+    [
+     0.3655,
+     0.1332,
+     0.0574,
+     0.2397
+    ],
+    [
+     0.3795,
+     0.5539,
+     0.0986,
+     0.426
+    ],
+    [
+     0.1486,
+     0.3091,
+     0.1074,
+     0.3393
+    ],
+    [
+     0.5165,
+     0.3818,
+     0.137,
+     0.586
+    ],
+    [
+     0.4553,
+     0.3754,
+     0.1023,
+     0.3927
+    ],
+    [
+     0.3125,
+     0.027,
+     0.0369,
+     0.139
+    ]
+   ],
+   "count": 8,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D016.jpg"
+  },
+  {
+   "id": "D017",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C05",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:48.157",
+   "rawTime": "2004-01-20 10:22:48.157",
+   "confidence": 0.887,
+   "box": [
+    0.3406,
+    0.2667,
+    0.0758,
+    0.2988
+   ],
+   "boxes": [
+    [
+     0.3406,
+     0.2667,
+     0.0758,
+     0.2988
+    ],
+    [
+     0.2503,
+     0.1776,
+     0.0831,
+     0.2658
+    ],
+    [
+     0.2181,
+     0.288,
+     0.0732,
+     0.3317
+    ],
+    [
+     0.4578,
+     0.1742,
+     0.069,
+     0.2795
+    ],
+    [
+     0.4266,
+     0.2717,
+     0.0754,
+     0.2999
+    ],
+    [
+     0.472,
+     0.9037,
+     0.0779,
+     0.0836
+    ],
+    [
+     0.1827,
+     0.0322,
+     0.0384,
+     0.1545
+    ]
+   ],
+   "count": 7,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D017.jpg"
+  },
+  {
+   "id": "D018",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C05",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:49.157",
+   "rawTime": "2004-01-20 10:22:49.157",
+   "confidence": 0.908,
+   "box": [
+    0.2683,
+    0.1911,
+    0.0692,
+    0.2714
+   ],
+   "boxes": [
+    [
+     0.2683,
+     0.1911,
+     0.0692,
+     0.2714
+    ],
+    [
+     0.2095,
+     0.265,
+     0.0718,
+     0.3234
+    ],
+    [
+     0.4603,
+     0.1809,
+     0.0757,
+     0.2852
+    ],
+    [
+     0.3453,
+     0.2599,
+     0.0719,
+     0.29
+    ],
+    [
+     0.4133,
+     0.2532,
+     0.0736,
+     0.2924
+    ],
+    [
+     0.3808,
+     0.8087,
+     0.147,
+     0.1794
+    ],
+    [
+     0.6907,
+     0.8492,
+     0.1304,
+     0.1379
+    ],
+    [
+     0.531,
+     0.8983,
+     0.0598,
+     0.0911
+    ]
+   ],
+   "count": 8,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D018.jpg"
+  },
+  {
+   "id": "D019",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C05",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:50.157",
+   "rawTime": "2004-01-20 10:22:50.157",
+   "confidence": 0.911,
+   "box": [
+    0.2727,
+    0.1946,
+    0.0754,
+    0.2807
+   ],
+   "boxes": [
+    [
+     0.2727,
+     0.1946,
+     0.0754,
+     0.2807
+    ],
+    [
+     0.3407,
+     0.2423,
+     0.0681,
+     0.2711
+    ],
+    [
+     0.4754,
+     0.2005,
+     0.0715,
+     0.2861
+    ],
+    [
+     0.4268,
+     0.8118,
+     0.1576,
+     0.1768
+    ],
+    [
+     0.4075,
+     0.245,
+     0.0693,
+     0.2732
+    ],
+    [
+     0.3188,
+     0.742,
+     0.1452,
+     0.245
+    ],
+    [
+     0.2035,
+     0.247,
+     0.067,
+     0.31
+    ],
+    [
+     0.618,
+     0.7685,
+     0.1631,
+     0.2161
+    ],
+    [
+     0.7417,
+     0.8127,
+     0.1047,
+     0.172
+    ]
+   ],
+   "count": 9,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D019.jpg"
+  },
+  {
+   "id": "D020",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C05",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:54.157",
+   "rawTime": "2004-01-20 10:22:54.157",
+   "confidence": 0.93,
+   "box": [
+    0.2903,
+    0.5527,
+    0.1153,
+    0.4363
+   ],
+   "boxes": [
+    [
+     0.2903,
+     0.5527,
+     0.1153,
+     0.4363
+    ],
+    [
+     0.5229,
+     0.5455,
+     0.1329,
+     0.4446
+    ],
+    [
+     0.3972,
+     0.5843,
+     0.1239,
+     0.4024
+    ],
+    [
+     0.4712,
+     0.2429,
+     0.0888,
+     0.3234
+    ],
+    [
+     0.4002,
+     0.2048,
+     0.0641,
+     0.2493
+    ],
+    [
+     0.6438,
+     0.5946,
+     0.1206,
+     0.3984
+    ],
+    [
+     0.2815,
+     0.2387,
+     0.0813,
+     0.3224
+    ],
+    [
+     0.3377,
+     0.2054,
+     0.0501,
+     0.2458
+    ],
+    [
+     0.2331,
+     0.035,
+     0.0394,
+     0.1085
+    ],
+    [
+     0.162,
+     0.1976,
+     0.0631,
+     0.2547
+    ]
+   ],
+   "count": 10,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D020.jpg"
+  },
+  {
+   "id": "D021",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C06",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:58.157",
+   "rawTime": "2004-01-20 10:22:58.157",
+   "confidence": 0.911,
+   "box": [
+    0.3765,
+    0.4367,
+    0.1033,
+    0.3739
+   ],
+   "boxes": [
+    [
+     0.3765,
+     0.4367,
+     0.1033,
+     0.3739
+    ],
+    [
+     0.2792,
+     0.4162,
+     0.101,
+     0.3956
+    ],
+    [
+     0.5565,
+     0.4175,
+     0.1117,
+     0.4109
+    ],
+    [
+     0.2703,
+     0.1771,
+     0.0507,
+     0.2187
+    ],
+    [
+     0.5266,
+     0.2928,
+     0.0896,
+     0.379
+    ],
+    [
+     0.3157,
+     0.2966,
+     0.0923,
+     0.2469
+    ],
+    [
+     0.655,
+     0.4465,
+     0.1162,
+     0.3532
+    ],
+    [
+     0.2281,
+     0.04,
+     0.0437,
+     0.1244
+    ],
+    [
+     0.3679,
+     0.1648,
+     0.0588,
+     0.2164
+    ]
+   ],
+   "count": 9,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D021.jpg"
+  },
+  {
+   "id": "D022",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C06",
+   "label": "person",
+   "refTime": "2004-01-20 10:23:03.157",
+   "rawTime": "2004-01-20 10:23:03.157",
+   "confidence": 0.907,
+   "box": [
+    0.5475,
+    0.3927,
+    0.1228,
+    0.4444
+   ],
+   "boxes": [
+    [
+     0.5475,
+     0.3927,
+     0.1228,
+     0.4444
+    ],
+    [
+     0.4807,
+     0.3077,
+     0.0853,
+     0.3265
+    ],
+    [
+     0.3327,
+     0.3924,
+     0.114,
+     0.4264
+    ],
+    [
+     0.2683,
+     0.3042,
+     0.084,
+     0.3107
+    ],
+    [
+     0.4052,
+     0.3235,
+     0.073,
+     0.3054
+    ],
+    [
+     0.2865,
+     0.1412,
+     0.0563,
+     0.1777
+    ],
+    [
+     0.3505,
+     0.1391,
+     0.0596,
+     0.2005
+    ],
+    [
+     0.2188,
+     0.0573,
+     0.0358,
+     0.1392
+    ],
+    [
+     0.5929,
+     0.3283,
+     0.0707,
+     0.1441
+    ]
+   ],
+   "count": 9,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D022.jpg"
+  },
+  {
+   "id": "D023",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C06",
+   "label": "person",
+   "refTime": "2004-01-20 10:23:04.157",
+   "rawTime": "2004-01-20 10:23:04.157",
+   "confidence": 0.912,
+   "box": [
+    0.583,
+    0.4244,
+    0.1141,
+    0.4694
+   ],
+   "boxes": [
+    [
+     0.583,
+     0.4244,
+     0.1141,
+     0.4694
+    ],
+    [
+     0.2579,
+     0.2875,
+     0.078,
+     0.3039
+    ],
+    [
+     0.3588,
+     0.3826,
+     0.1261,
+     0.4796
+    ],
+    [
+     0.4471,
+     0.2798,
+     0.0812,
+     0.308
+    ],
+    [
+     0.3016,
+     0.1306,
+     0.0523,
+     0.1999
+    ],
+    [
+     0.5492,
+     0.309,
+     0.0752,
+     0.2734
+    ],
+    [
+     0.3546,
+     0.1346,
+     0.0577,
+     0.1965
+    ],
+    [
+     0.2144,
+     0.0665,
+     0.044,
+     0.1284
+    ],
+    [
+     0.3722,
+     0.3048,
+     0.0724,
+     0.1746
+    ],
+    [
+     0.1818,
+     0.0413,
+     0.0376,
+     0.1447
+    ]
+   ],
+   "count": 10,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D023.jpg"
+  },
+  {
+   "id": "D024",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C06",
+   "label": "person",
+   "refTime": "2004-01-20 10:23:06.157",
+   "rawTime": "2004-01-20 10:23:06.157",
+   "confidence": 0.932,
+   "box": [
+    0.3771,
+    0.4648,
+    0.1427,
+    0.4893
+   ],
+   "boxes": [
+    [
+     0.3771,
+     0.4648,
+     0.1427,
+     0.4893
+    ],
+    [
+     0.6434,
+     0.4786,
+     0.1266,
+     0.4999
+    ],
+    [
+     0.3396,
+     0.2753,
+     0.0698,
+     0.2776
+    ],
+    [
+     0.241,
+     0.2628,
+     0.0702,
+     0.2842
+    ],
+    [
+     0.4085,
+     0.2568,
+     0.0694,
+     0.234
+    ],
+    [
+     0.3555,
+     0.1213,
+     0.054,
+     0.1861
+    ],
+    [
+     0.4729,
+     0.2738,
+     0.0734,
+     0.2707
+    ],
+    [
+     0.2927,
+     0.1182,
+     0.05,
+     0.1969
+    ],
+    [
+     0.2046,
+     0.0743,
+     0.0398,
+     0.1304
+    ],
+    [
+     0.2473,
+     0.0391,
+     0.034,
+     0.1442
+    ]
+   ],
+   "count": 10,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D024.jpg"
+  },
+  {
+   "id": "D025",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C06",
+   "label": "person",
+   "refTime": "2004-01-20 10:23:09.157",
+   "rawTime": "2004-01-20 10:23:09.157",
+   "confidence": 0.932,
+   "box": [
+    0.3973,
+    0.5731,
+    0.1569,
+    0.4115
+   ],
+   "boxes": [
+    [
+     0.3973,
+     0.5731,
+     0.1569,
+     0.4115
+    ],
+    [
+     0.6427,
+     0.6069,
+     0.1611,
+     0.3777
+    ],
+    [
+     0.2126,
+     0.2227,
+     0.069,
+     0.2525
+    ],
+    [
+     0.4082,
+     0.2145,
+     0.0541,
+     0.247
+    ],
+    [
+     0.3256,
+     0.2338,
+     0.062,
+     0.2418
+    ],
+    [
+     0.4448,
+     0.2443,
+     0.0653,
+     0.2409
+    ],
+    [
+     0.2884,
+     0.1078,
+     0.0511,
+     0.1787
+    ],
+    [
+     0.1891,
+     0.0895,
+     0.0505,
+     0.1489
+    ],
+    [
+     0.3456,
+     0.1294,
+     0.049,
+     0.1419
+    ],
+    [
+     0.348,
+     0.0316,
+     0.0368,
+     0.1028
+    ]
+   ],
+   "count": 10,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D025.jpg"
+  },
+  {
+   "id": "D026",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C06",
+   "label": "person",
+   "refTime": "2004-01-20 10:23:13.157",
+   "rawTime": "2004-01-20 10:23:13.157",
+   "confidence": 0.893,
+   "box": [
+    0.4436,
+    0.8171,
+    0.1731,
+    0.1717
+   ],
+   "boxes": [
+    [
+     0.4436,
+     0.8171,
+     0.1731,
+     0.1717
+    ],
+    [
+     0.3411,
+     0.1784,
+     0.0608,
+     0.2338
+    ],
+    [
+     0.2486,
+     0.1933,
+     0.0592,
+     0.223
+    ],
+    [
+     0.3027,
+     0.0864,
+     0.0461,
+     0.172
+    ],
+    [
+     0.7571,
+     0.8559,
+     0.152,
+     0.1349
+    ],
+    [
+     0.3483,
+     0.0849,
+     0.0433,
+     0.1295
+    ],
+    [
+     0.2062,
+     0.1056,
+     0.055,
+     0.1717
+    ],
+    [
+     0.1961,
+     0.2071,
+     0.0636,
+     0.2346
+    ]
+   ],
+   "count": 8,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D026.jpg"
+  },
+  {
+   "id": "D027",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C07",
+   "label": "person",
+   "refTime": "2004-01-20 10:23:15.757",
+   "rawTime": "2004-01-20 10:23:15.757",
+   "confidence": 0.821,
+   "box": [
+    0.2871,
+    0.0794,
+    0.0429,
+    0.1607
+   ],
+   "boxes": [
+    [
+     0.2871,
+     0.0794,
+     0.0429,
+     0.1607
+    ],
+    [
+     0.2008,
+     0.1956,
+     0.0594,
+     0.214
+    ],
+    [
+     0.31,
+     0.165,
+     0.0577,
+     0.2344
+    ],
+    [
+     0.3378,
+     0.082,
+     0.0421,
+     0.1437
+    ],
+    [
+     0.2049,
+     0.123,
+     0.0593,
+     0.1278
+    ]
+   ],
+   "count": 5,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D027.jpg"
+  },
+  {
+   "id": "D028",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C07",
+   "label": "person",
+   "refTime": "2004-01-20 10:23:16.757",
+   "rawTime": "2004-01-20 10:23:16.757",
+   "confidence": 0.902,
+   "box": [
+    0.2298,
+    0.3158,
+    0.1033,
+    0.3724
+   ],
+   "boxes": [
+    [
+     0.2298,
+     0.3158,
+     0.1033,
+     0.3724
+    ],
+    [
+     0.2021,
+     0.13,
+     0.0574,
+     0.1833
+    ],
+    [
+     0.3341,
+     0.0788,
+     0.0417,
+     0.1595
+    ],
+    [
+     0.2718,
+     0.1512,
+     0.0562,
+     0.2379
+    ],
+    [
+     0.2681,
+     0.0728,
+     0.0405,
+     0.1439
+    ],
+    [
+     0.1572,
+     0.2026,
+     0.0477,
+     0.2187
+    ]
+   ],
+   "count": 6,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D028.jpg"
+  },
+  {
+   "id": "D029",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-C07",
+   "label": "person",
+   "refTime": "2004-01-20 10:23:23.757",
+   "rawTime": "2004-01-20 10:23:23.757",
+   "confidence": 0.935,
+   "box": [
+    0.524,
+    0.5369,
+    0.1541,
+    0.4492
+   ],
+   "boxes": [
+    [
+     0.524,
+     0.5369,
+     0.1541,
+     0.4492
+    ],
+    [
+     0.19,
+     0.1931,
+     0.074,
+     0.2264
+    ],
+    [
+     0.1487,
+     0.3296,
+     0.0979,
+     0.3123
+    ],
+    [
+     0.3336,
+     0.0626,
+     0.0428,
+     0.1432
+    ],
+    [
+     0.208,
+     0.0531,
+     0.0396,
+     0.1408
+    ]
+   ],
+   "count": 5,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D029.jpg"
+  },
+  {
+   "id": "D030",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-N01",
+   "label": "person",
+   "refTime": "2004-01-20 10:32:32.237",
+   "rawTime": "2004-01-20 10:32:32.237",
+   "confidence": 0.755,
+   "box": [
+    0.3311,
+    0.0405,
+    0.0313,
+    0.1192
+   ],
+   "boxes": [
+    [
+     0.3311,
+     0.0405,
+     0.0313,
+     0.1192
+    ]
+   ],
+   "count": 1,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D030.jpg"
+  },
+  {
+   "id": "D031",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-N01",
+   "label": "person",
+   "refTime": "2004-01-20 10:32:35.237",
+   "rawTime": "2004-01-20 10:32:35.237",
+   "confidence": 0.757,
+   "box": [
+    0.8331,
+    0.8596,
+    0.1296,
+    0.1291
+   ],
+   "boxes": [
+    [
+     0.8331,
+     0.8596,
+     0.1296,
+     0.1291
+    ],
+    [
+     0.3265,
+     0.0389,
+     0.0344,
+     0.1219
+    ]
+   ],
+   "count": 2,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D031.jpg"
+  },
+  {
+   "id": "D032",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-N01",
+   "label": "person",
+   "refTime": "2004-01-20 10:32:36.237",
+   "rawTime": "2004-01-20 10:32:36.237",
+   "confidence": 0.728,
+   "box": [
+    0.7945,
+    0.8492,
+    0.1078,
+    0.1376
+   ],
+   "boxes": [
+    [
+     0.7945,
+     0.8492,
+     0.1078,
+     0.1376
+    ],
+    [
+     0.3306,
+     0.0733,
+     0.0266,
+     0.0859
+    ],
+    [
+     0.9315,
+     0.8211,
+     0.0682,
+     0.165
+    ]
+   ],
+   "count": 3,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D032.jpg"
+  },
+  {
+   "id": "D033",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-N01",
+   "label": "person",
+   "refTime": "2004-01-20 10:32:38.237",
+   "rawTime": "2004-01-20 10:32:38.237",
+   "confidence": 0.9,
+   "box": [
+    0.5481,
+    0.7146,
+    0.1592,
+    0.2721
+   ],
+   "boxes": [
+    [
+     0.5481,
+     0.7146,
+     0.1592,
+     0.2721
+    ],
+    [
+     0.7109,
+     0.6741,
+     0.1688,
+     0.3116
+    ],
+    [
+     0.2664,
+     0.0375,
+     0.0352,
+     0.0938
+    ],
+    [
+     0.3206,
+     0.0357,
+     0.0367,
+     0.1214
+    ]
+   ],
+   "count": 4,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D033.jpg"
+  },
+  {
+   "id": "D034",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-N01",
+   "label": "person",
+   "refTime": "2004-01-20 10:32:40.237",
+   "rawTime": "2004-01-20 10:32:40.237",
+   "confidence": 0.921,
+   "box": [
+    0.6179,
+    0.5862,
+    0.1366,
+    0.3998
+   ],
+   "boxes": [
+    [
+     0.6179,
+     0.5862,
+     0.1366,
+     0.3998
+    ],
+    [
+     0.4711,
+     0.5939,
+     0.1438,
+     0.3818
+    ],
+    [
+     0.2901,
+     0.0362,
+     0.0235,
+     0.0932
+    ]
+   ],
+   "count": 3,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D034.jpg"
+  },
+  {
+   "id": "D035",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-N01",
+   "label": "person",
+   "refTime": "2004-01-20 10:32:41.237",
+   "rawTime": "2004-01-20 10:32:41.237",
+   "confidence": 0.912,
+   "box": [
+    0.582,
+    0.5313,
+    0.1204,
+    0.4518
+   ],
+   "boxes": [
+    [
+     0.582,
+     0.5313,
+     0.1204,
+     0.4518
+    ],
+    [
+     0.4474,
+     0.5363,
+     0.1374,
+     0.4405
+    ],
+    [
+     0.328,
+     0.0413,
+     0.0359,
+     0.1189
+    ],
+    [
+     0.2855,
+     0.0329,
+     0.0276,
+     0.0951
+    ]
+   ],
+   "count": 4,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D035.jpg"
+  },
+  {
+   "id": "D036",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-N01",
+   "label": "person",
+   "refTime": "2004-01-20 10:32:44.237",
+   "rawTime": "2004-01-20 10:32:44.237",
+   "confidence": 0.916,
+   "box": [
+    0.3718,
+    0.418,
+    0.1068,
+    0.4362
+   ],
+   "boxes": [
+    [
+     0.3718,
+     0.418,
+     0.1068,
+     0.4362
+    ],
+    [
+     0.4795,
+     0.5551,
+     0.1608,
+     0.4321
+    ],
+    [
+     0.4802,
+     0.4089,
+     0.1085,
+     0.3128
+    ],
+    [
+     0.3285,
+     0.0353,
+     0.035,
+     0.1259
+    ],
+    [
+     0.2879,
+     0.032,
+     0.0303,
+     0.1086
+    ]
+   ],
+   "count": 5,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D036.jpg"
+  },
+  {
+   "id": "D037",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-N02",
+   "label": "person",
+   "refTime": "2004-01-20 10:32:47.237",
+   "rawTime": "2004-01-20 10:32:47.237",
+   "confidence": 0.921,
+   "box": [
+    0.3733,
+    0.3723,
+    0.1035,
+    0.4281
+   ],
+   "boxes": [
+    [
+     0.3733,
+     0.3723,
+     0.1035,
+     0.4281
+    ],
+    [
+     0.2741,
+     0.355,
+     0.0777,
+     0.4001
+    ],
+    [
+     0.4886,
+     0.3976,
+     0.1079,
+     0.4195
+    ],
+    [
+     0.3284,
+     0.0418,
+     0.0349,
+     0.1181
+    ]
+   ],
+   "count": 4,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D037.jpg"
+  },
+  {
+   "id": "D038",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-N02",
+   "label": "person",
+   "refTime": "2004-01-20 10:32:59.237",
+   "rawTime": "2004-01-20 10:32:59.237",
+   "confidence": 0.91,
+   "box": [
+    0.1965,
+    0.3606,
+    0.111,
+    0.4252
+   ],
+   "boxes": [
+    [
+     0.1965,
+     0.3606,
+     0.111,
+     0.4252
+    ],
+    [
+     0.3397,
+     0.355,
+     0.0955,
+     0.3382
+    ],
+    [
+     0.3239,
+     0.0393,
+     0.0378,
+     0.1214
+    ],
+    [
+     0.3554,
+     0.0404,
+     0.0275,
+     0.1195
+    ]
+   ],
+   "count": 4,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D038.jpg"
+  },
+  {
+   "id": "D039",
+   "cameraId": "CAM-01",
+   "segmentId": "EV-001-N02",
+   "label": "person",
+   "refTime": "2004-01-20 10:33:01.237",
+   "rawTime": "2004-01-20 10:33:01.237",
+   "confidence": 0.894,
+   "box": [
+    0.2986,
+    0.3066,
+    0.0843,
+    0.3105
+   ],
+   "boxes": [
+    [
+     0.2986,
+     0.3066,
+     0.0843,
+     0.3105
+    ],
+    [
+     0.1941,
+     0.3546,
+     0.0962,
+     0.421
+    ],
+    [
+     0.2895,
+     0.0413,
+     0.0377,
+     0.1187
+    ],
+    [
+     0.3258,
+     0.0357,
+     0.0352,
+     0.1238
+    ]
+   ],
+   "count": 4,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D039.jpg"
+  },
+  {
+   "id": "D040",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R01",
+   "label": "person",
+   "refTime": "2004-01-20 10:07:37.877",
+   "rawTime": "2004-01-20 10:06:00.477",
+   "confidence": 0.666,
+   "box": [
+    0.5958,
+    0.2524,
+    0.0269,
+    0.0949
+   ],
+   "boxes": [
+    [
+     0.5958,
+     0.2524,
+     0.0269,
+     0.0949
+    ]
+   ],
+   "count": 1,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D040.jpg"
+  },
+  {
+   "id": "D041",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R01",
+   "label": "person",
+   "refTime": "2004-01-20 10:07:40.877",
+   "rawTime": "2004-01-20 10:06:03.477",
+   "confidence": 0.823,
+   "box": [
+    0.2725,
+    0.3999,
+    0.0605,
+    0.1741
+   ],
+   "boxes": [
+    [
+     0.2725,
+     0.3999,
+     0.0605,
+     0.1741
+    ]
+   ],
+   "count": 1,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D041.jpg"
+  },
+  {
+   "id": "D042",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R01",
+   "label": "person",
+   "refTime": "2004-01-20 10:07:50.877",
+   "rawTime": "2004-01-20 10:06:13.477",
+   "confidence": 0.633,
+   "box": [
+    0.6238,
+    0.3379,
+    0.0524,
+    0.2
+   ],
+   "boxes": [
+    [
+     0.6238,
+     0.3379,
+     0.0524,
+     0.2
+    ],
+    [
+     0.5757,
+     0.3429,
+     0.0493,
+     0.1938
+    ]
+   ],
+   "count": 2,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D042.jpg"
+  },
+  {
+   "id": "D043",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R01",
+   "label": "person",
+   "refTime": "2004-01-20 10:07:53.877",
+   "rawTime": "2004-01-20 10:06:16.477",
+   "confidence": 0.833,
+   "box": [
+    0.5944,
+    0.279,
+    0.0416,
+    0.1614
+   ],
+   "boxes": [
+    [
+     0.5944,
+     0.279,
+     0.0416,
+     0.1614
+    ],
+    [
+     0.5546,
+     0.2823,
+     0.0383,
+     0.1538
+    ],
+    [
+     0.1818,
+     0.3011,
+     0.0612,
+     0.3073
+    ]
+   ],
+   "count": 3,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D043.jpg"
+  },
+  {
+   "id": "D044",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R01",
+   "label": "person",
+   "refTime": "2004-01-20 10:08:17.877",
+   "rawTime": "2004-01-20 10:06:40.477",
+   "confidence": 0.507,
+   "box": [
+    0.6037,
+    0.245,
+    0.0305,
+    0.1323
+   ],
+   "boxes": [
+    [
+     0.6037,
+     0.245,
+     0.0305,
+     0.1323
+    ]
+   ],
+   "count": 1,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D044.jpg"
+  },
+  {
+   "id": "D045",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R01",
+   "label": "person",
+   "refTime": "2004-01-20 10:08:24.877",
+   "rawTime": "2004-01-20 10:06:47.477",
+   "confidence": 0.808,
+   "box": [
+    0.4628,
+    0.3546,
+    0.0469,
+    0.2036
+   ],
+   "boxes": [
+    [
+     0.4628,
+     0.3546,
+     0.0469,
+     0.2036
+    ],
+    [
+     0.502,
+     0.3696,
+     0.0569,
+     0.2059
+    ]
+   ],
+   "count": 2,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D045.jpg"
+  },
+  {
+   "id": "D046",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R01",
+   "label": "person",
+   "refTime": "2004-01-20 10:08:34.877",
+   "rawTime": "2004-01-20 10:06:57.477",
+   "confidence": 0.763,
+   "box": [
+    0.883,
+    0.3664,
+    0.0423,
+    0.1681
+   ],
+   "boxes": [
+    [
+     0.883,
+     0.3664,
+     0.0423,
+     0.1681
+    ]
+   ],
+   "count": 1,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D046.jpg"
+  },
+  {
+   "id": "D047",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R02",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:21.077",
+   "rawTime": "2004-01-20 10:20:43.570",
+   "confidence": 0.551,
+   "box": [
+    0.6482,
+    0.2863,
+    0.0422,
+    0.2434
+   ],
+   "boxes": [
+    [
+     0.6482,
+     0.2863,
+     0.0422,
+     0.2434
+    ]
+   ],
+   "count": 1,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D047.jpg"
+  },
+  {
+   "id": "D048",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R02",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:25.077",
+   "rawTime": "2004-01-20 10:20:47.570",
+   "confidence": 0.687,
+   "box": [
+    0.4673,
+    0.358,
+    0.0601,
+    0.1813
+   ],
+   "boxes": [
+    [
+     0.4673,
+     0.358,
+     0.0601,
+     0.1813
+    ]
+   ],
+   "count": 1,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D048.jpg"
+  },
+  {
+   "id": "D049",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R02",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:32.077",
+   "rawTime": "2004-01-20 10:20:54.570",
+   "confidence": 0.727,
+   "box": [
+    0.8599,
+    0.3968,
+    0.0627,
+    0.172
+   ],
+   "boxes": [
+    [
+     0.8599,
+     0.3968,
+     0.0627,
+     0.172
+    ],
+    [
+     0.8005,
+     0.3863,
+     0.0502,
+     0.1604
+    ]
+   ],
+   "count": 2,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D049.jpg"
+  },
+  {
+   "id": "D050",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R02",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:34.077",
+   "rawTime": "2004-01-20 10:20:56.570",
+   "confidence": 0.823,
+   "box": [
+    0.6125,
+    0.3667,
+    0.0348,
+    0.178
+   ],
+   "boxes": [
+    [
+     0.6125,
+     0.3667,
+     0.0348,
+     0.178
+    ],
+    [
+     0.6452,
+     0.4025,
+     0.0783,
+     0.199
+    ],
+    [
+     0.2153,
+     0.3549,
+     0.0418,
+     0.1979
+    ]
+   ],
+   "count": 3,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D050.jpg"
+  },
+  {
+   "id": "D051",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R02",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:38.077",
+   "rawTime": "2004-01-20 10:21:00.570",
+   "confidence": 0.787,
+   "box": [
+    0.252,
+    0.4011,
+    0.0504,
+    0.1665
+   ],
+   "boxes": [
+    [
+     0.252,
+     0.4011,
+     0.0504,
+     0.1665
+    ],
+    [
+     0.3554,
+     0.3481,
+     0.0487,
+     0.1579
+    ],
+    [
+     0.1294,
+     0.4073,
+     0.0631,
+     0.1881
+    ],
+    [
+     0.0887,
+     0.4148,
+     0.0473,
+     0.1905
+    ],
+    [
+     0.2088,
+     0.3816,
+     0.047,
+     0.171
+    ]
+   ],
+   "count": 5,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D051.jpg"
+  },
+  {
+   "id": "D052",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R02",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:40.077",
+   "rawTime": "2004-01-20 10:21:02.570",
+   "confidence": 0.763,
+   "box": [
+    0.2621,
+    0.4222,
+    0.057,
+    0.1994
+   ],
+   "boxes": [
+    [
+     0.2621,
+     0.4222,
+     0.057,
+     0.1994
+    ],
+    [
+     0.3029,
+     0.4118,
+     0.059,
+     0.1905
+    ],
+    [
+     0.4972,
+     0.3497,
+     0.0527,
+     0.1977
+    ]
+   ],
+   "count": 3,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D052.jpg"
+  },
+  {
+   "id": "D053",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R02",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:44.077",
+   "rawTime": "2004-01-20 10:21:06.570",
+   "confidence": 0.863,
+   "box": [
+    0.2297,
+    0.3717,
+    0.0769,
+    0.197
+   ],
+   "boxes": [
+    [
+     0.2297,
+     0.3717,
+     0.0769,
+     0.197
+    ],
+    [
+     0.6741,
+     0.3046,
+     0.0441,
+     0.1648
+    ],
+    [
+     0.6411,
+     0.4086,
+     0.0708,
+     0.197
+    ]
+   ],
+   "count": 3,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D053.jpg"
+  },
+  {
+   "id": "D054",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R02",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:47.077",
+   "rawTime": "2004-01-20 10:21:09.570",
+   "confidence": 0.777,
+   "box": [
+    0.6787,
+    0.3042,
+    0.0418,
+    0.1611
+   ],
+   "boxes": [
+    [
+     0.6787,
+     0.3042,
+     0.0418,
+     0.1611
+    ],
+    [
+     0.6206,
+     0.3545,
+     0.0494,
+     0.1928
+    ],
+    [
+     0.7684,
+     0.324,
+     0.0262,
+     0.1156
+    ]
+   ],
+   "count": 3,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D054.jpg"
+  },
+  {
+   "id": "D055",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R02",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:49.077",
+   "rawTime": "2004-01-20 10:21:11.570",
+   "confidence": 0.828,
+   "box": [
+    0.7628,
+    0.288,
+    0.0411,
+    0.181
+   ],
+   "boxes": [
+    [
+     0.7628,
+     0.288,
+     0.0411,
+     0.181
+    ],
+    [
+     0.8796,
+     0.3515,
+     0.0375,
+     0.1617
+    ]
+   ],
+   "count": 2,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D055.jpg"
+  },
+  {
+   "id": "D056",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R02",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:56.077",
+   "rawTime": "2004-01-20 10:21:18.570",
+   "confidence": 0.835,
+   "box": [
+    0.8283,
+    0.3635,
+    0.0754,
+    0.263
+   ],
+   "boxes": [
+    [
+     0.8283,
+     0.3635,
+     0.0754,
+     0.263
+    ]
+   ],
+   "count": 1,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D056.jpg"
+  },
+  {
+   "id": "D057",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R02",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:57.077",
+   "rawTime": "2004-01-20 10:21:19.570",
+   "confidence": 0.848,
+   "box": [
+    0.7203,
+    0.3802,
+    0.0941,
+    0.2456
+   ],
+   "boxes": [
+    [
+     0.7203,
+     0.3802,
+     0.0941,
+     0.2456
+    ],
+    [
+     0.1589,
+     0.3814,
+     0.0637,
+     0.1789
+    ],
+    [
+     0.0825,
+     0.4108,
+     0.0561,
+     0.2278
+    ]
+   ],
+   "count": 3,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D057.jpg"
+  },
+  {
+   "id": "D058",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R02",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:58.077",
+   "rawTime": "2004-01-20 10:21:20.570",
+   "confidence": 0.787,
+   "box": [
+    0.6473,
+    0.4004,
+    0.0601,
+    0.2257
+   ],
+   "boxes": [
+    [
+     0.6473,
+     0.4004,
+     0.0601,
+     0.2257
+    ],
+    [
+     0.6888,
+     0.3668,
+     0.0606,
+     0.203
+    ],
+    [
+     0.2447,
+     0.3733,
+     0.0535,
+     0.1873
+    ],
+    [
+     0.174,
+     0.4412,
+     0.0555,
+     0.2163
+    ]
+   ],
+   "count": 4,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D058.jpg"
+  },
+  {
+   "id": "D059",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R02",
+   "label": "person",
+   "refTime": "2004-01-20 10:22:59.077",
+   "rawTime": "2004-01-20 10:21:21.570",
+   "confidence": 0.844,
+   "box": [
+    0.5318,
+    0.4022,
+    0.0811,
+    0.2369
+   ],
+   "boxes": [
+    [
+     0.5318,
+     0.4022,
+     0.0811,
+     0.2369
+    ],
+    [
+     0.5996,
+     0.3625,
+     0.043,
+     0.2054
+    ],
+    [
+     0.3573,
+     0.3797,
+     0.0381,
+     0.1768
+    ],
+    [
+     0.2788,
+     0.4206,
+     0.0574,
+     0.255
+    ],
+    [
+     0.3282,
+     0.3973,
+     0.034,
+     0.1645
+    ]
+   ],
+   "count": 5,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D059.jpg"
+  },
+  {
+   "id": "D060",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R02",
+   "label": "person",
+   "refTime": "2004-01-20 10:23:01.077",
+   "rawTime": "2004-01-20 10:21:23.570",
+   "confidence": 0.836,
+   "box": [
+    0.3355,
+    0.4041,
+    0.0903,
+    0.2167
+   ],
+   "boxes": [
+    [
+     0.3355,
+     0.4041,
+     0.0903,
+     0.2167
+    ],
+    [
+     0.4115,
+     0.3677,
+     0.0558,
+     0.1993
+    ],
+    [
+     0.4951,
+     0.427,
+     0.0922,
+     0.2415
+    ]
+   ],
+   "count": 3,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D060.jpg"
+  },
+  {
+   "id": "D061",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R02",
+   "label": "person",
+   "refTime": "2004-01-20 10:23:04.077",
+   "rawTime": "2004-01-20 10:21:26.570",
+   "confidence": 0.789,
+   "box": [
+    0.1464,
+    0.3697,
+    0.0458,
+    0.1982
+   ],
+   "boxes": [
+    [
+     0.1464,
+     0.3697,
+     0.0458,
+     0.1982
+    ],
+    [
+     0.8704,
+     0.3854,
+     0.0469,
+     0.1876
+    ],
+    [
+     0.9035,
+     0.4142,
+     0.0523,
+     0.2294
+    ]
+   ],
+   "count": 3,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D061.jpg"
+  },
+  {
+   "id": "D062",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R02",
+   "label": "person",
+   "refTime": "2004-01-20 10:23:13.077",
+   "rawTime": "2004-01-20 10:21:35.570",
+   "confidence": 0.759,
+   "box": [
+    0.5548,
+    0.2781,
+    0.0472,
+    0.1721
+   ],
+   "boxes": [
+    [
+     0.5548,
+     0.2781,
+     0.0472,
+     0.1721
+    ]
+   ],
+   "count": 1,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D062.jpg"
+  },
+  {
+   "id": "D063",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R02",
+   "label": "person",
+   "refTime": "2004-01-20 10:23:15.077",
+   "rawTime": "2004-01-20 10:21:37.570",
+   "confidence": 0.883,
+   "box": [
+    0.5946,
+    0.3158,
+    0.0594,
+    0.1877
+   ],
+   "boxes": [
+    [
+     0.5946,
+     0.3158,
+     0.0594,
+     0.1877
+    ],
+    [
+     0.7687,
+     0.3317,
+     0.0257,
+     0.1088
+    ]
+   ],
+   "count": 2,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D063.jpg"
+  },
+  {
+   "id": "D064",
+   "cameraId": "CAM-02",
+   "segmentId": "EV-002-R02",
+   "label": "person",
+   "refTime": "2004-01-20 10:23:18.077",
+   "rawTime": "2004-01-20 10:21:40.570",
+   "confidence": 0.831,
+   "box": [
+    0.3913,
+    0.3591,
+    0.0609,
+    0.2036
+   ],
+   "boxes": [
+    [
+     0.3913,
+     0.3591,
+     0.0609,
+     0.2036
+    ]
+   ],
+   "count": 1,
+   "model": {
+    "name": "YOLOX-S",
+    "version": "0.1.1rc0 ONNX",
+    "licence": "Apache-2.0"
+   },
+   "review": "pending",
+   "thumb": "/clips/detections/D064.jpg"
+  }
+ ],
+ "provenance": {
+  "nodes": [
+   {
+    "id": "EV-001",
+    "kind": "source",
+    "label": "EV-001_dvr-disk.img",
+    "sha256": "56f6502e8ec2fdbb0fe59388e4f28af85f3f6792e9f64ad9784065e2c43bfe16"
+   },
+   {
+    "id": "EV-002",
+    "kind": "source",
+    "label": "EV-002_nvr-export.dav",
+    "sha256": "f5beda99e4dd84fc1311da33c437e9bcb5962f7bfca9eff24a666b266e2ea960"
+   },
+   {
+    "id": "EV-001-X01/bytes",
+    "kind": "extent",
+    "label": "Bytes 0x100000 to 0x3b6828 of EV-001",
+    "sha256": "474eb45e4881ce366e1de129580ab19ab66e1591fe05a540ab56d54342601ae2"
+   },
+   {
+    "id": "EV-001-C01/bytes",
+    "kind": "extent",
+    "label": "Bytes 0x3c2828 to 0x498028 of EV-001",
+    "sha256": "8beb768b201bb1e4afe59ea46ce9816e7d0b7663c6b40e73ba8cde5067728ca0"
+   },
+   {
+    "id": "EV-001-C01/stream",
+    "kind": "stream",
+    "label": "MPEG-PS video, header removed",
+    "sha256": "8beb768b201bb1e4afe59ea46ce9816e7d0b7663c6b40e73ba8cde5067728ca0",
+    "op": "extract",
+    "tool": "frametrail"
+   },
+   {
+    "id": "EV-001-C01/mp4",
+    "kind": "clip",
+    "label": "EV-001-C01.mp4",
+    "sha256": "da6a4c372bbc9044454db166f2041f76f7db5a4cd4baae6e3259b9defe8b6557",
+    "op": "remux, codec copy",
+    "tool": "ffmpeg 9.0.2"
+   },
+   {
+    "id": "EV-001-C02/bytes",
+    "kind": "extent",
+    "label": "Bytes 0x4a0000 to 0x5d3028 of EV-001",
+    "sha256": "b71cae4e81f79644ec8304ecfca671b4b0595bef8719b9415e25e316ba02b96f"
+   },
+   {
+    "id": "EV-001-C02/stream",
+    "kind": "stream",
+    "label": "MPEG-PS video, header removed",
+    "sha256": "69c2027c520a5a7323a1e14fefbbb30184638cf38bf08362a048b672af435320",
+    "op": "extract",
+    "tool": "frametrail"
+   },
+   {
+    "id": "EV-001-C02/mp4",
+    "kind": "clip",
+    "label": "EV-001-C02.mp4",
+    "sha256": "19724aec52bee5b3d436adafb7cf571ec64f91a3c8644b0403e78dd94dbadd98",
+    "op": "remux, codec copy",
+    "tool": "ffmpeg 9.0.2"
+   },
+   {
+    "id": "EV-001-C03/bytes",
+    "kind": "extent",
+    "label": "Bytes 0x5d8000 to 0x6f3828 of EV-001",
+    "sha256": "d4183a2d343ae1a1ff3c3d97f77169123fd3e8f722e8eec55f6cfbe2b8c46918"
+   },
+   {
+    "id": "EV-001-C03/stream",
+    "kind": "stream",
+    "label": "MPEG-PS video, header removed",
+    "sha256": "fe95d136b4a8d317b6816a991f03f8452632e728845fc3bd2ae00fce2c327e0a",
+    "op": "extract",
+    "tool": "frametrail"
+   },
+   {
+    "id": "EV-001-C03/mp4",
+    "kind": "clip",
+    "label": "EV-001-C03.mp4",
+    "sha256": "ad21f9c85dc014f071dcf72af2d2c2a64253929a50fe4e179c159f5b5597865e",
+    "op": "remux, codec copy",
+    "tool": "ffmpeg 9.0.2"
+   },
+   {
+    "id": "EV-001-C04/bytes",
+    "kind": "extent",
+    "label": "Bytes 0x6f8000 to 0x8d2828 of EV-001",
+    "sha256": "aff78264dcf1700611c2c284be16390513e7e770d88dffdf5655c3d0e6ce650f"
+   },
+   {
+    "id": "EV-001-C04/stream",
+    "kind": "stream",
+    "label": "MPEG-PS video, header removed",
+    "sha256": "5dfe6d621214284c9266501f421bedd62c32d30f9b9a3df9882e7da3b310589d",
+    "op": "extract",
+    "tool": "frametrail"
+   },
+   {
+    "id": "EV-001-C04/mp4",
+    "kind": "clip",
+    "label": "EV-001-C04.mp4",
+    "sha256": "2a0baccab9e3b1277e35d795f4ac3ad50bd0f4fdc87a0ebe9742b99986742153",
+    "op": "remux, codec copy",
+    "tool": "ffmpeg 9.0.2"
+   },
+   {
+    "id": "EV-001-C05/bytes",
+    "kind": "extent",
+    "label": "Bytes 0x8d8000 to 0xab0028 of EV-001",
+    "sha256": "f00d4152e9ed71bcc4361ca122281177ee0724d69a2706e11e308ae3500e515b"
+   },
+   {
+    "id": "EV-001-C05/stream",
+    "kind": "stream",
+    "label": "MPEG-PS video, header removed",
+    "sha256": "cb5f30ee49f1943b578c88ada489883dbe8a51f414ef9f0a7d1526134da4b462",
+    "op": "extract",
+    "tool": "frametrail"
+   },
+   {
+    "id": "EV-001-C05/mp4",
+    "kind": "clip",
+    "label": "EV-001-C05.mp4",
+    "sha256": "23561061e62af46e1dbcd244cfcca96c6be57cf4380cf0050acac365acda53ef",
+    "op": "remux, codec copy",
+    "tool": "ffmpeg 9.0.2"
+   },
+   {
+    "id": "EV-001-C06/bytes",
+    "kind": "extent",
+    "label": "Bytes 0xab8000 to 0xc97028 of EV-001",
+    "sha256": "93960cc2f1a0276127e93e8356fad55d41b9b759efd2044377bbf3cab20f9c45"
+   },
+   {
+    "id": "EV-001-C06/stream",
+    "kind": "stream",
+    "label": "MPEG-PS video, header removed",
+    "sha256": "1f987df84bcc1d5a4d1ac3a1a1f4e065f60c7cd9c731e41b13e50cfe0d534c6a",
+    "op": "extract",
+    "tool": "frametrail"
+   },
+   {
+    "id": "EV-001-C06/mp4",
+    "kind": "clip",
+    "label": "EV-001-C06.mp4",
+    "sha256": "66084e1605121d161afbf2f4df3ecec87ce8e64dcfa59b18636d6e0e82da951a",
+    "op": "remux, codec copy",
+    "tool": "ffmpeg 9.0.2"
+   },
+   {
+    "id": "EV-001-C07/bytes",
+    "kind": "extent",
+    "label": "Bytes 0xc98000 to 0xdb6028 of EV-001",
+    "sha256": "841003703aae0af64b9d2bcc77f468d590c7c8000683bad59ab90fbf0aa7b3ab"
+   },
+   {
+    "id": "EV-001-C07/stream",
+    "kind": "stream",
+    "label": "MPEG-PS video, header removed",
+    "sha256": "2679f5c87785b46c022209d8da4f17e5c4ee242eb3ac2277dd6c669162df6129",
+    "op": "extract",
+    "tool": "frametrail"
+   },
+   {
+    "id": "EV-001-C07/mp4",
+    "kind": "clip",
+    "label": "EV-001-C07.mp4",
+    "sha256": "14139440a25c7123e9230a37aff8c5e1bc52499bb2f65d57c94865c167946dcb",
+    "op": "remux, codec copy",
+    "tool": "ffmpeg 9.0.2"
+   },
+   {
+    "id": "EV-001-N01/bytes",
+    "kind": "extent",
+    "label": "Bytes 0x100000 to 0x249028 of EV-001",
+    "sha256": "b949da7049f7c2d88fb921fd3e5aa408802d0ecdf2062e4ebdf0947764cbba26"
+   },
+   {
+    "id": "EV-001-N01/stream",
+    "kind": "stream",
+    "label": "MPEG-PS video, header removed",
+    "sha256": "b57507b03f32d947f848b9ad5818aa89536649123c92d131e9a51366954a94a8",
+    "op": "extract",
+    "tool": "frametrail"
+   },
+   {
+    "id": "EV-001-N01/mp4",
+    "kind": "clip",
+    "label": "EV-001-N01.mp4",
+    "sha256": "729552321569109e54f1d0d693c2fb8cc8850b04eb5fc28eea9eaff66291ec8d",
+    "op": "remux, codec copy",
+    "tool": "ffmpeg 9.0.2"
+   },
+   {
+    "id": "EV-001-N02/bytes",
+    "kind": "extent",
+    "label": "Bytes 0x250000 to 0x3b6828 of EV-001",
+    "sha256": "446fcf9191283f9108919c788e6b3c784f3f79fefd3e0b3044ec28f58a1d3e92"
+   },
+   {
+    "id": "EV-001-N02/stream",
+    "kind": "stream",
+    "label": "MPEG-PS video, header removed",
+    "sha256": "b2d307da19444e3dc103a4d0a960197962e88805478bd5dfd822259e814c7780",
+    "op": "extract",
+    "tool": "frametrail"
+   },
+   {
+    "id": "EV-001-N02/mp4",
+    "kind": "clip",
+    "label": "EV-001-N02.mp4",
+    "sha256": "c62c22354878259470aa8b8119cde270b63636083b95bf94d983218832c2134e",
+    "op": "remux, codec copy",
+    "tool": "ffmpeg 9.0.2"
+   },
+   {
+    "id": "EV-002-R01/bytes",
+    "kind": "extent",
+    "label": "Bytes 0x0 to 0x66dce8 of EV-002",
+    "sha256": "b95e65ed6e389478b4774aabfa944902e240a312077dec5763a5032908b22573"
+   },
+   {
+    "id": "EV-002-R01/stream",
+    "kind": "stream",
+    "label": "H.264 frames from DHAV",
+    "sha256": "08d3c37f009e3f2e90a288871fedd703b55c7aa4e39a5d55f7644c824adcf2e7",
+    "op": "extract",
+    "tool": "frametrail"
+   },
+   {
+    "id": "EV-002-R01/mp4",
+    "kind": "clip",
+    "label": "EV-002-R01.mp4",
+    "sha256": "d6f21e19520fc11951e1f306b3307502e2c78fc3ae06e6c83b09844b05158a38",
+    "op": "remux, codec copy",
+    "tool": "ffmpeg 9.0.2"
+   },
+   {
+    "id": "EV-002-R02/bytes",
+    "kind": "extent",
+    "label": "Bytes 0x66dce8 to 0xcd013d of EV-002",
+    "sha256": "8676df1abf463f2ea8f3a74013d2f838f7670a0bb62e5b71599887fc8ad90b87"
+   },
+   {
+    "id": "EV-002-R02/stream",
+    "kind": "stream",
+    "label": "H.264 frames from DHAV",
+    "sha256": "c2125c4ecceeb4c22ba1459c638569b94b3104209b74042b574330c29c89edcf",
+    "op": "extract",
+    "tool": "frametrail"
+   },
+   {
+    "id": "EV-002-R02/mp4",
+    "kind": "clip",
+    "label": "EV-002-R02.mp4",
+    "sha256": "b40240af7b9601ec97241c5175b1e23463e949988da359e69acf04f7bc85556c",
+    "op": "remux, codec copy",
+    "tool": "ffmpeg 9.0.2"
+   }
+  ],
+  "edges": [
+   [
+    "EV-001",
+    "EV-001-X01/bytes"
+   ],
+   [
+    "EV-001",
+    "EV-001-C01/bytes"
+   ],
+   [
+    "EV-001-C01/bytes",
+    "EV-001-C01/stream"
+   ],
+   [
+    "EV-001-C01/stream",
+    "EV-001-C01/mp4"
+   ],
+   [
+    "EV-001",
+    "EV-001-C02/bytes"
+   ],
+   [
+    "EV-001-C02/bytes",
+    "EV-001-C02/stream"
+   ],
+   [
+    "EV-001-C02/stream",
+    "EV-001-C02/mp4"
+   ],
+   [
+    "EV-001",
+    "EV-001-C03/bytes"
+   ],
+   [
+    "EV-001-C03/bytes",
+    "EV-001-C03/stream"
+   ],
+   [
+    "EV-001-C03/stream",
+    "EV-001-C03/mp4"
+   ],
+   [
+    "EV-001",
+    "EV-001-C04/bytes"
+   ],
+   [
+    "EV-001-C04/bytes",
+    "EV-001-C04/stream"
+   ],
+   [
+    "EV-001-C04/stream",
+    "EV-001-C04/mp4"
+   ],
+   [
+    "EV-001",
+    "EV-001-C05/bytes"
+   ],
+   [
+    "EV-001-C05/bytes",
+    "EV-001-C05/stream"
+   ],
+   [
+    "EV-001-C05/stream",
+    "EV-001-C05/mp4"
+   ],
+   [
+    "EV-001",
+    "EV-001-C06/bytes"
+   ],
+   [
+    "EV-001-C06/bytes",
+    "EV-001-C06/stream"
+   ],
+   [
+    "EV-001-C06/stream",
+    "EV-001-C06/mp4"
+   ],
+   [
+    "EV-001",
+    "EV-001-C07/bytes"
+   ],
+   [
+    "EV-001-C07/bytes",
+    "EV-001-C07/stream"
+   ],
+   [
+    "EV-001-C07/stream",
+    "EV-001-C07/mp4"
+   ],
+   [
+    "EV-001",
+    "EV-001-N01/bytes"
+   ],
+   [
+    "EV-001-N01/bytes",
+    "EV-001-N01/stream"
+   ],
+   [
+    "EV-001-N01/stream",
+    "EV-001-N01/mp4"
+   ],
+   [
+    "EV-001",
+    "EV-001-N02/bytes"
+   ],
+   [
+    "EV-001-N02/bytes",
+    "EV-001-N02/stream"
+   ],
+   [
+    "EV-001-N02/stream",
+    "EV-001-N02/mp4"
+   ],
+   [
+    "EV-002",
+    "EV-002-R01/bytes"
+   ],
+   [
+    "EV-002-R01/bytes",
+    "EV-002-R01/stream"
+   ],
+   [
+    "EV-002-R01/stream",
+    "EV-002-R01/mp4"
+   ],
+   [
+    "EV-002",
+    "EV-002-R02/bytes"
+   ],
+   [
+    "EV-002-R02/bytes",
+    "EV-002-R02/stream"
+   ],
+   [
+    "EV-002-R02/stream",
+    "EV-002-R02/mp4"
+   ]
+  ]
+ },
+ "custody": [
+  {
+   "seq": 1,
+   "at": "2004-01-20 10:34:02",
+   "actor": "Examiner 1",
+   "action": "Seized and sealed",
+   "objectId": "EV-001",
+   "sha256": "56f6502e8ec2fdbb0fe59388e4f28af85f3f6792e9f64ad9784065e2c43bfe16",
+   "prev": "0000000000000000000000000000000000000000000000000000000000000000",
+   "hash": "e6a9acbae74ac2027e10f63b35f5567e4a7278e4e988b36e2c57249b6015a5f9"
+  },
+  {
+   "seq": 2,
+   "at": "2026-09-30T02:29:42+05:30",
+   "actor": "Examiner 1",
+   "action": "Acquired read-only; MD5 and SHA-256 recorded",
+   "objectId": "EV-001",
+   "sha256": "56f6502e8ec2fdbb0fe59388e4f28af85f3f6792e9f64ad9784065e2c43bfe16",
+   "prev": "e6a9acbae74ac2027e10f63b35f5567e4a7278e4e988b36e2c57249b6015a5f9",
+   "hash": "51416e43e6cf442ecd37eed411808af4bacbae715970953a4f4a4297cb32dd2a"
+  },
+  {
+   "seq": 3,
+   "at": "2004-01-20 11:03:50",
+   "actor": "Examiner 1",
+   "action": "Seized and sealed",
+   "objectId": "EV-002",
+   "sha256": "f5beda99e4dd84fc1311da33c437e9bcb5962f7bfca9eff24a666b266e2ea960",
+   "prev": "51416e43e6cf442ecd37eed411808af4bacbae715970953a4f4a4297cb32dd2a",
+   "hash": "ca7c2395158f78d4b363d457e47ded8373000636c75bd877d33c0a211d3828e8"
+  },
+  {
+   "seq": 4,
+   "at": "2026-09-30T02:29:42+05:30",
+   "actor": "Examiner 1",
+   "action": "Acquired read-only; MD5 and SHA-256 recorded",
+   "objectId": "EV-002",
+   "sha256": "f5beda99e4dd84fc1311da33c437e9bcb5962f7bfca9eff24a666b266e2ea960",
+   "prev": "ca7c2395158f78d4b363d457e47ded8373000636c75bd877d33c0a211d3828e8",
+   "hash": "53bc1cf7a2ec083189bc3e03960ea29d45c171c73ca2139fcdcc1e4768e1410d"
+  },
+  {
+   "seq": 5,
+   "at": "2026-09-30T02:29:45+05:30",
+   "actor": "Examiner 1",
+   "action": "Extracted EV-001-C01 and remuxed to MP4",
+   "objectId": "EV-001-C01/mp4",
+   "sha256": "da6a4c372bbc9044454db166f2041f76f7db5a4cd4baae6e3259b9defe8b6557",
+   "prev": "53bc1cf7a2ec083189bc3e03960ea29d45c171c73ca2139fcdcc1e4768e1410d",
+   "hash": "785f8d97d9542c74f4d59444cafc1cf0381fec61a89c5cb0a908364e96a8df32"
+  },
+  {
+   "seq": 6,
+   "at": "2026-09-30T02:29:46+05:30",
+   "actor": "Examiner 1",
+   "action": "Extracted EV-001-C02 and remuxed to MP4",
+   "objectId": "EV-001-C02/mp4",
+   "sha256": "19724aec52bee5b3d436adafb7cf571ec64f91a3c8644b0403e78dd94dbadd98",
+   "prev": "785f8d97d9542c74f4d59444cafc1cf0381fec61a89c5cb0a908364e96a8df32",
+   "hash": "0f02b82e56ba96d9439102c6650228da99e5aeafea2fa359da7b563a9c3ff99e"
+  },
+  {
+   "seq": 7,
+   "at": "2026-09-30T02:29:46+05:30",
+   "actor": "Examiner 1",
+   "action": "Extracted EV-001-C03 and remuxed to MP4",
+   "objectId": "EV-001-C03/mp4",
+   "sha256": "ad21f9c85dc014f071dcf72af2d2c2a64253929a50fe4e179c159f5b5597865e",
+   "prev": "0f02b82e56ba96d9439102c6650228da99e5aeafea2fa359da7b563a9c3ff99e",
+   "hash": "1c996c8b01e3659ea12d95406ef6864fcb7f917dd123d4fb6669b9057304a27d"
+  },
+  {
+   "seq": 8,
+   "at": "2026-09-30T02:29:47+05:30",
+   "actor": "Examiner 1",
+   "action": "Extracted EV-001-C04 and remuxed to MP4",
+   "objectId": "EV-001-C04/mp4",
+   "sha256": "2a0baccab9e3b1277e35d795f4ac3ad50bd0f4fdc87a0ebe9742b99986742153",
+   "prev": "1c996c8b01e3659ea12d95406ef6864fcb7f917dd123d4fb6669b9057304a27d",
+   "hash": "6c6e7313e351248463403b9a2d33f25352dab97e8483f53a0085fc5b6e6fc801"
+  },
+  {
+   "seq": 9,
+   "at": "2026-09-30T02:29:47+05:30",
+   "actor": "Examiner 1",
+   "action": "Extracted EV-001-C05 and remuxed to MP4",
+   "objectId": "EV-001-C05/mp4",
+   "sha256": "23561061e62af46e1dbcd244cfcca96c6be57cf4380cf0050acac365acda53ef",
+   "prev": "6c6e7313e351248463403b9a2d33f25352dab97e8483f53a0085fc5b6e6fc801",
+   "hash": "86dc8d9dc8ed93b4e9fd1debf968c415a4f91ec4355b6132e3e749ddeab19ae0"
+  },
+  {
+   "seq": 10,
+   "at": "2026-09-30T02:29:47+05:30",
+   "actor": "Examiner 1",
+   "action": "Extracted EV-001-C06 and remuxed to MP4",
+   "objectId": "EV-001-C06/mp4",
+   "sha256": "66084e1605121d161afbf2f4df3ecec87ce8e64dcfa59b18636d6e0e82da951a",
+   "prev": "86dc8d9dc8ed93b4e9fd1debf968c415a4f91ec4355b6132e3e749ddeab19ae0",
+   "hash": "3d67020098ac1c3f7299530a6679fb5913f2f4d9528765a0e3ed4835942d5a8b"
+  },
+  {
+   "seq": 11,
+   "at": "2026-09-30T02:29:48+05:30",
+   "actor": "Examiner 1",
+   "action": "Extracted EV-001-C07 and remuxed to MP4",
+   "objectId": "EV-001-C07/mp4",
+   "sha256": "14139440a25c7123e9230a37aff8c5e1bc52499bb2f65d57c94865c167946dcb",
+   "prev": "3d67020098ac1c3f7299530a6679fb5913f2f4d9528765a0e3ed4835942d5a8b",
+   "hash": "cc9ddbe77bd7e3f9363923c0ad157097c1fbae42726b13dd80c2117f7aa55ae8"
+  },
+  {
+   "seq": 12,
+   "at": "2026-09-30T02:29:48+05:30",
+   "actor": "Examiner 1",
+   "action": "Extracted EV-001-N01 and remuxed to MP4",
+   "objectId": "EV-001-N01/mp4",
+   "sha256": "729552321569109e54f1d0d693c2fb8cc8850b04eb5fc28eea9eaff66291ec8d",
+   "prev": "cc9ddbe77bd7e3f9363923c0ad157097c1fbae42726b13dd80c2117f7aa55ae8",
+   "hash": "9cfc7883e8f206c0252e09ecfbcec0755e52ae86bbb2424d196e776b432268b8"
+  },
+  {
+   "seq": 13,
+   "at": "2026-09-30T02:29:48+05:30",
+   "actor": "Examiner 1",
+   "action": "Extracted EV-001-N02 and remuxed to MP4",
+   "objectId": "EV-001-N02/mp4",
+   "sha256": "c62c22354878259470aa8b8119cde270b63636083b95bf94d983218832c2134e",
+   "prev": "9cfc7883e8f206c0252e09ecfbcec0755e52ae86bbb2424d196e776b432268b8",
+   "hash": "7c2c4bd6f898aae3ae1ec564933fd919947bb8f8289c65030bdd74b4c49f8be1"
+  },
+  {
+   "seq": 14,
+   "at": "2026-09-30T02:29:49+05:30",
+   "actor": "Examiner 1",
+   "action": "Extracted EV-002-R01 and remuxed to MP4",
+   "objectId": "EV-002-R01/mp4",
+   "sha256": "d6f21e19520fc11951e1f306b3307502e2c78fc3ae06e6c83b09844b05158a38",
+   "prev": "7c2c4bd6f898aae3ae1ec564933fd919947bb8f8289c65030bdd74b4c49f8be1",
+   "hash": "b9d91e03a5e4e6d309e946d27548a2711efbb1939fa442cb516e7e376a66fa8e"
+  },
+  {
+   "seq": 15,
+   "at": "2026-09-30T02:29:50+05:30",
+   "actor": "Examiner 1",
+   "action": "Extracted EV-002-R02 and remuxed to MP4",
+   "objectId": "EV-002-R02/mp4",
+   "sha256": "b40240af7b9601ec97241c5175b1e23463e949988da359e69acf04f7bc85556c",
+   "prev": "b9d91e03a5e4e6d309e946d27548a2711efbb1939fa442cb516e7e376a66fa8e",
+   "hash": "68e3abf5eb8b0c0df756e3effd6cc3e5bb70c17dfb84cf0e9aa0bf3b19d02a13"
+  },
+  {
+   "seq": 16,
+   "at": "2026-09-30T02:30:06+05:30",
+   "actor": "frametrail",
+   "action": "AI-assisted person detection, YOLOX-S",
+   "objectId": "detections",
+   "sha256": "9164fcfbaba1365d167eb752f810bc6eb8d9c119576efb614951d309f54d26bd",
+   "prev": "68e3abf5eb8b0c0df756e3effd6cc3e5bb70c17dfb84cf0e9aa0bf3b19d02a13",
+   "hash": "e6ab5b1846f4a5446627274442897c6d3224a2e28a5f17a08c36e6b43c737dc6"
+  },
+  {
+   "seq": 17,
+   "at": "2026-09-30T02:30:06+05:30",
+   "actor": "frametrail",
+   "action": "Re-hashed after analysis; unchanged",
+   "objectId": "EV-001",
+   "sha256": "56f6502e8ec2fdbb0fe59388e4f28af85f3f6792e9f64ad9784065e2c43bfe16",
+   "prev": "e6ab5b1846f4a5446627274442897c6d3224a2e28a5f17a08c36e6b43c737dc6",
+   "hash": "39a4764e3c189e4063d28b42304b8b1f49f874cd3f1ad206579be429e167345b"
+  },
+  {
+   "seq": 18,
+   "at": "2026-09-30T02:30:06+05:30",
+   "actor": "frametrail",
+   "action": "Re-hashed after analysis; unchanged",
+   "objectId": "EV-002",
+   "sha256": "f5beda99e4dd84fc1311da33c437e9bcb5962f7bfca9eff24a666b266e2ea960",
+   "prev": "39a4764e3c189e4063d28b42304b8b1f49f874cd3f1ad206579be429e167345b",
+   "hash": "5f6b374b7986d09ebe8fe7c6a4eef9ed296cb29670b01a0a9fadc62beab11046"
+  }
+ ],
+ "adapters": [
+  {
+   "vendor": "Hikvision",
+   "family": "HIKBTREE disk",
+   "formats": [
+    "Raw disk image",
+    "IMKH export"
+   ],
+   "status": "tested-on-fixture",
+   "ops": [
+    "Identify",
+    "Master sector and backup",
+    "System log",
+    "Both index copies",
+    "Carve",
+    "Detect initialisation"
+   ],
+   "note": "Fixture modelled on Han, Jeong and Lee (2015). Not yet run on a real disk."
+  },
+  {
+   "vendor": "Dahua",
+   "family": "DHAV frames",
+   "formats": [
+    ".dav export"
+   ],
+   "status": "tested-on-fixture",
+   "ops": [
+    "Identify",
+    "Parse frames",
+    "Recorder time",
+    "Remux"
+   ],
+   "note": "Frames also read back by FFmpeg's own dhav demuxer. DHFS disk parsing is next."
+  },
+  {
+   "vendor": "CP Plus",
+   "family": "Dahua OEM",
+   "formats": [
+    ".dav export"
+   ],
+   "status": "export-parser",
+   "ops": [
+    "Parse frames through the Dahua adapter"
+   ],
+   "note": "Listed as a Dahua OEM (IPVM, 2024). Not yet tested on a real CP Plus file."
+  },
+  {
+   "vendor": "Honeywell",
+   "family": "Own file system",
+   "formats": [
+    "Raw disk image"
+   ],
+   "status": "next-phase",
+   "ops": [],
+   "note": "Undocumented file system studied by Yoon and Hwang (DFRWS USA 2026)."
+  },
+  {
+   "vendor": "Uniview",
+   "family": "Unknown",
+   "formats": [
+    "Raw disk image"
+   ],
+   "status": "next-phase",
+   "ops": [],
+   "note": "No public on-disk specification found."
+  },
+  {
+   "vendor": "TP-Link VIGI",
+   "family": "Unknown",
+   "formats": [
+    "USB export"
+   ],
+   "status": "next-phase",
+   "ops": [],
+   "note": "TP-Link does not publish the export format."
+  },
+  {
+   "vendor": "Godrej",
+   "family": "Unknown",
+   "formats": [],
+   "status": "next-phase",
+   "ops": [],
+   "note": "OEM source not publicly documented."
+  },
+  {
+   "vendor": "Matrix",
+   "family": "SATATYA exports",
+   "formats": [
+    ".mxs",
+    ".avs",
+    ".stm"
+   ],
+   "status": "next-phase",
+   "ops": [],
+   "note": "Export formats named on Matrix's own wiki."
+  }
+ ],
+ "log": [
+  {
+   "seq": 1,
+   "rawTime": "2004-01-20 09:58:12.000",
+   "refTime": "2004-01-20 09:58:12.000",
+   "type": "power",
+   "text": "System power on",
+   "sourceId": "EV-001",
+   "byteOffset": 65536
+  },
+  {
+   "seq": 2,
+   "rawTime": "2004-01-20 10:07:33.997",
+   "refTime": "2004-01-20 10:07:33.997",
+   "type": "record",
+   "text": "Motion recording, camera 1",
+   "sourceId": "EV-001",
+   "byteOffset": 65600
+  },
+  {
+   "seq": 3,
+   "rawTime": "2004-01-20 10:08:39.797",
+   "refTime": "2004-01-20 10:08:39.797",
+   "type": "record",
+   "text": "Recording stopped, camera 1",
+   "sourceId": "EV-001",
+   "byteOffset": 65664
+  },
+  {
+   "seq": 4,
+   "rawTime": "2004-01-20 10:15:03.000",
+   "refTime": "2004-01-20 10:15:03.000",
+   "type": "video-loss",
+   "text": "Video loss, camera 2",
+   "sourceId": "EV-001",
+   "byteOffset": 65728
+  },
+  {
+   "seq": 5,
+   "rawTime": "2004-01-20 10:15:41.000",
+   "refTime": "2004-01-20 10:15:41.000",
+   "type": "video-loss",
+   "text": "Video restored, camera 2",
+   "sourceId": "EV-001",
+   "byteOffset": 65792
+  },
+  {
+   "seq": 6,
+   "rawTime": "2004-01-20 10:22:24.157",
+   "refTime": "2004-01-20 10:22:24.157",
+   "type": "record",
+   "text": "Motion recording, camera 1",
+   "sourceId": "EV-001",
+   "byteOffset": 65856
+  },
+  {
+   "seq": 7,
+   "rawTime": "2004-01-20 10:23:27.757",
+   "refTime": "2004-01-20 10:23:27.757",
+   "type": "record",
+   "text": "Recording stopped, camera 1",
+   "sourceId": "EV-001",
+   "byteOffset": 65920
+  },
+  {
+   "seq": 8,
+   "rawTime": "2004-01-20 10:30:48.000",
+   "refTime": "2004-01-20 10:30:48.000",
+   "type": "login",
+   "text": "Local login, user admin",
+   "sourceId": "EV-001",
+   "byteOffset": 65984
+  },
+  {
+   "seq": 9,
+   "rawTime": "2004-01-20 10:31:05.000",
+   "refTime": "2004-01-20 10:31:05.000",
+   "type": "hdd-init",
+   "text": "HDD 1 initialised, user admin",
+   "sourceId": "EV-001",
+   "byteOffset": 66048
+  },
+  {
+   "seq": 10,
+   "rawTime": "2004-01-20 10:31:52.000",
+   "refTime": "2004-01-20 10:31:52.000",
+   "type": "power",
+   "text": "System power on",
+   "sourceId": "EV-001",
+   "byteOffset": 66112
+  },
+  {
+   "seq": 11,
+   "rawTime": "2004-01-20 10:32:32.237",
+   "refTime": "2004-01-20 10:32:32.237",
+   "type": "record",
+   "text": "Motion recording, camera 1",
+   "sourceId": "EV-001",
+   "byteOffset": 66176
+  },
+  {
+   "seq": 12,
+   "rawTime": "2004-01-20 10:33:02.237",
+   "refTime": "2004-01-20 10:33:02.237",
+   "type": "record",
+   "text": "Recording stopped, camera 1",
+   "sourceId": "EV-001",
+   "byteOffset": 66240
+  },
+  {
+   "seq": 13,
+   "rawTime": "2004-01-20 10:34:10.000",
+   "refTime": "2004-01-20 10:34:10.000",
+   "type": "power",
+   "text": "System power off",
+   "sourceId": "EV-001",
+   "byteOffset": 66304
+  }
+ ],
+ "reformat": {
+  "sourceId": "EV-001",
+  "at": "2004-01-20 10:31:05.000",
+  "evidence": [
+   "Block 119 holds footage recorded before block 74's: time runs backwards along the disk",
+   "The master sector records the disk as initialised at Unix time 1074594665 (2004-01-20 10:31:05 recorder time)",
+   "7 carved segments are older than that; the index lists none of them",
+   "Both index copies list only 2 segments, all after it",
+   "Recorder log at byte 0x10200: \"HDD 1 initialised, user admin\""
+  ],
+  "timeReversal": {
+   "blockOrder": [
+    32,
+    74,
+    119,
+    148,
+    187,
+    223,
+    283,
+    343,
+    403
+   ],
+   "times": [
+    "2004-01-20 10:32:32.237",
+    "2004-01-20 10:32:47.237",
+    "2004-01-20 10:08:03.997",
+    "2004-01-20 10:08:13.997",
+    "2004-01-20 10:08:27.997",
+    "2004-01-20 10:22:24.157",
+    "2004-01-20 10:22:41.157",
+    "2004-01-20 10:22:58.157",
+    "2004-01-20 10:23:15.757"
+   ],
+   "segments": [
+    "EV-001-N01",
+    "EV-001-N02",
+    "EV-001-C01",
+    "EV-001-C02",
+    "EV-001-C03",
+    "EV-001-C04",
+    "EV-001-C05",
+    "EV-001-C06",
+    "EV-001-C07"
+   ]
+  }
+ },
+ "stats": {
+  "sources": 2,
+  "evidenceBytes": 28016957,
+  "hashSecondsTotal": 0.058,
+  "indexedSegments": 2,
+  "recoveredSegments": 7,
+  "recoveredSeconds": 99.4,
+  "overwrittenSeconds": 30.0,
+  "carveCandidates": 7,
+  "carveRejected": 1,
+  "nvrFrames": 3235,
+  "ffmpegDhavFrames": 3235,
+  "offsetSec": 97.4,
+  "offsetPlantedSec": 97.4,
+  "offsetErrorMs": -0.01,
+  "driftPpm": 120.0,
+  "driftPlantedPpm": 120.0,
+  "seizureOffsetSec": -98.0,
+  "seizureAgreementSec": 0.194,
+  "osdFramesRead": 207,
+  "osdMisreads": 31,
+  "osdFontAccuracy": 0.852,
+  "partialDatingCheckMs": -0.0,
+  "remuxIdentical": 11,
+  "clips": 11,
+  "logRecords": 13,
+  "detections": 64,
+  "custodyEvents": 18,
+  "initialisedAt": "2004-01-20 10:31:05.000",
+  "adapters": 8,
+  "adaptersTested": 2
+ },
+ "footage": {
+  "name": "CAVIAR project, Lisbon shopping-centre sequences TwoEnterShop1, OneStopMoveEnter1, OneShopOneWait1",
+  "url": "https://homepages.inf.ed.ac.uk/rbf/CAVIARDATA1/",
+  "licence": "CC BY-SA",
+  "credit": "EC Funded CAVIAR project/IST 2001 37540",
+  "note": "Real CCTV footage, packed by us into synthetic recorder images."
+ },
+ "tools": {
+  "ffmpeg": "ffmpeg 9.0.2",
+  "model": {
+   "name": "YOLOX-S",
+   "version": "0.1.1rc0 ONNX",
+   "licence": "Apache-2.0"
+  }
+ }
+}

@@ -1,0 +1,338 @@
+"""Parse and recover a Hikvision-style disk image.
+
+Reads the master sector and its backup, the system log, both index copies, then carves
+every data block the index does not list. Carved segments are only kept if their video
+decodes. Finally it checks block order against time order: a recorder writes forward,
+so newer footage in lower blocks than older footage means the disk was initialised and
+recording started again from the first block (Han, Jeong and Lee, 2015).
+"""
+
+from __future__ import annotations
+
+import tempfile
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
+from pathlib import Path
+
+from . import hikfs
+from .media import FFPROBE, ffmpeg, run
+
+
+@dataclass
+class Found:
+    """One stretch of video bytes on the disk, however it was found."""
+
+    key: str
+    state: str  # indexed | partial | recovered-unindexed | overwritten
+    channel: int
+    start_ms: int
+    end_ms: int
+    byte_start: int
+    byte_end: int
+    first_block: int
+    ps: bytes = b""  # MPEG-PS video, segment header removed
+    frames: int = 0
+    how: str = ""  # how the time was established
+    note: str = ""
+    evidence: list[str] = field(default_factory=list)
+
+
+@dataclass
+class Disk:
+    master: hikfs.Master
+    backup_matches: bool
+    index_copies_match: bool
+    entries: list[hikfs.Entry]
+    logs: list[hikfs.LogRecord]
+    found: list[Found]
+    runs: list[dict]
+    candidates: int
+    rejected: list[dict]
+    reformat: dict | None
+
+
+def decoded_frames(ps: bytes) -> int:
+    if not ps:
+        return 0
+    try:
+        out = run(
+            FFPROBE,
+            "-v",
+            "error",
+            "-f",
+            "mpeg",
+            "-count_frames",
+            "-select_streams",
+            "v:0",
+            "-show_entries",
+            "stream=nb_read_frames",
+            "-of",
+            "csv=p=0",
+            "pipe:0",
+            stdin=ps,
+        )
+    except RuntimeError:
+        return 0
+    text = out.decode().strip().split(",")[0]
+    return int(text) if text.isdigit() else 0
+
+
+def first_keyframe(ps: bytes) -> tuple[int, float] | None:
+    """Byte position of the pack that carries the first keyframe, and that frame's PTS."""
+    out = run(
+        FFPROBE,
+        "-v",
+        "error",
+        "-f",
+        "mpeg",
+        "-select_streams",
+        "v:0",
+        "-show_entries",
+        "packet=pts_time,flags,pos",
+        "-of",
+        "csv=p=0",
+        "pipe:0",
+        stdin=ps,
+    )
+    for line in out.decode().split():
+        pts, pos, flags = (line.split(",") + ["", "", ""])[:3]
+        if flags.startswith("K") and pts not in ("", "N/A") and pos.isdigit():
+            pack = ps.rfind(b"\x00\x00\x01\xba", 0, int(pos) + 1)
+            return max(pack, 0), float(pts)
+    return None
+
+
+def to_mp4(stream: bytes, fmt: str) -> bytes:
+    """Remux without re-encoding, so every coded frame is carried over as it was.
+    faststart needs a seekable output, so this goes through a temporary folder."""
+    with tempfile.TemporaryDirectory() as d:
+        src, dst = Path(d) / "in.bin", Path(d) / "out.mp4"
+        src.write_bytes(stream)
+        rate = ["-framerate", "25"] if fmt == "h264" else []
+        ffmpeg("-f", fmt, *rate, "-i", src, "-c", "copy", "-movflags", "+faststart", dst)
+        return dst.read_bytes()
+
+
+def parse(img: bytes) -> Disk:
+    sig = img.find(hikfs.SIGNATURE)
+    at = sig - 0x10
+    sector = img[at : at + hikfs.MASTER_LEN]
+    m = hikfs.unpack_master(sector)
+    backup_at = m.log_at + m.log_len
+    backup_ok = img[backup_at : backup_at + hikfs.MASTER_LEN] == sector
+    logs = hikfs.unpack_logs(img[m.log_at : m.log_at + m.log_len], m.log_at)
+    slots = (m.index_len - 64) // hikfs.ENTRY_LEN
+    copy_a = img[m.index_at : m.index_at + m.index_len]
+    copy_b = img[m.index_at + m.index_len : m.index_at + 2 * m.index_len]
+    entries = hikfs.unpack_index(copy_a, slots)
+    B, base = m.block_size, m.data_at
+    found: list[Found] = []
+    owner: dict[int, str] = {}
+
+    for e in (e for e in entries if e.in_use):
+        key = f"N{len(found) + 1:02d}"
+        a = base + e.first_block * B
+        raw = img[a : a + e.length]
+        ps = raw[hikfs.IMKH_LEN :] if hikfs.unpack_imkh(raw) else b""
+        f = Found(
+            key,
+            "indexed",
+            e.channel,
+            e.start_ms,
+            e.end_ms,
+            a,
+            a + e.length,
+            e.first_block,
+            ps,
+            decoded_frames(ps),
+            how="Index entry, Unix epoch time",
+        )
+        found.append(f)
+        for b in range(e.first_block, e.first_block + e.block_count):
+            owner[b] = key
+
+    # Carve: walk every block the index does not claim.
+    candidates, rejected, carved = 0, [], []
+    b = 0
+    while b < m.block_count:
+        if b in owner or not any(img[base + b * B : base + (b + 1) * B]):
+            b += 1
+            continue
+        o = base + b * B
+        head = hikfs.unpack_imkh(img[o : o + hikfs.IMKH_LEN])
+        end = b + 1
+        while end < m.block_count and end not in owner:
+            nxt = base + end * B
+            if hikfs.unpack_imkh(img[nxt : nxt + hikfs.IMKH_LEN]) or not any(img[nxt : nxt + B]):
+                break
+            end += 1
+        raw = img[o : base + end * B].rstrip(b"\0")
+        if head:
+            candidates += 1
+            ps = raw[hikfs.IMKH_LEN :]
+            frames = decoded_frames(ps)
+            if frames and abs(frames - head["frames"]) <= 1:
+                f = Found(
+                    "",
+                    "recovered-unindexed",
+                    head["channel"],
+                    head["start_ms"],
+                    head["start_ms"] + frames * 1000 // head["fps"],
+                    o,
+                    o + len(raw),
+                    b,
+                    ps,
+                    frames,
+                    how="Segment header, carved",
+                )
+                f.note = "Found in blocks the index does not list. Header and every frame decode."
+                carved.append(f)
+            else:
+                rejected.append(
+                    {
+                        "byteStart": o,
+                        "byteEnd": o + len(raw),
+                        "claimedFrames": head["frames"],
+                        "decodedFrames": frames,
+                        "reason": "Segment header found, but the bytes after it do not decode",
+                    }
+                )
+        else:
+            # Video with no header: the tail of a segment whose head was overwritten.
+            pack = raw.find(b"\x00\x00\x01\xba")
+            key_at = first_keyframe(raw[pack:]) if pack >= 0 else None
+            if key_at:
+                skip, pts = key_at
+                ps = raw[pack + skip :]
+                f = Found(
+                    "", "partial", 1, 0, 0, o + pack + skip, o + len(raw), b, ps, decoded_frames(ps)
+                )
+                f.pts = pts  # type: ignore[attr-defined]
+                carved.append(f)
+        b = end
+
+    # A headerless tail is dated from the segment that follows it on disk, recorded
+    # without a break. The OSD check in analyse confirms or corrects this.
+    carved.sort(key=lambda f: f.first_block)
+    # Every whole segment's stream starts at the same PTS; measure it on one we have.
+    whole = next((f for f in found + carved if f.state != "partial" and f.ps), None)
+    origin = first_keyframe(whole.ps)[1] if whole else 0.0
+    sys_blocks = base // B
+    for i, f in enumerate(carved):
+        if f.state == "partial":
+            into = f.pts - origin  # type: ignore[attr-defined]
+            f.evidence.append(
+                f"Block {f.first_block + sys_blocks} has video but no segment header; its first "
+                f"keyframe is {into:.2f} s into a segment, so the segment's head is missing"
+            )
+            nxt = carved[i + 1] if i + 1 < len(carved) else None
+            if nxt:
+                f.end_ms = nxt.start_ms
+                f.start_ms = f.end_ms - f.frames * 40
+                f.how = "Abuts the next carved segment; checked against the on-screen clock"
+            f.note = "The head of this segment and everything before it were overwritten."
+    for n, f in enumerate(carved):
+        f.key = f"C{n + 1:02d}"
+        for blk in range(f.first_block, -(-(f.byte_end - base) // B)):
+            owner.setdefault(blk, f.key)
+    found += carved
+
+    reformat, lost = _reformat(m, logs, entries, found)
+    if lost:
+        found.append(lost)
+    runs = _runs(m, owner, found, lost)
+    return Disk(
+        m, backup_ok, copy_a == copy_b, entries, logs, found, runs, candidates, rejected, reformat
+    )
+
+
+def _reformat(
+    m: hikfs.Master, logs: list[hikfs.LogRecord], entries: list[hikfs.Entry], found: list[Found]
+) -> tuple[dict | None, Found | None]:
+    video = sorted((f for f in found if f.frames), key=lambda f: f.first_block)
+    init_ms = m.init_s * 1000
+    reversal = [(a, b) for a, b in zip(video, video[1:], strict=False) if b.start_ms < a.start_ms]
+    if not reversal:
+        return None, None
+    a, b = reversal[0]
+    sys_blocks = m.data_at // m.block_size
+    older = [f for f in found if f.start_ms < init_ms and f.frames]
+    rec = next((r for r in logs if r.type == 7), None)
+    evidence = [
+        f"Block {b.first_block + sys_blocks} holds footage recorded before block "
+        f"{a.first_block + sys_blocks}'s: "
+        "time runs backwards along the disk",
+        f"The master sector records the disk as initialised at Unix time {m.init_s} "
+        f"({datetime.fromtimestamp(m.init_s, UTC):%Y-%m-%d %H:%M:%S} recorder time)",
+        f"{len(older)} carved segments are older than that; the index lists none of them",
+        f"Both index copies list only {sum(e.in_use for e in entries)} segments, all after it",
+    ]
+    if rec:
+        evidence.append(f'Recorder log at byte {rec.offset:#x}: "{rec.text}"')
+    lost = None
+    partial = next((f for f in found if f.state == "partial"), None)
+    if partial:
+        # Everything between the first data block and the surviving tail was overwritten
+        # by footage recorded after initialisation.
+        started = [r.ms for r in logs if r.type == 3 and r.ms < partial.start_ms]
+        holders = [f for f in found if f.state == "indexed"]
+        end = max(f.byte_end for f in holders)
+        lost = Found(
+            "X01",
+            "overwritten",
+            partial.channel,
+            min(started) if started else partial.start_ms,
+            partial.start_ms,
+            m.data_at,
+            end,
+            sys_blocks,
+            how="From the recorder log and the surviving tail",
+        )
+        last = (end - 1 - m.data_at) // m.block_size + sys_blocks
+        holders = [f.key for f in holders]
+        lost.note = (
+            "Recorded before initialisation, then overwritten when recording restarted at "
+            f"block 0. These blocks now hold {', '.join(holders)}."
+        )
+        lost.evidence = [
+            f"Segment headers of {', '.join(holders)}, recorded after initialisation, sit in "
+            f"blocks {sys_blocks} to {last}",
+            *partial.evidence,
+        ]
+    return {
+        "at": init_ms,
+        "evidence": evidence,
+        "blockOrder": [f.first_block + sys_blocks for f in video],
+        "times": [f.start_ms for f in video],
+        "keys": [f.key for f in video],
+    }, lost
+
+
+def _runs(
+    m: hikfs.Master, owner: dict[int, str], found: list[Found], lost: Found | None
+) -> list[dict]:
+    state_of = {f.key: f.state for f in found}
+    lost_blocks: set[int] = set()
+    if lost:
+        lost_blocks = set(range(0, -(-(lost.byte_end - m.data_at) // m.block_size)))
+    labels: list[tuple[str, str | None]] = [("system", None)] * (m.data_at // m.block_size)
+    for b in range(m.block_count):
+        seg = owner.get(b)
+        if b in lost_blocks:
+            labels.append(("overwritten", seg))
+        elif seg:
+            labels.append((state_of.get(seg, "indexed"), seg))
+        else:
+            labels.append(("free", None))
+    runs: list[dict] = []
+    for i, (state, seg) in enumerate(labels):
+        if runs and runs[-1]["state"] == state and runs[-1].get("segmentId") == seg:
+            runs[-1]["count"] += 1
+            continue
+        item: dict = {"start": i, "count": 1, "state": state}
+        if seg:
+            item["segmentId"] = seg
+        if state == "overwritten":
+            item["lost"] = "X01"
+        runs.append(item)
+    return runs

@@ -1,0 +1,44 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  engine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: FFmpeg, for the DHAV round trip through FFmpeg's own demuxer
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Install
+        run: uv sync --project engine --python 3.12
+      - name: Lint
+        run: |
+          uv run --project engine ruff check engine
+          uv run --project engine ruff format --check engine
+      - name: Tests (fixture tests skip, the footage is not in the repository)
+        run: uv run --project engine pytest engine/tests -q -rs
+
+  web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Private names
+        run: pnpm check:names
+      - name: Lint
+        run: pnpm lint
+      - name: Production build
+        run: pnpm build
+      - name: Typecheck
+        run: pnpm typecheck

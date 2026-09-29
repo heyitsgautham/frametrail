@@ -1,0 +1,93 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* The evidence room: graphite surfaces, evidence-tag amber for what the examiner acts on,
+   teal only for what has been verified. */
+:root {
+  --bg: #0e1012;
+  --panel: #16191c;
+  --panel-2: #1c2024;
+  --line: #2a3035;
+  --line-2: #363d44;
+  --ink: #eceae4;
+  --ink-2: #a9aca8;
+  --ink-3: #737874;
+  --amber: #f4b400;
+  --amber-ink: #1a1400;
+  --teal: #34d3b4;
+  --red: #f0564a;
+  --st-indexed: #5b8def;
+  --st-recovered: #f4b400;
+  --st-partial: #f08a3c;
+  --st-overwritten: #f0564a;
+  --st-free: #23282d;
+  --st-system: #50585f;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-panel-2: var(--panel-2);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-amber: var(--amber);
+  --color-amber-ink: var(--amber-ink);
+  --color-teal: var(--teal);
+  --color-red: var(--red);
+  --font-display: var(--font-display);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-code);
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+body {
+  font-family: var(--font-body), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "ss01", "cv11";
+}
+
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* A faint grid on the floor of the evidence room. */
+.floor {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* An evidence tag: amber card with a punched hole. */
+.tag {
+  background: var(--amber);
+  color: var(--amber-ink);
+  clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%);
+}
+
+.scanline {
+  background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0) 0 2px, rgba(0, 0, 0, 0.18) 2px 3px);
+}
+
+video {
+  background: #000;
+}
+
+::selection {
+  background: var(--amber);
+  color: var(--amber-ink);
+}

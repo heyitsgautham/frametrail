@@ -1,0 +1,3 @@
+#!/bin/sh
+# Blocks a commit that would publish a name kept in apps/web/.env.local.
+exec pnpm -s exec tsx scripts/private-names.ts --staged

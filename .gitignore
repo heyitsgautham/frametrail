@@ -1,0 +1,32 @@
+# dependencies and builds
+node_modules/
+.next/
+*.tsbuildinfo
+next-env.d.ts
+
+# python
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# downloaded footage, built fixtures, clips and models stay on the machine that made them
+data/local/
+
+# local display names, kept out of the public repository (see apps/web/src/lib/brand.ts)
+.env*
+
+# recordings
+recording/out/
+recording/vo/
+recording/vo-guide/
+recording/shots/
+*.mp4
+*.mov
+*.webm
+*.mpg
+
+# misc
+test-results/
+.DS_Store

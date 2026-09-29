@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": { "lib": ["ES2023", "DOM"] },
+  "include": ["recording/**/*.ts", "scripts/**/*.ts", "apps/web/e2e/**/*.ts"]
+}

@@ -1,0 +1,9 @@
+packages:
+  - apps/*
+
+onlyBuiltDependencies:
+  - '@ffmpeg-installer/darwin-arm64'
+  - '@ffprobe-installer/darwin-arm64'
+  - esbuild
+  - sharp
+  - unrs-resolver

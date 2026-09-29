@@ -1,0 +1,38 @@
+{
+  "name": "frametrail",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.26.2",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @frametrail/web dev",
+    "build": "pnpm --filter @frametrail/web build",
+    "start": "pnpm --filter @frametrail/web start",
+    "typecheck": "pnpm -r typecheck && tsc -p tsconfig.json",
+    "lint": "biome lint .",
+    "test:e2e": "tsx --test apps/web/e2e/*.test.ts",
+    "check:names": "tsx scripts/private-names.ts",
+    "check": "pnpm check:names && pnpm typecheck && pnpm lint",
+    "record": "tsx recording/record.ts",
+    "take": "tsx recording/take.ts",
+    "voiceover": "tsx recording/voiceover.ts",
+    "mux": "tsx recording/mux.ts",
+    "hero": "tsx recording/hero.ts",
+    "engine:setup": "uv sync --project engine",
+    "engine:fixtures": "uv run --project engine frametrail fixtures",
+    "engine:analyse": "uv run --project engine frametrail analyse",
+    "engine:test": "uv run --project engine pytest engine/tests -q",
+    "engine:lint": "uv run --project engine ruff check engine && uv run --project engine ruff format --check engine"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.14",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@ffprobe-installer/ffprobe": "^2.1.2",
+    "@types/node": "24.13.6",
+    "playwright": "1.63.0",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3"
+  }
+}

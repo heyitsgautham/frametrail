@@ -12,7 +12,11 @@ dependencies = [
 frametrail = "frametrail.cli:main"
 
 [dependency-groups]
-dev = ["pytest>=8", "ruff>=0.6"]
+dev = [
+    "pytest>=8",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.6",
+]
 
 [build-system]
 requires = ["hatchling"]
@@ -27,3 +31,11 @@ select = ["E", "F", "I", "UP", "B"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "--cov=frametrail --cov-report=term-missing:skip-covered"
+
+[tool.coverage.run]
+branch = true
+source = ["frametrail"]
+
+[tool.coverage.report]
+fail_under = 80

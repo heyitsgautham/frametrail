@@ -30,3 +30,9 @@ recording/shots/
 # misc
 test-results/
 .DS_Store
+
+# test coverage
+.coverage
+coverage.xml
+htmlcov/
+coverage/

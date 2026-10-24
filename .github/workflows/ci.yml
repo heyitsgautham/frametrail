@@ -14,13 +14,17 @@ jobs:
       - name: FFmpeg, for the DHAV round trip through FFmpeg's own demuxer
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
       - name: Install
-        run: uv sync --project engine --python 3.12
+        run: uv sync --project engine --frozen --python 3.12
       - name: Lint
         run: |
           uv run --project engine ruff check engine
           uv run --project engine ruff format --check engine
-      - name: Tests (fixture tests skip, the footage is not in the repository)
+      - name: Tests with coverage, failing under 80 percent (CAVIAR footage tests skip)
         run: uv run --project engine pytest engine/tests -q -rs
+      - name: Dependency audit
+        run: |
+          uv export --project engine --frozen --format requirements-txt --no-emit-project -o "$RUNNER_TEMP/requirements.txt"
+          uvx pip-audit@2.10.1 --disable-pip -r "$RUNNER_TEMP/requirements.txt"
 
   web:
     runs-on: ubuntu-latest
@@ -34,6 +38,8 @@ jobs:
           cache: pnpm
       - name: Install
         run: pnpm install --frozen-lockfile
+      - name: Dependency audit
+        run: pnpm audit --audit-level=high
       - name: Private names
         run: pnpm check:names
       - name: Lint
@@ -42,3 +48,22 @@ jobs:
         run: pnpm build
       - name: Typecheck
         run: pnpm typecheck
+      - name: Chromium for the browser checks
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Browser checks against the production build
+        run: |
+          pnpm start > "$RUNNER_TEMP/next.log" 2>&1 &
+          for i in $(seq 1 60); do curl -sf -o /dev/null http://localhost:3150/intake && break; sleep 1; done
+          pnpm test:e2e || { cat "$RUNNER_TEMP/next.log"; exit 1; }
+
+  secrets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Secret scan over the full history
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

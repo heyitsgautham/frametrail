@@ -1,0 +1,24 @@
+version: 2
+updates:
+  # pnpm workspace: the root package.json, apps/web and pnpm-lock.yaml
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+
+  # Python engine: engine/pyproject.toml and engine/uv.lock
+  - package-ecosystem: uv
+    directory: /engine
+    schedule:
+      interval: weekly
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

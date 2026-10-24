@@ -60,11 +60,15 @@ Its healthcheck calls `GET /health`, which answers 503 when `case.json` is missi
 ## Test
 
 ```sh
-pnpm engine:test   # 65 engine tests with coverage, failing under 80 percent
+pnpm engine:test   # engine tests with coverage, failing under 80 percent
 pnpm engine:lint   # ruff check and ruff format --check
 pnpm check         # private names, typecheck and Biome lint
-pnpm test:e2e      # 11 browser checks, against a running `pnpm start`
+pnpm test:unit     # web helper tests with coverage, failing under 80 percent of lines
+pnpm test:e2e      # browser checks on every screen and /health, against a running `pnpm start`
 ```
+
+`pnpm test:unit` needs Node 22.8 or later for its coverage floor.
+Node only counts the files the tests load, so the floor covers the pure helpers in `apps/web/src/lib/` and not the screens, which the browser checks cover.
 
 The engine tests need no download.
 `engine/frametrail/fixture/synthetic.py` builds a 6 MB disk and a 1.4 MB export in about 5 seconds, with the clock burned into frames it draws itself.

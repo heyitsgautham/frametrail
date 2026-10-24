@@ -13,6 +13,7 @@
     "typecheck": "pnpm -r typecheck && tsc -p tsconfig.json",
     "lint": "biome lint .",
     "test:e2e": "tsx --test apps/web/e2e/*.test.ts",
+    "test:unit": "node --import tsx --test --experimental-test-coverage --test-coverage-include='apps/web/src/lib/**' --test-coverage-exclude='**/*.test.ts' --test-coverage-lines=80 apps/web/src/lib/*.test.ts",
     "check:names": "tsx scripts/private-names.ts",
     "check": "pnpm check:names && pnpm typecheck && pnpm lint",
     "record": "tsx recording/record.ts",

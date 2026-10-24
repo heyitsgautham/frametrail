@@ -19,6 +19,7 @@ Run the same checks CI runs.
 pnpm engine:lint   # ruff check and ruff format --check
 pnpm engine:test   # engine tests, fails under 80 percent coverage
 pnpm check         # private names, typecheck and Biome lint
+pnpm test:unit     # web helper tests, fails under 80 percent line coverage
 pnpm build         # production build of the workbench
 ```
 
@@ -33,6 +34,9 @@ A change to the engine lands with the test that proves it, in the same commit.
 Engine tests live in `engine/tests/` and run on the synthetic case from `engine/frametrail/fixture/synthetic.py`, so they need no download.
 Add to the synthetic case when a test needs evidence it does not plant yet, and keep it small enough to build in a few seconds.
 Tests that need the real CAVIAR footage go in `engine/tests/test_caviar.py`, which skips them until `pnpm engine:fixtures` has run.
+
+A pure helper in `apps/web/src/lib/` gets a `node:test` file next to it, named `<module>.test.ts`.
+A change to a screen gets a check in `apps/web/e2e/routes.test.ts`.
 
 The engine opens evidence read-only and hashes it before and after.
 Keep it that way, and never write into a file under `data/local/fixtures/`.

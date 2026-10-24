@@ -18,7 +18,7 @@ Run the same checks CI runs.
 ```sh
 pnpm engine:lint   # ruff check and ruff format --check
 pnpm engine:test   # engine tests, fails under 80 percent coverage
-pnpm check         # private names, typecheck and Biome lint
+pnpm check         # private names, typecheck, Biome lint and format check
 pnpm test:unit     # web helper tests, fails under 80 percent line coverage
 pnpm build         # production build of the workbench
 ```
@@ -26,7 +26,7 @@ pnpm build         # production build of the workbench
 If you changed a screen, start the build with `pnpm start` and run `pnpm test:e2e` against it.
 
 `uv run --project engine ruff format engine` fixes Python formatting.
-Biome lints the TypeScript and does not format it.
+`pnpm format` fixes TypeScript formatting with Biome.
 
 ## Tests
 

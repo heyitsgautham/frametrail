@@ -62,7 +62,7 @@ Its healthcheck calls `GET /health`, which answers 503 when `case.json` is missi
 ```sh
 pnpm engine:test   # engine tests with coverage, failing under 80 percent
 pnpm engine:lint   # ruff check and ruff format --check
-pnpm check         # private names, typecheck and Biome lint
+pnpm check         # private names, typecheck, Biome lint and format check
 pnpm test:unit     # web helper tests with coverage, failing under 80 percent of lines
 pnpm test:e2e      # browser checks on every screen and /health, against a running `pnpm start`
 ```

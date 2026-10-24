@@ -7,3 +7,7 @@ onlyBuiltDependencies:
   - esbuild
   - sharp
   - unrs-resolver
+
+# Patched releases of transitive dependencies the direct ones have not picked up yet.
+overrides:
+  source-map-js: ^1.2.2

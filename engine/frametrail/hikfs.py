@@ -113,11 +113,17 @@ def pack_master(m: Master) -> bytes:
     return bytes(sector)
 
 
+def _text(raw: bytes) -> str:
+    """Recorder text as written. Bytes that are not UTF-8, from damage or a multi-byte
+    character cut at the field's end, stay visible as \\xNN escapes instead of failing."""
+    return raw.rstrip(b"\0").decode(errors="backslashreplace")
+
+
 def unpack_master(sector: bytes) -> Master:
     if sector[0x10 : 0x10 + len(SIGNATURE)] != SIGNATURE:
         raise ValueError("no master signature")
     f = _MASTER.unpack_from(sector, 0x30)
-    return Master(*f[:9], f[9].rstrip(b"\0").decode(), f[10].rstrip(b"\0").decode())
+    return Master(*f[:9], _text(f[9]), _text(f[10]))
 
 
 def pack_entry(e: Entry) -> bytes:
@@ -159,7 +165,7 @@ def unpack_logs(region: bytes, base: int) -> list[LogRecord]:
         if region[o : o + 4] != RATS:
             continue
         _m, s, ms, kind, ch, text = _LOG.unpack_from(region, o)
-        out.append(LogRecord(base + o, s * 1000 + ms, kind, ch, text.rstrip(b"\0").decode()))
+        out.append(LogRecord(base + o, s * 1000 + ms, kind, ch, _text(text)))
     return out
 
 

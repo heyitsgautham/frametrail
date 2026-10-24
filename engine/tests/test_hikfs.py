@@ -72,6 +72,27 @@ def test_log_text_is_cut_at_48_bytes():
     assert got.text == "x" * 48
 
 
+def test_log_text_cut_inside_a_character_keeps_the_record():
+    text = "A" + "硬盘初始化" * 4  # 61 bytes of UTF-8, cut at 48 inside the 17th character
+    (got,) = hikfs.unpack_logs(hikfs.pack_log(5000, 7, 0, text), 0)
+    assert (got.ms, got.type) == (5000, 7)
+    assert got.text == text[:16] + "\\xe7\\xa1"
+
+
+def test_damaged_log_text_keeps_the_record_and_shows_the_bytes():
+    rec = bytearray(hikfs.pack_log(5000, 7, 0, "HDD 1 initialised"))
+    rec[12] = 0xFF  # first byte of the text, after magic, seconds, ms, type and channel
+    (got,) = hikfs.unpack_logs(bytes(rec), 0)
+    assert got.text == "\\xffDD 1 initialised"
+
+
+def test_damaged_master_strings_do_not_stop_the_parse():
+    sector = bytearray(hikfs.pack_master(master()))
+    at = sector.index(b"HV-7208-FX")
+    sector[at] = 0xFF
+    assert hikfs.unpack_master(bytes(sector)).model == "\\xffV-7208-FX"
+
+
 def test_segment_header_round_trips_and_rejects_other_bytes():
     raw = hikfs.pack_imkh(1, 25, 1_074_593_253_997, 400)
     assert len(raw) == hikfs.IMKH_LEN

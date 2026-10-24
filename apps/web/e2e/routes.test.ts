@@ -50,3 +50,12 @@ test("custody tamper breaks the chain", async () => {
   await page.getByText(/Chain broken at entry/).waitFor({ timeout: 10_000 });
   await page.close();
 });
+
+test("health reports the case the screens read", async () => {
+  const res = await fetch(`${BASE}/health`);
+  assert.equal(res.status, 200);
+  const body = (await res.json()) as { status: string; case: string; segments: number };
+  assert.equal(body.status, "ok");
+  assert.ok(body.case);
+  assert.ok(body.segments > 0);
+});

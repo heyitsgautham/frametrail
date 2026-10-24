@@ -16,6 +16,7 @@ data/local/
 
 # local display names, kept out of the public repository (see apps/web/src/lib/brand.ts)
 .env*
+!.env.example
 
 # recordings
 recording/out/

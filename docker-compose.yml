@@ -1,0 +1,23 @@
+# docker compose up --build web               the workbench on http://localhost:3150
+# docker compose run --rm engine fixtures     download the footage, build the evidence into data/local
+# docker compose run --rm engine analyse      run the case, rewrite data/demo/derived/case.json
+services:
+  web:
+    build:
+      context: .
+      target: web
+    ports:
+      - "3150:3150"
+    volumes:
+      # The workbench reads case.json and the clips on every request, so an engine run
+      # shows without a rebuild.
+      - ./data:/app/data:ro
+    restart: unless-stopped
+
+  engine:
+    build:
+      context: .
+      target: engine
+    profiles: ["engine"]
+    volumes:
+      - ./data:/app/data

@@ -1,0 +1,23 @@
+.git
+.github
+**/node_modules
+**/.next
+**/*.tsbuildinfo
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+.coverage
+coverage.xml
+htmlcov
+coverage
+test-results
+# footage, fixtures and clips stay on the host and arrive through the compose volume
+data/local
+# private display names stay out of images, so a built image shows the neutral names
+**/.env*
+recording
+docs
+*.mp4
+*.mov
+*.webm

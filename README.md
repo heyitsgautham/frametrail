@@ -44,6 +44,19 @@ pnpm engine:fixtures   # download 43 MB of CAVIAR footage, build both evidence f
 pnpm engine:analyse    # run the case, rewrite data/demo/derived/case.json, export the clips
 ```
 
+## Docker
+
+```sh
+docker compose up --build web              # the workbench on http://localhost:3150
+docker compose run --rm engine fixtures    # download the footage, build the evidence into data/local
+docker compose run --rm engine analyse     # run the case, rewrite data/demo/derived/case.json
+```
+
+One `Dockerfile` builds two targets, `web` and `engine`, and both mount `./data`.
+The workbench reads the case on every request, so an engine run shows without a rebuild.
+Its healthcheck calls `GET /health`, which answers 503 when `case.json` is missing or broken.
+`.dockerignore` keeps `.env.local` out of the build, so an image always shows the neutral names.
+
 ## Test
 
 ```sh

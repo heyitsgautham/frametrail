@@ -38,7 +38,7 @@ export function makeAxis(spans: [number, number][], pad = 12, joinBelow = 90): A
     for (const [i, w] of windows.entries()) {
       if (t <= w.to || i === windows.length - 1) {
         if (t < w.from) return i === 0 ? w.left : breaks[i - 1]!.left + BREAK / 2;
-        return w.left + (Math.min(t, w.to) - w.from) / (w.to - w.from || 1) * w.width;
+        return w.left + ((Math.min(t, w.to) - w.from) / (w.to - w.from || 1)) * w.width;
       }
     }
     return 100;

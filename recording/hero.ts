@@ -19,7 +19,13 @@ const png = path.join(root, "../docs/hero.png");
 const env = path.join(root, "../apps/web/.env.local");
 
 const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: 1600, height: 900 }, deviceScaleFactor: 2, locale: "en-IN", timezoneId: "Asia/Kolkata", colorScheme: "dark" });
+const page = await browser.newPage({
+  viewport: { width: 1600, height: 900 },
+  deviceScaleFactor: 2,
+  locale: "en-IN",
+  timezoneId: "Asia/Kolkata",
+  colorScheme: "dark",
+});
 await page.goto(new URL("/timeline?done", base).href, { waitUntil: "networkidle" });
 await page.evaluate(() => document.fonts.ready);
 await page.mouse.move(4, 4);

@@ -36,7 +36,12 @@ export function Report({ c }: { c: Case }) {
   return (
     <div className="pb-10">
       <PageHead kicker="Step 7 · Report" title="Ready for the examiner to sign">
-        <button type="button" data-testid="generate" onClick={() => setGo(true)} className="flex items-center gap-2 rounded-md bg-amber px-5 py-3 text-[16px] font-bold text-amber-ink">
+        <button
+          type="button"
+          data-testid="generate"
+          onClick={() => setGo(true)}
+          className="flex items-center gap-2 rounded-md bg-amber px-5 py-3 text-[16px] font-bold text-amber-ink"
+        >
           <FileCheck2 className="h-5 w-5" /> Generate certificate
         </button>
       </PageHead>
@@ -61,7 +66,10 @@ export function Report({ c }: { c: Case }) {
                 [`SHA-256, ${s.id}`, s.sha256],
               ]),
               ["Recovered or partial segments", `${recovered} of ${c.segments.length}, each with its own hashes`],
-              ["AI-assisted markers", `${c.detections.length} raised · ${confirmed} confirmed, ${rejected} rejected by the examiner · the rest not relied on`],
+              [
+                "AI-assisted markers",
+                `${c.detections.length} raised · ${confirmed} confirmed, ${rejected} rejected by the examiner · the rest not relied on`,
+              ],
               ["Date of examination", day(c.createdAt)],
             ].map(([k, v], i) => (
               <Row key={k} k={k!} v={v!} i={i} on={go} />
@@ -80,7 +88,13 @@ export function Report({ c }: { c: Case }) {
           <Panel className="p-5" data-testid="limitations">
             <Label>Limitations, stated in the report</Label>
             {limits.map((l, i) => (
-              <motion.div key={l} initial={false} animate={{ opacity: go ? 1 : 0.25 }} transition={{ delay: go ? 1.2 + i * 0.25 : 0 }} className="mt-3 flex gap-2.5 text-[14px] leading-snug text-ink-2">
+              <motion.div
+                key={l}
+                initial={false}
+                animate={{ opacity: go ? 1 : 0.25 }}
+                transition={{ delay: go ? 1.2 + i * 0.25 : 0 }}
+                className="mt-3 flex gap-2.5 text-[14px] leading-snug text-ink-2"
+              >
                 <span className="font-mono text-amber">{i + 1}</span>
                 {l}
               </motion.div>

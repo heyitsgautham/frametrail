@@ -35,7 +35,9 @@ export default function Page() {
       icon: Sparkles,
       id: "model",
       title: "Offline AI, used for triage",
-      body: model ? `${model.name} ${model.version}, ${model.licence}. Runs on the workstation. No cloud, no upload.` : "Runs on the workstation. No cloud, no upload.",
+      body: model
+        ? `${model.name} ${model.version}, ${model.licence}. Runs on the workstation. No cloud, no upload.`
+        : "Runs on the workstation. No cloud, no upload.",
     },
     {
       icon: BookOpen,

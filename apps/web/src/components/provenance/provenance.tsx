@@ -36,7 +36,8 @@ export function Provenance({ c }: { c: Case }) {
   const { nodes, edges } = c.provenance;
   const parent = useMemo(() => new Map(edges.map(([a, b]) => [b, a])), [edges]);
   const clips = nodes.filter((n) => n.kind === "clip");
-  const segOf = (n: ProvNode): Segment | undefined => c.segments.find((s) => n.id.startsWith(`${s.id}/`) || n.id === s.id || n.label.startsWith(s.id));
+  const segOf = (n: ProvNode): Segment | undefined =>
+    c.segments.find((s) => n.id.startsWith(`${s.id}/`) || n.id === s.id || n.label.startsWith(s.id));
   const preferred = clips.find((n) => segOf(n)?.state === "recovered-unindexed") ?? clips[0];
   const [sel, setSel] = useState<string | null>(null);
   useEffect(() => {
@@ -74,7 +75,10 @@ export function Provenance({ c }: { c: Case }) {
                 type="button"
                 data-testid={`node-${n.id}`}
                 onClick={() => setSel(n.id)}
-                className={cn("flex w-full items-center gap-3 rounded-md px-2.5 py-2 text-left", sel === n.id ? "bg-panel-2" : "hover:bg-panel-2/60")}
+                className={cn(
+                  "flex w-full items-center gap-3 rounded-md px-2.5 py-2 text-left",
+                  sel === n.id ? "bg-panel-2" : "hover:bg-panel-2/60",
+                )}
               >
                 <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: s ? STATE_COLOR[s.state] : "#737874" }} />
                 <span className="flex-1 truncate font-mono text-[14px] text-ink">{n.label}</span>
@@ -91,8 +95,19 @@ export function Provenance({ c }: { c: Case }) {
                     const Icon = ICON[n.kind];
                     const last = i === chain.length - 1;
                     return (
-                      <motion.div key={`${sel}-${n.id}`} className="flex min-w-0 flex-1 items-stretch" initial={{ opacity: 0, x: -14 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 * i, duration: 0.4 }}>
-                        <div className={cn("flex min-h-[330px] min-w-0 flex-1 flex-col gap-3 rounded-md border p-5", last ? "border-amber bg-[#2a2410]" : "border-teal/50 bg-[#12241f]")}>
+                      <motion.div
+                        key={`${sel}-${n.id}`}
+                        className="flex min-w-0 flex-1 items-stretch"
+                        initial={{ opacity: 0, x: -14 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.25 * i, duration: 0.4 }}
+                      >
+                        <div
+                          className={cn(
+                            "flex min-h-[330px] min-w-0 flex-1 flex-col gap-3 rounded-md border p-5",
+                            last ? "border-amber bg-[#2a2410]" : "border-teal/50 bg-[#12241f]",
+                          )}
+                        >
                           <div className="flex items-center gap-2">
                             <Icon className={cn("h-6 w-6 shrink-0", last ? "text-amber" : "text-teal")} />
                             <Label>{STAGE[n.kind]}</Label>
@@ -141,7 +156,12 @@ function Detail({ node, seg, steps }: { node: ProvNode; seg?: Segment; steps: nu
     setCheck(hex === node.sha256 ? "match" : "differ");
   }
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 * steps }} className="grid grid-cols-[1fr_1fr_340px] gap-5 [&>*]:min-h-[190px]">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.25 * steps }}
+      className="grid grid-cols-[1fr_1fr_340px] gap-5 [&>*]:min-h-[190px]"
+    >
       <Panel className="p-5">
         <Label>Kept by the export</Label>
         {(seg?.kept ?? []).map((k) => (
@@ -161,8 +181,16 @@ function Detail({ node, seg, steps }: { node: ProvNode; seg?: Segment; steps: nu
         ))}
       </Panel>
       <Panel className="flex flex-col justify-between gap-3 p-5">
-        <div className="text-[14px] leading-snug text-ink-3">Hash the exported file again, here, and compare it with the value recorded at export.</div>
-        <button type="button" data-testid="rehash" onClick={rehash} disabled={!file || check === "running"} className="w-full rounded-md bg-amber py-3 text-[15px] font-bold text-amber-ink">
+        <div className="text-[14px] leading-snug text-ink-3">
+          Hash the exported file again, here, and compare it with the value recorded at export.
+        </div>
+        <button
+          type="button"
+          data-testid="rehash"
+          onClick={rehash}
+          disabled={!file || check === "running"}
+          className="w-full rounded-md bg-amber py-3 text-[15px] font-bold text-amber-ink"
+        >
           {check === "running" ? "Hashing the clip…" : "Re-hash this clip"}
         </button>
         <AnimatePresence>
@@ -171,7 +199,10 @@ function Detail({ node, seg, steps }: { node: ProvNode; seg?: Segment; steps: nu
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               data-testid="rehash-result"
-              className={cn("rounded-md border px-3 py-2 text-[14px] font-semibold", check === "match" ? "border-teal/50 bg-teal/10 text-teal" : "border-red/50 bg-red/10 text-red")}
+              className={cn(
+                "rounded-md border px-3 py-2 text-[14px] font-semibold",
+                check === "match" ? "border-teal/50 bg-teal/10 text-teal" : "border-red/50 bg-red/10 text-red",
+              )}
             >
               {check === "match" ? "SHA-256 matches. Unchanged since export." : "SHA-256 differs from the value at export."}
             </motion.div>

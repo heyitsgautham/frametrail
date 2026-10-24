@@ -35,7 +35,13 @@ async function shot(page: Page, name: string, settleMs = 1800) {
 async function main() {
   for (const f of readdirSync(shots)) if (f.endsWith(`-${suffix}.png`)) rmSync(path.join(shots, f));
   const browser = await chromium.launch();
-  const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 1, locale: "en-IN", timezoneId: "Asia/Kolkata", colorScheme: "dark" });
+  const context = await browser.newContext({
+    viewport: { width, height },
+    deviceScaleFactor: 1,
+    locale: "en-IN",
+    timezoneId: "Asia/Kolkata",
+    colorScheme: "dark",
+  });
   await context.route("**/*", (route) => {
     const u = new URL(route.request().url());
     if (u.origin !== base.origin && u.protocol !== "data:" && u.protocol !== "blob:") {

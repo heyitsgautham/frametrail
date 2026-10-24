@@ -3,7 +3,13 @@ import path from "node:path";
 import { Readable } from "node:stream";
 import { CLIPS } from "@/lib/data";
 
-const TYPES: Record<string, string> = { ".mp4": "video/mp4", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".webp": "image/webp" };
+const TYPES: Record<string, string> = {
+  ".mp4": "video/mp4",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".png": "image/png",
+  ".webp": "image/webp",
+};
 
 // Clips and stills the engine wrote to data/local/clips. Video needs byte ranges to seek.
 export async function GET(req: Request, { params }: { params: Promise<{ path: string[] }> }) {

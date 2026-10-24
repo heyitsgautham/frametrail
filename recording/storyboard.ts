@@ -88,8 +88,9 @@ export function scenes(): Scene[] {
   const nvrRead = nvr.clock.offsetSec.toFixed(1);
   const dvrRight = Math.abs(dvr.clock.offsetSec) < 0.5;
   const firstClip =
-    c.provenance.nodes.find((n) => n.kind === "clip" && mine.some((s) => s.state === "recovered-unindexed" && n.id.startsWith(`${s.id}/`))) ??
-    c.provenance.nodes.find((n) => n.kind === "clip");
+    c.provenance.nodes.find(
+      (n) => n.kind === "clip" && mine.some((s) => s.state === "recovered-unindexed" && n.id.startsWith(`${s.id}/`)),
+    ) ?? c.provenance.nodes.find((n) => n.kind === "clip");
   const people = c.detections.filter((d) => d.label === "person").sort((a, b) => b.confidence - a.confidence);
   const weakest = [...c.detections].sort((a, b) => a.confidence - b.confidence)[0];
   const firstCarved = firstClip ? mine.find((s) => firstClip.id.startsWith(`${s.id}/`)) : found[0];
@@ -164,7 +165,8 @@ export function scenes(): Scene[] {
       id: "wipe",
       start: 64,
       end: 82,
-      screen: "Recovery. The time-reversal plot, block number against recorded time, drops where the new recording restarted at the front of the disk. The recorder log and the evidence of re-initialisation",
+      screen:
+        "Recovery. The time-reversal plot, block number against recorded time, drops where the new recording restarted at the front of the disk. The recorder log and the evidence of re-initialisation",
       line: "The blocks prove it. Time runs backwards across the disk: new footage at the front, older footage behind it. The wipe erased the index, not the video.",
       async play(d) {
         await d.at(64.2);
@@ -283,7 +285,8 @@ export function scenes(): Scene[] {
       id: "report",
       start: 178,
       end: 193,
-      screen: "Report. Generate: the Section 63 certificate, Part B, fills row by row with devices and both hashes; the limitations list beside it; the signature lines stay empty",
+      screen:
+        "Report. Generate: the Section 63 certificate, Part B, fills row by row with devices and both hashes; the limitations list beside it; the signature lines stay empty",
       line: "The certificate the Bharatiya Sakshya Adhiniyam asks for fills itself from the case. The examiner still signs it.",
       async play(d) {
         await d.at(178.2);

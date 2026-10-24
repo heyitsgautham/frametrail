@@ -152,11 +152,35 @@ const LIST = path.join(out, "frames.txt");
 function encode() {
   execFileSync(
     ffmpeg.path,
-    ["-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", LIST, "-vf", `fps=30,scale=${W}:${H}:flags=lanczos,format=yuv420p`, "-c:v", "libx264", "-preset", "slow", "-crf", "16", "-r", "30", "-t", String(DURATION), "-movflags", "+faststart", MP4],
+    [
+      "-y",
+      "-loglevel",
+      "error",
+      "-f",
+      "concat",
+      "-safe",
+      "0",
+      "-i",
+      LIST,
+      "-vf",
+      `fps=30,scale=${W}:${H}:flags=lanczos,format=yuv420p`,
+      "-c:v",
+      "libx264",
+      "-preset",
+      "slow",
+      "-crf",
+      "16",
+      "-r",
+      "30",
+      "-t",
+      String(DURATION),
+      "-movflags",
+      "+faststart",
+      MP4,
+    ],
     { stdio: "inherit" },
   );
 }
-
 
 async function main() {
   if (values.encode) {
@@ -169,7 +193,13 @@ async function main() {
   mkdirSync(frames, { recursive: true });
 
   const browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext({ viewport: { width: VW, height: VH }, deviceScaleFactor: 2, locale: "en-IN", timezoneId: "Asia/Kolkata", colorScheme: "dark" });
+  const context = await browser.newContext({
+    viewport: { width: VW, height: VH },
+    deviceScaleFactor: 2,
+    locale: "en-IN",
+    timezoneId: "Asia/Kolkata",
+    colorScheme: "dark",
+  });
   const offOrigin: string[] = [];
   await context.route("**/*", (route) => {
     const u = new URL(route.request().url());
@@ -209,15 +239,18 @@ async function main() {
   // Rectangles in the page's own, unzoomed coordinates, so zooms and rings land where the
   // element is laid out whatever the camera is doing.
   const rect = async (testId: string) => {
-    const r = await page.getByTestId(testId).first().evaluate((el) => {
-      const b = el.getBoundingClientRect();
-      const t = getComputedStyle(document.body).transform;
-      const m = t && t !== "none" ? new DOMMatrixReadOnly(t) : new DOMMatrixReadOnly();
-      const inv = m.inverse();
-      const p1 = inv.transformPoint(new DOMPoint(b.left, b.top));
-      const p2 = inv.transformPoint(new DOMPoint(b.right, b.bottom));
-      return { x: p1.x, y: p1.y, width: p2.x - p1.x, height: p2.y - p1.y };
-    });
+    const r = await page
+      .getByTestId(testId)
+      .first()
+      .evaluate((el) => {
+        const b = el.getBoundingClientRect();
+        const t = getComputedStyle(document.body).transform;
+        const m = t && t !== "none" ? new DOMMatrixReadOnly(t) : new DOMMatrixReadOnly();
+        const inv = m.inverse();
+        const p1 = inv.transformPoint(new DOMPoint(b.left, b.top));
+        const p2 = inv.transformPoint(new DOMPoint(b.right, b.bottom));
+        return { x: p1.x, y: p1.y, width: p2.x - p1.x, height: p2.y - p1.y };
+      });
     return r;
   };
   const director: Director = {
@@ -245,7 +278,11 @@ async function main() {
     async zoom(testId, scale, ms = 1200, dy = 0) {
       const r = { ...(await rect(testId)) };
       r.y += dy;
-      await page.evaluate(([r, s, ms]) => (window as unknown as { __cam: { zoom: (...a: unknown[]) => void } }).__cam.zoom(r, s, ms), [r, scale, ms] as const);
+      await page.evaluate(([r, s, ms]) => (window as unknown as { __cam: { zoom: (...a: unknown[]) => void } }).__cam.zoom(r, s, ms), [
+        r,
+        scale,
+        ms,
+      ] as const);
     },
     async unzoom(ms = 800) {
       await page.evaluate((ms) => (window as unknown as { __cam: { reset: (ms: number) => void } }).__cam.reset(ms), ms);
@@ -253,10 +290,16 @@ async function main() {
     },
     async ring(testId, ms = 3000, tone = "ink") {
       const r = await rect(testId);
-      await page.evaluate(([r, ms, tone]) => (window as unknown as { __cam: { ring: (...a: unknown[]) => void } }).__cam.ring(r, ms, tone), [r, ms, tone] as const);
+      await page.evaluate(
+        ([r, ms, tone]) => (window as unknown as { __cam: { ring: (...a: unknown[]) => void } }).__cam.ring(r, ms, tone),
+        [r, ms, tone] as const,
+      );
     },
     async reveal(testId, ms = 700) {
-      await page.getByTestId(testId).first().evaluate((el) => el.scrollIntoView({ behavior: "smooth", block: "center" }));
+      await page
+        .getByTestId(testId)
+        .first()
+        .evaluate((el) => el.scrollIntoView({ behavior: "smooth", block: "center" }));
       await page.waitForTimeout(ms);
     },
     async hideCursor() {

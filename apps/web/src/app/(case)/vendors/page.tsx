@@ -28,7 +28,11 @@ export default function Page() {
             <Label>Tested on, and limits</Label>
           </div>
           {c.adapters.map((a) => (
-            <div key={a.vendor} data-testid={`vendor-${a.vendor}`} className="grid grid-cols-[150px_170px_1fr_170px_330px] items-center gap-4 border-b border-line/60 px-5 py-3 last:border-0">
+            <div
+              key={a.vendor}
+              data-testid={`vendor-${a.vendor}`}
+              className="grid grid-cols-[150px_170px_1fr_170px_330px] items-center gap-4 border-b border-line/60 px-5 py-3 last:border-0"
+            >
               <span className="text-[16px] font-semibold text-ink">{a.vendor}</span>
               <span className="font-mono text-[13px] text-ink-2">{a.family}</span>
               <span className="flex flex-wrap gap-1.5">
@@ -42,12 +46,16 @@ export default function Page() {
                   <span className="text-[13px] text-ink-3">Reported as unsupported</span>
                 )}
               </span>
-              <span className={`w-fit rounded-full border px-3 py-1 text-[13px] font-semibold ${STATUS[a.status].cls}`}>{STATUS[a.status].label}</span>
+              <span className={`w-fit rounded-full border px-3 py-1 text-[13px] font-semibold ${STATUS[a.status].cls}`}>
+                {STATUS[a.status].label}
+              </span>
               <span className="text-[13px] leading-snug text-ink-3">{a.note}</span>
             </div>
           ))}
         </Panel>
-        <div className="mt-4 text-[14px] text-ink-3">An unknown layout is reported as unsupported, never forced through the wrong parser.</div>
+        <div className="mt-4 text-[14px] text-ink-3">
+          An unknown layout is reported as unsupported, never forced through the wrong parser.
+        </div>
       </div>
     </div>
   );

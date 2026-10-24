@@ -49,7 +49,10 @@ export function Timeline({ c }: { c: Case }) {
   const axis = useMemo(
     () =>
       makeAxis([
-        ...segs.flatMap((s) => [[secs(s.rawStart), secs(s.rawEnd)] as [number, number], [secs(s.refStart), secs(s.refEnd)] as [number, number]]),
+        ...segs.flatMap((s) => [
+          [secs(s.rawStart), secs(s.rawEnd)] as [number, number],
+          [secs(s.refStart), secs(s.refEnd)] as [number, number],
+        ]),
         ...logs.map((l) => [secs(l.at), secs(l.at)] as [number, number]),
       ]),
     [segs, logs],
@@ -117,7 +120,11 @@ export function Timeline({ c }: { c: Case }) {
               </div>
             ))}
             {axis.breaks.map((b) => (
-              <div key={b.left} className="absolute top-0 text-center font-mono text-[11px] text-ink-3/70" style={{ left: `${b.left}%`, width: `${b.width}%` }}>
+              <div
+                key={b.left}
+                className="absolute top-0 text-center font-mono text-[11px] text-ink-3/70"
+                style={{ left: `${b.left}%`, width: `${b.width}%` }}
+              >
                 {Math.round(b.seconds / 60)}m
               </div>
             ))}
@@ -138,7 +145,11 @@ export function Timeline({ c }: { c: Case }) {
                   <div
                     key={b.left}
                     className="absolute top-0 bottom-0 bg-bg"
-                    style={{ left: `${b.left}%`, width: `${b.width}%`, backgroundImage: "repeating-linear-gradient(90deg, transparent 0 5px, rgba(255,255,255,.05) 5px 6px)" }}
+                    style={{
+                      left: `${b.left}%`,
+                      width: `${b.width}%`,
+                      backgroundImage: "repeating-linear-gradient(90deg, transparent 0 5px, rgba(255,255,255,.05) 5px 6px)",
+                    }}
                   />
                 ))}
                 {cam === first &&
@@ -171,7 +182,10 @@ export function Timeline({ c }: { c: Case }) {
                           key={s.id}
                           data-testid={`lane-${s.id}`}
                           className="absolute top-1.5 bottom-1.5 origin-left rounded-[3px]"
-                          style={{ background: STATE_COLOR[s.state], boxShadow: s.state === "recovered-unindexed" ? "0 0 14px rgba(244,180,0,.55)" : undefined }}
+                          style={{
+                            background: STATE_COLOR[s.state],
+                            boxShadow: s.state === "recovered-unindexed" ? "0 0 14px rgba(244,180,0,.55)" : undefined,
+                          }}
                           initial={found ? { scaleX: 0, opacity: 0 } : false}
                           animate={{ left: `${x(a)}%`, width: `${x(b) - x(a)}%`, scaleX: 1, opacity: 1 }}
                           transition={{ duration: found ? 0.7 : 1.8, delay: found ? 0.5 + i * 0.35 : 0, ease: [0.45, 0, 0.2, 1] }}
@@ -200,14 +214,28 @@ export function Timeline({ c }: { c: Case }) {
                     );
                   })}
                 {sync && moment && (
-                  <motion.div className="absolute -top-2 -bottom-2 w-0.5 bg-teal" initial={{ opacity: 0 }} animate={{ opacity: 1, left: `${x(moment.t)}%` }} data-testid="playhead" />
+                  <motion.div
+                    className="absolute -top-2 -bottom-2 w-0.5 bg-teal"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1, left: `${x(moment.t)}%` }}
+                    data-testid="playhead"
+                  />
                 )}
               </div>
             </div>
           ))}
         </Panel>
 
-        <SyncPlayers c={c} cams={cams} moment={moment} aligned={aligned} sync={sync} onSync={() => setSync(true)} carved={carved} diskId={disk?.id} />
+        <SyncPlayers
+          c={c}
+          cams={cams}
+          moment={moment}
+          aligned={aligned}
+          sync={sync}
+          onSync={() => setSync(true)}
+          carved={carved}
+          diskId={disk?.id}
+        />
       </div>
     </div>
   );
@@ -219,12 +247,17 @@ function pickMoment(c: Case, first: Camera, second: Camera): { t: number } | nul
   const named = c.stats.syncRef;
   if (named !== undefined) return { t: typeof named === "number" ? named : secs(String(named)) };
   // Both players need room to run: at least 14 s of the same segment after the moment.
-  const at = (cam: Camera, t: number) => c.segments.find((s) => s.cameraId === cam.id && s.clip && secs(s.refStart) + 1 <= t && t <= secs(s.refEnd) - 14);
+  const at = (cam: Camera, t: number) =>
+    c.segments.find((s) => s.cameraId === cam.id && s.clip && secs(s.refStart) + 1 <= t && t <= secs(s.refEnd) - 14);
   // Prefer a moment with people on the second camera while the first camera's footage there
   // had to be carved back, so the players open on the recovered picture.
   const people = c.detections
     .filter((d) => d.label === "person" && d.cameraId === second.id)
-    .map((d) => ({ t: secs(d.refTime), score: d.confidence * ((d as { count?: number }).count ?? 1), found: at(first, secs(d.refTime))?.state }))
+    .map((d) => ({
+      t: secs(d.refTime),
+      score: d.confidence * ((d as { count?: number }).count ?? 1),
+      found: at(first, secs(d.refTime))?.state,
+    }))
     .filter((p) => p.found)
     .sort((p, q) => Number(q.found === "recovered-unindexed") - Number(p.found === "recovered-unindexed") || q.score - p.score);
   if (people[0]) return { t: people[0].t };
@@ -258,7 +291,11 @@ function ClockCard({ cam, c, aligned }: { cam: Camera; c: Case; aligned: boolean
       ) : (
         <div className="mt-3 text-[14px] text-ink-3">No seizure record for this clock</div>
       )}
-      <motion.div initial={false} animate={{ opacity: aligned ? 1 : 0.3 }} className="mt-3 flex items-baseline gap-2 text-[14px] text-ink-2">
+      <motion.div
+        initial={false}
+        animate={{ opacity: aligned ? 1 : 0.3 }}
+        className="mt-3 flex items-baseline gap-2 text-[14px] text-ink-2"
+      >
         {Math.abs(off) < 0.5 ? (
           <span className="font-mono text-[18px] font-bold text-teal">Matches the reference clock</span>
         ) : (
@@ -299,9 +336,22 @@ function Correlation({ al, cams, aligned }: { al: Case["alignment"][number] | un
         <text x={W} y={py(seized) - 6} textAnchor="end" fill="#34d3b4" fontSize="12" fontFamily="var(--font-code)">
           seizure record {seized.toFixed(0)} s
         </text>
-        <motion.path d={d} fill="none" stroke="#f4b400" strokeWidth="2.5" initial={false} animate={{ pathLength: aligned ? 1 : 0 }} transition={{ duration: 1.4 }} />
+        <motion.path
+          d={d}
+          fill="none"
+          stroke="#f4b400"
+          strokeWidth="2.5"
+          initial={false}
+          animate={{ pathLength: aligned ? 1 : 0 }}
+          transition={{ duration: 1.4 }}
+        />
       </svg>
-      <motion.div initial={false} animate={{ opacity: aligned ? 1 : 0 }} transition={{ delay: aligned ? 1.3 : 0 }} className="mt-2 text-[14px] leading-snug text-ink-2">
+      <motion.div
+        initial={false}
+        animate={{ opacity: aligned ? 1 : 0 }}
+        transition={{ delay: aligned ? 1.3 : 0 }}
+        className="mt-2 text-[14px] leading-snug text-ink-2"
+      >
         {cam?.name ?? al.b} is <span className="font-mono text-amber">{al.offsetSec.toFixed(1)} s</span> behind
         {al.driftPpm ? (
           <>
@@ -360,7 +410,8 @@ function SyncPlayers({
     let stop = false;
     let raf = 0;
     const pairs = segs.map((s, i) => ({ s, v: vids.current[i] })).filter((p): p is { s: Segment; v: HTMLVideoElement } => !!p.s && !!p.v);
-    const ready = (v: HTMLVideoElement) => (v.readyState >= 1 ? Promise.resolve() : new Promise<void>((r) => v.addEventListener("loadedmetadata", () => r(), { once: true })));
+    const ready = (v: HTMLVideoElement) =>
+      v.readyState >= 1 ? Promise.resolve() : new Promise<void>((r) => v.addEventListener("loadedmetadata", () => r(), { once: true }));
     const seek = (v: HTMLVideoElement, t: number) =>
       new Promise<void>((r) => {
         v.addEventListener("seeked", () => r(), { once: true });
@@ -421,7 +472,9 @@ function SyncPlayers({
                 </div>
               )}
               {s?.state === "recovered-unindexed" && (
-                <div className="absolute right-3 top-3 rounded bg-amber px-2 py-1 text-[12px] font-bold text-amber-ink">Recovered by carving</div>
+                <div className="absolute right-3 top-3 rounded bg-amber px-2 py-1 text-[12px] font-bold text-amber-ink">
+                  Recovered by carving
+                </div>
               )}
               <div className="absolute bottom-3 left-3 rounded bg-black/75 px-2.5 py-1.5 font-mono text-[13px] text-ink backdrop-blur">
                 {cam.name} · raw {now !== null ? clock(now - off) : "--:--:--"}
@@ -436,14 +489,19 @@ function SyncPlayers({
           <div className="mt-2 font-mono text-[30px] text-teal tabular" data-testid="ref-clock">
             {now !== null ? clock(now, true) : "--:--:--"}
           </div>
-          <div className="mt-2 text-[14px] leading-snug text-ink-3">Both players are held to this clock. Each keeps its recorder&apos;s raw time.</div>
+          <div className="mt-2 text-[14px] leading-snug text-ink-3">
+            Both players are held to this clock. Each keeps its recorder&apos;s raw time.
+          </div>
         </div>
         <button
           type="button"
           data-testid="play-both"
           disabled={!aligned || !moment}
           onClick={onSync}
-          className={cn("mt-4 flex items-center justify-center gap-2 rounded-md py-3 text-[15px] font-bold transition-all", aligned ? "bg-amber text-amber-ink" : "bg-panel-2 text-ink-3")}
+          className={cn(
+            "mt-4 flex items-center justify-center gap-2 rounded-md py-3 text-[15px] font-bold transition-all",
+            aligned ? "bg-amber text-amber-ink" : "bg-panel-2 text-ink-3",
+          )}
         >
           <Play className="h-4 w-4" /> Play both{moment ? ` at ${clock(moment.t)}` : ""}
         </button>

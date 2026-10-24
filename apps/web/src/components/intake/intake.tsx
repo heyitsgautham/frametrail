@@ -38,7 +38,10 @@ export function Intake({ sources }: { sources: Source[] }) {
   return (
     <div className="pb-10">
       <PageHead kicker="Step 1 · Evidence intake" title="Acquire, hash, identify">
-        <div className="flex items-center gap-2 rounded-full border border-teal/40 bg-teal/10 px-4 py-2 text-[14px] font-semibold text-teal" data-testid="write-block">
+        <div
+          className="flex items-center gap-2 rounded-full border border-teal/40 bg-teal/10 px-4 py-2 text-[14px] font-semibold text-teal"
+          data-testid="write-block"
+        >
           <Lock className="h-4 w-4" /> Write-blocked · read only
         </div>
       </PageHead>
@@ -86,7 +89,8 @@ export function Intake({ sources }: { sources: Source[] }) {
             <div className="mt-4 flex items-center gap-2 text-[13px] text-ink-3">
               {hashing >= 1 ? (
                 <>
-                  <Check className="h-4 w-4 text-teal" /> Both digests in one read pass, {disk.hashSeconds < 1 ? `${Math.round(disk.hashSeconds * 1000)} ms` : `${disk.hashSeconds.toFixed(1)} s`}
+                  <Check className="h-4 w-4 text-teal" /> Both digests in one read pass,{" "}
+                  {disk.hashSeconds < 1 ? `${Math.round(disk.hashSeconds * 1000)} ms` : `${disk.hashSeconds.toFixed(1)} s`}
                 </>
               ) : (
                 "Reading the image once, both digests together"
@@ -201,7 +205,11 @@ function known(st: State): State {
 }
 
 const ORDER: State[] = ["indexed", "free", "system"];
-const INTAKE_LABEL: Partial<Record<State, string>> = { indexed: "Listed in the index", free: "Not listed in the index", system: "System area" };
+const INTAKE_LABEL: Partial<Record<State, string>> = {
+  indexed: "Listed in the index",
+  free: "Not listed in the index",
+  system: "System area",
+};
 
 function DiskMap({ source, p }: { source: Source; p: number }) {
   const b = source.blocks;
@@ -241,7 +249,10 @@ function DiskMap({ source, p }: { source: Source; p: number }) {
       </div>
       <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2" data-testid="legend">
         {ORDER.filter((s) => counts.has(s)).map((s) => (
-          <div key={s} className={cn("flex items-center gap-2 text-[14px] transition-opacity duration-500", p >= 1 ? "opacity-100" : "opacity-40")}>
+          <div
+            key={s}
+            className={cn("flex items-center gap-2 text-[14px] transition-opacity duration-500", p >= 1 ? "opacity-100" : "opacity-40")}
+          >
             <span className="h-3 w-3 rounded-[2px]" style={{ background: s === "free" ? "#2c3238" : STATE_COLOR[s] }} />
             <span className="text-ink-2">{INTAKE_LABEL[s] ?? STATE_LABEL[s]}</span>
             <span className="font-mono text-ink-3">{counts.get(s)}</span>

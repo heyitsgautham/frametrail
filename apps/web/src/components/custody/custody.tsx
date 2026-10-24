@@ -78,8 +78,13 @@ export function Custody({ events }: { events: CustodyEvent[] }) {
               <div key={e.seq} className={i > 0 ? "mt-1" : ""}>
                 <motion.div
                   data-testid={`entry-${e.seq}`}
-                  animate={{ backgroundColor: m === "altered" ? "rgba(240,86,74,.16)" : m === "after" ? "rgba(240,86,74,.07)" : "rgba(0,0,0,0)" }}
-                  className={cn("grid grid-cols-[22px_36px_92px_1fr_120px_170px] items-center gap-3 rounded-md border px-3 py-[5px]", m === "ok" ? "border-line" : "border-red/50")}
+                  animate={{
+                    backgroundColor: m === "altered" ? "rgba(240,86,74,.16)" : m === "after" ? "rgba(240,86,74,.07)" : "rgba(0,0,0,0)",
+                  }}
+                  className={cn(
+                    "grid grid-cols-[22px_36px_92px_1fr_120px_170px] items-center gap-3 rounded-md border px-3 py-[5px]",
+                    m === "ok" ? "border-line" : "border-red/50",
+                  )}
                 >
                   {m === "ok" ? <Link2 className="h-4 w-4 text-ink-3" /> : <Link2Off className="h-4 w-4 text-red" />}
                   <span className="font-mono text-[13px] text-ink-3">#{e.seq}</span>
@@ -88,7 +93,14 @@ export function Custody({ events }: { events: CustodyEvent[] }) {
                     {e.action} <span className="text-ink-3">· {e.objectId}</span>
                   </span>
                   <span className={cn("text-[14px]", m === "altered" ? "font-semibold text-red" : "text-ink-2")}>{e.actor}</span>
-                  <span className={cn("text-right font-mono text-[12px]", m === "ok" ? "text-teal" : m === "altered" ? "font-bold text-red" : "text-red/70 line-through")}>{short(e.hash, 7)}</span>
+                  <span
+                    className={cn(
+                      "text-right font-mono text-[12px]",
+                      m === "ok" ? "text-teal" : m === "altered" ? "font-bold text-red" : "text-red/70 line-through",
+                    )}
+                  >
+                    {short(e.hash, 7)}
+                  </span>
                 </motion.div>
               </div>
             );
@@ -106,7 +118,9 @@ export function Custody({ events }: { events: CustodyEvent[] }) {
               <br />
               &nbsp;&nbsp;exhibit, exhibit hash)
             </div>
-            <div className="mt-3 text-[14px] leading-snug text-ink-3">Each entry carries the one before it, so a change anywhere shows everywhere after it.</div>
+            <div className="mt-3 text-[14px] leading-snug text-ink-3">
+              Each entry carries the one before it, so a change anywhere shows everywhere after it.
+            </div>
           </Panel>
           <Panel className="p-5">
             <Label>Test it</Label>
@@ -118,7 +132,10 @@ export function Custody({ events }: { events: CustodyEvent[] }) {
               data-testid="tamper"
               onClick={tamper}
               disabled={broken}
-              className={cn("mt-4 flex w-full items-center justify-center gap-2 rounded-md py-3 text-[15px] font-bold", broken ? "bg-panel-2 text-ink-3" : "bg-amber text-amber-ink")}
+              className={cn(
+                "mt-4 flex w-full items-center justify-center gap-2 rounded-md py-3 text-[15px] font-bold",
+                broken ? "bg-panel-2 text-ink-3" : "bg-amber text-amber-ink",
+              )}
             >
               <PencilLine className="h-4 w-4" /> Edit entry {target + 1}
             </button>

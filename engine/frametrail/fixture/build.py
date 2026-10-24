@@ -175,6 +175,9 @@ def is_idr(au: bytes) -> bool:
     return False
 
 
+Clip = tuple[int, int, bytes]  # start ms, frame count, MPEG-PS video
+
+
 def build_dvr(paths: dict[str, Path], out: Path) -> dict:
     """Record the eight early segments from block 0, initialise the disk, then record two
     more from block 0 again, as a recorder does after initialisation."""
@@ -182,16 +185,34 @@ def build_dvr(paths: dict[str, Path], out: Path) -> dict:
     for si, a, b in CUTS:
         s = SEQUENCES[si]
         start = _ms(s.cor_start) + a * FRAME_MS
-        ps = encode(paths[f"{s.name}cor"], a, b, "mpeg")
-        before.append((start, b - a, hikfs.pack_imkh(DVR_CHANNEL, FPS, start, b - a) + ps))
+        before.append((start, b - a, encode(paths[f"{s.name}cor"], a, b, "mpeg")))
     for a, b in AFTER_CUTS:
         start = _ms(AFTER.cor_start) + a * FRAME_MS
-        ps = encode(paths[f"{AFTER.name}cor"], a, b, "mpeg")
-        after.append((start, b - a, hikfs.pack_imkh(DVR_CHANNEL, FPS, start, b - a) + ps))
+        after.append((start, b - a, encode(paths[f"{AFTER.name}cor"], a, b, "mpeg")))
+    log = [(_ms(t), k, ch, text) for t, k, ch, text in LOG]
+    image, truth = pack_dvr(before, after, _ms(INIT), _ms(SEIZED), log)
+    out.write_bytes(image)
+    return truth
 
-    def lay(items):
+
+def pack_dvr(
+    before: list[Clip],
+    after: list[Clip],
+    init_ms: int,
+    seized_ms: int,
+    log: list[tuple[int, int, int, str]],
+) -> tuple[bytes, dict]:
+    """Lay segments out on a disk image the way a recorder that was initialised mid-way
+    leaves it: `before` written forward from block 0, then `after` written from block 0
+    again over the top, with only `after` in the index. A stray segment header over
+    random bytes goes in free space for the carver to reject.
+
+    Returns the image and the planted values the engine is checked against."""
+
+    def lay(items: list[Clip]) -> tuple[list[tuple[int, int, int, int, bytes]], int]:
         at, placed = 0, []
-        for start, frames, payload in items:
+        for start, frames, ps in items:
+            payload = hikfs.pack_imkh(DVR_CHANNEL, FPS, start, frames) + ps
             n = -(-len(payload) // hikfs.BLOCK)
             placed.append((at, n, start, frames, payload))
             at += n
@@ -219,7 +240,7 @@ def build_dvr(paths: dict[str, Path], out: Path) -> dict:
         capacity,
         hikfs.INDEX_AT,
         hikfs.INDEX_LEN,
-        _ms(INIT) // 1000,
+        init_ms // 1000,
         "HV-7208-FX",
         "V4.30 fixture",
     )
@@ -229,7 +250,7 @@ def build_dvr(paths: dict[str, Path], out: Path) -> dict:
         for n, (first, blocks, start, frames, p) in enumerate(new)
     ]
     index = hikfs.pack_index(entries, 32)
-    logs = b"".join(hikfs.pack_log(_ms(t), k, ch, text) for t, k, ch, text in LOG)
+    logs = b"".join(hikfs.pack_log(ms, k, ch, text) for ms, k, ch, text in log)
 
     image = bytearray(size)
     image[hikfs.MASTER_AT : hikfs.MASTER_AT + hikfs.MASTER_LEN] = hikfs.pack_master(master)
@@ -240,12 +261,11 @@ def build_dvr(paths: dict[str, Path], out: Path) -> dict:
     image[hikfs.INDEX_AT : hikfs.INDEX_AT + len(index)] = index
     image[hikfs.INDEX_AT + hikfs.INDEX_LEN : hikfs.INDEX_AT + hikfs.INDEX_LEN + len(index)] = index
     image[hikfs.DATA_AT : hikfs.DATA_AT + len(data)] = data
-    out.write_bytes(image)
 
     lost_to = new_used * hikfs.BLOCK
-    return {
-        "initialisedAt": _ms(INIT),
-        "seizedAt": _ms(SEIZED),
+    return bytes(image), {
+        "initialisedAt": init_ms,
+        "seizedAt": seized_ms,
         "segmentsBefore": [{"start": s, "frames": f, "firstBlock": b} for b, _n, s, f, _p in old],
         "segmentsAfter": [{"start": s, "frames": f, "firstBlock": b} for b, _n, s, f, _p in new],
         "fullyOverwritten": [
@@ -262,23 +282,42 @@ def build_dvr(paths: dict[str, Path], out: Path) -> dict:
 
 
 def build_nvr(paths: dict[str, Path], out: Path) -> dict:
-    t0 = epoch_ms(SEQUENCES[0].front_start)
-    number = 0
-    chunks = []
-    for s in SEQUENCES:
-        aus = access_units(encode(paths[f"{s.name}front"], 0, s.frames, "h264"))
-        for i, au in enumerate(aus):
-            true_ms = epoch_ms(s.front_start) + i * FRAME_MS
-            raw = true_ms - NVR_OFFSET_MS - round((true_ms - t0) * NVR_DRIFT_PPM / 1e6)
-            chunks.append(dhav.pack_frame(au, is_idr(au), number, raw, NVR_CHANNEL, W, H, FPS))
-            number += 1
-    out.write_bytes(b"".join(chunks))
+    runs = [
+        (
+            epoch_ms(s.front_start),
+            access_units(encode(paths[f"{s.name}front"], 0, s.frames, "h264")),
+        )
+        for s in SEQUENCES
+    ]
+    dav, frames = pack_nvr(runs, NVR_OFFSET_MS, NVR_DRIFT_PPM)
+    out.write_bytes(dav)
     return {
         "nvrOffsetMs": NVR_OFFSET_MS,
         "nvrDriftPpm": NVR_DRIFT_PPM,
-        "nvrFrames": number,
-        "nvrEpochMs": t0,
+        "nvrFrames": frames,
+        "nvrEpochMs": runs[0][0],
     }
+
+
+def nvr_clock(true_ms: int, t0: int, offset_ms: int, drift_ppm: float) -> int:
+    """What a recorder that is `offset_ms` slow at t0, and loses `drift_ppm` after it, reads."""
+    return true_ms - offset_ms - round((true_ms - t0) * drift_ppm / 1e6)
+
+
+def pack_nvr(
+    runs: list[tuple[int, list[bytes]]], offset_ms: int, drift_ppm: float
+) -> tuple[bytes, int]:
+    """DHAV frames for each run of H.264 access units, stamped with the slow recorder
+    clock. Each run is (true start ms, access units). Returns the bytes and frame count."""
+    t0 = runs[0][0]
+    number = 0
+    chunks = []
+    for start, aus in runs:
+        for i, au in enumerate(aus):
+            raw = nvr_clock(start + i * FRAME_MS, t0, offset_ms, drift_ppm)
+            chunks.append(dhav.pack_frame(au, is_idr(au), number, raw, NVR_CHANNEL, W, H, FPS))
+            number += 1
+    return b"".join(chunks), number
 
 
 def build(root: Path) -> dict:
@@ -309,7 +348,7 @@ def seizure_record() -> dict:
     reference clock, read off the same photograph. Screens show whole seconds."""
     nvr_ref = datetime(2004, 1, 20, 11, 3, 50)
     t0 = epoch_ms(SEQUENCES[0].front_start)
-    shown = _ms(nvr_ref) - NVR_OFFSET_MS - round((_ms(nvr_ref) - t0) * NVR_DRIFT_PPM / 1e6)
+    shown = nvr_clock(_ms(nvr_ref), t0, NVR_OFFSET_MS, NVR_DRIFT_PPM)
     dvr_ref = datetime(2004, 1, 20, 10, 34, 2)
     return {
         "EV-001": {

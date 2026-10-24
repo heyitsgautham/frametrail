@@ -6,10 +6,14 @@ findings are leads for an examiner to confirm or reject, never evidence on their
 
 from __future__ import annotations
 
+from datetime import datetime
 from pathlib import Path
 
 import cv2
 import numpy as np
+
+from .clocks import stamp
+from .dhav import epoch_ms
 
 MODEL = {"name": "YOLOX-S", "version": "0.1.1rc0 ONNX", "licence": "Apache-2.0"}
 URL = "https://github.com/Megvii-BaseDetection/YOLOX/releases/download/0.1.1rc0/yolox_s.onnx"
@@ -57,3 +61,57 @@ class Detector:
             )
             for i in idx
         ]
+
+
+def detect_people(root: Path, clips: Path, segments: list[dict], cams: list[dict]) -> list[dict]:
+    """Sample one frame a second from every clip and keep the moments a new person appears."""
+    model = root / "data" / "local" / "models" / "yolox_s.onnx"
+    if not model.exists():
+        import urllib.request
+
+        model.parent.mkdir(parents=True, exist_ok=True)
+        urllib.request.urlretrieve(URL, model)
+    det = Detector(model)
+    thumbs = clips / "detections"
+    thumbs.mkdir(exist_ok=True)
+    out = []
+    for s in segments:
+        if "clip" not in s:
+            continue
+        path = clips / Path(s["clip"]).name
+        cap = cv2.VideoCapture(str(path))
+        raw0 = epoch_ms(datetime.fromisoformat(s["rawStart"]))
+        ref0 = epoch_ms(datetime.fromisoformat(s["refStart"]))
+        prev = 0
+        i = 0
+        while True:
+            ok, frame = cap.read()
+            if not ok:
+                break
+            if i % 25 == 0:
+                people = [p for p in det.people(frame) if p[0] >= 0.5]
+                if len(people) > prev:
+                    best = max(people, key=lambda p: p[0])
+                    did = f"D{len(out) + 1:03d}"
+                    cv2.imwrite(str(thumbs / f"{did}.jpg"), frame, [cv2.IMWRITE_JPEG_QUALITY, 85])
+                    out.append(
+                        {
+                            "id": did,
+                            "cameraId": s["cameraId"],
+                            "segmentId": s["id"],
+                            "label": "person",
+                            "refTime": stamp(ref0 + i * 40),
+                            "rawTime": stamp(raw0 + i * 40),
+                            "confidence": best[0],
+                            "box": best[1],
+                            "boxes": [p[1] for p in people],
+                            "count": len(people),
+                            "model": MODEL,
+                            "review": "pending",
+                            "thumb": f"/clips/detections/{did}.jpg",
+                        }
+                    )
+                prev = len(people)
+            i += 1
+        cap.release()
+    return out

@@ -15,9 +15,13 @@ engine/frametrail
   dhav.py      DHAV frame parser and packed-date decoder (Dahua-style)
   nvr.py       continuous recording runs from DHAV frames
   osd.py       reads the burned-in clock from the pixels, fits offset and drift
+  clocks.py    learns the clock font, fits each recorder's clock, checks it at seizure
   detect.py    YOLOX-S person detection through OpenCV DNN, CPU only
   custody.py   hash-chained custody log
-  analyse.py   runs the case, builds provenance, writes case.json
+  segments.py  clips remuxed without re-encoding, frame-by-frame check, provenance graph
+  sources.py   evidence hashes, vendor, on-disk structures, the recorder log and the wipe
+  adapters.py  the vendor families read today and the ones still to come
+  analyse.py   runs the steps in order, adds up the stats, writes case.json
         |
         v
 data/demo/derived/case.json + data/local/clips/*.mp4

@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 from . import dhav
 
-GAP_MS = 1000  # a jump longer than this in the recorder clock starts a new run
+GAP_MS = dhav.GAP_MS
 
 
 @dataclass

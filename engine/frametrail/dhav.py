@@ -17,6 +17,7 @@ P_FRAME = 0xFC
 _HEAD = struct.Struct("<4sBBBBIII HBB")
 HEAD_LEN = 24
 CODEC_H264 = 0x02
+GAP_MS = 1000  # a jump longer than this in the recorder clock starts a new run
 
 
 def pack_date(t: datetime) -> int:
@@ -89,6 +90,7 @@ class Frame:
 def parse(data: bytes) -> list[Frame]:
     """Walk every DHAV frame in a buffer. Bytes between frames are skipped, not trusted."""
     frames: list[Frame] = []
+    prev: int | None = None
     pos = data.find(b"DHAV")
     while pos >= 0 and pos + HEAD_LEN <= len(data):
         _m, kind, _sub, ch, _subn, num, length, date, ms16, ext_len, _ck = _HEAD.unpack_from(
@@ -104,13 +106,27 @@ def parse(data: bytes) -> list[Frame]:
         if not ok:
             pos = data.find(b"DHAV", pos + 1)
             continue
-        second = epoch_ms(unpack_date(date))
-        # The 16-bit counter is the full millisecond clock modulo 65536; pick the value
-        # that falls inside the second the date field names.
-        raw = second + ((ms16 - second) % 65536)
-        if raw >= second + 1000:  # counter disagrees with the date: trust the date
-            raw = second
+        try:
+            second = epoch_ms(unpack_date(date))
+        except ValueError:
+            second = None
+        if second is not None:
+            # The 16-bit counter is the full millisecond clock modulo 65536; pick the value
+            # that falls inside the second the date field names.
+            raw = second + ((ms16 - second) % 65536)
+            if raw >= second + 1000:  # counter disagrees with the date: trust the date
+                raw = second
+        else:
+            # The date names no real time, such as month 0 or 31 February. The counter
+            # still places the frame after the one before it, but only within the gap
+            # that keeps a run together; otherwise the frame cannot be dated and is skipped.
+            step = None if prev is None else (ms16 - prev) % 65536
+            if step is None or step > GAP_MS:
+                pos = data.find(b"DHAV", end)
+                continue
+            raw = prev + step
         start = pos + HEAD_LEN + ext_len
         frames.append(Frame(pos, kind == I_FRAME, ch, num, raw, slice(start, end - 8)))
+        prev = raw
         pos = data.find(b"DHAV", end)
     return frames

@@ -55,6 +55,35 @@ def test_a_millisecond_counter_outside_the_named_second_falls_back_to_the_date()
     assert f.raw_ms == START - START % 1000
 
 
+def undated(raw: bytes) -> bytes:
+    """The frame with month 0 in its date field, a date no recorder can mean."""
+    data = bytearray(raw)
+    d = int.from_bytes(data[16:20], "little")  # after magic, 4 single bytes and two fields
+    data[16:20] = (d & ~(0x0F << 22)).to_bytes(4, "little")
+    return bytes(data)
+
+
+def test_an_impossible_date_is_dated_from_the_counter_after_the_previous_frame():
+    data = frame(0, START) + undated(frame(1, START + 40)) + frame(2, START + 80)
+    assert [(f.number, f.raw_ms) for f in dhav.parse(data)] == [
+        (0, START),
+        (1, START + 40),
+        (2, START + 80),
+    ]
+    (run,) = nvr.parse(data)
+    assert len(run.frames) == 3
+
+
+def test_an_impossible_date_with_no_frame_before_it_is_skipped():
+    data = undated(frame(0, START)) + frame(1, START + 40)
+    assert [f.number for f in dhav.parse(data)] == [1]
+
+
+def test_an_impossible_date_whose_counter_jumps_past_the_run_gap_is_skipped():
+    data = frame(0, START) + undated(frame(1, START + 5000)) + frame(2, START + 80)
+    assert [f.number for f in dhav.parse(data)] == [0, 2]
+
+
 def test_dhav_round_trip_through_ffmpeg(tmp_path):
     h264 = ffmpeg(
         *("-f", "lavfi", "-i", "testsrc=size=384x288:rate=25:duration=2"),

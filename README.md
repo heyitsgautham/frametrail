@@ -20,35 +20,71 @@ Every clip it exports traces to the exact bytes it came from, with MD5 and SHA-2
 The footage is real CCTV from the CAVIAR project (CC BY-SA), packed into synthetic recorder images modelled on published disk layouts.
 FrameTrail has not yet been run on a seized recorder, and [docs/validation.md](docs/validation.md) says what that means.
 
-## Run it
+## Install
 
-You need Node 20.9 or later, pnpm, [uv](https://docs.astral.sh/uv/) and FFmpeg on your PATH.
+You need Node 20.9 or later, pnpm 10, [uv](https://docs.astral.sh/uv/) and FFmpeg on your PATH.
+uv fetches Python 3.12 for the engine if you do not have it.
 
 ```sh
-pnpm install
-pnpm engine:setup      # Python 3.12 engine
-pnpm engine:fixtures   # download the footage, build both evidence files into data/local
-pnpm engine:analyse    # run the case, write data/demo/derived/case.json
+pnpm install --frozen-lockfile    # web app, from pnpm-lock.yaml
+pnpm engine:setup                 # engine, from engine/uv.lock
+```
+
+## Run
+
+```sh
 pnpm build && pnpm start   # http://localhost:3150
 ```
 
-`data/demo/derived/case.json` is committed, so `pnpm build && pnpm start` works without the fixtures, but the video players need the clips from `pnpm engine:analyse`.
+`data/demo/derived/case.json` is committed, so the workbench runs straight after install.
+The video players stay empty until you build the evidence and run the case, which writes the clips to `data/local/clips/`.
 
 ```sh
-pnpm engine:test && pnpm check   # engine tests, then names, types and lint
+pnpm engine:fixtures   # download 43 MB of CAVIAR footage, build both evidence files into data/local
+pnpm engine:analyse    # run the case, rewrite data/demo/derived/case.json, export the clips
 ```
 
-## Inside
+## Test
+
+```sh
+pnpm engine:test   # 65 engine tests with coverage, failing under 80 percent
+pnpm engine:lint   # ruff check and ruff format --check
+pnpm check         # private names, typecheck and Biome lint
+pnpm test:e2e      # 11 browser checks, against a running `pnpm start`
+```
+
+The engine tests need no download.
+`engine/frametrail/fixture/synthetic.py` builds a 6 MB disk and a 1.4 MB export in about 5 seconds, with the clock burned into frames it draws itself.
+The tests carve that disk, date the tail whose head was recorded over, reject the decoy header, find the wipe and check the custody chain.
+Three more tests in `engine/tests/test_caviar.py` run on the real footage and skip until `pnpm engine:fixtures` has built it.
+
+CI in `.github/workflows/ci.yml` runs all of the above on every push and pull request, plus pip-audit, `pnpm audit` and a gitleaks scan of the full history.
+
+## Configuration
+
+Nothing needs configuring to run, test or build.
+`apps/web/.env.example` lists every variable the code reads, with its default.
+Copy it to `apps/web/.env.local`, which git ignores, to set display names or point the screens at another `case.json` with `FT_CASE`.
+
+## Architecture
 
 ```
 engine/        Python engine: intake, vendor detection, index and log parsing, carving,
-               clock model, detection, provenance, custody, fixture builder, tests
+               clock model, detection, provenance, custody, fixture builders, tests
 apps/web/      Next.js workbench, one screen per step of the examination
 data/demo/     case.json, the analysed demo case the web app reads
 recording/     Playwright script that records the demo video
 scripts/       Checks run before every commit
 docs/          Architecture, SOP, validation, OEM comparison, user manual, fixtures
 ```
+
+The engine reads the evidence read-only and writes one file, `case.json`, plus the exported clips.
+The workbench reads only those, so everything on screen traces to one analysis run.
+[docs/architecture.md](docs/architecture.md) walks through each module and the pipeline.
+
+## Contributing
+
+[CONTRIBUTING.md](CONTRIBUTING.md) covers the setup, the checks to run before a commit and the commit format.
 
 ## Docs
 

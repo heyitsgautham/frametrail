@@ -15,6 +15,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from . import hikfs
+from .errors import EvidenceFormatError
 from .media import FFPROBE, ffmpeg, run
 
 
@@ -115,6 +116,10 @@ def to_mp4(stream: bytes, fmt: str) -> bytes:
 
 def parse(img: bytes) -> Disk:
     sig = img.find(hikfs.SIGNATURE)
+    if sig < 0x10:
+        raise EvidenceFormatError(
+            "no Hikvision-style master sector signature; this is not a disk image FrameTrail reads"
+        )
     at = sig - 0x10
     sector = img[at : at + hikfs.MASTER_LEN]
     m = hikfs.unpack_master(sector)

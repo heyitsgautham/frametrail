@@ -18,6 +18,8 @@ from __future__ import annotations
 import struct
 from dataclasses import dataclass
 
+from .errors import EvidenceFormatError
+
 SIGNATURE = b"HIKVISION@HANGZHOU"
 MASTER_AT = 0x200
 MASTER_LEN = 0x100
@@ -121,7 +123,7 @@ def _text(raw: bytes) -> str:
 
 def unpack_master(sector: bytes) -> Master:
     if sector[0x10 : 0x10 + len(SIGNATURE)] != SIGNATURE:
-        raise ValueError("no master signature")
+        raise EvidenceFormatError("no master signature")
     f = _MASTER.unpack_from(sector, 0x30)
     return Master(*f[:9], _text(f[9]), _text(f[10]))
 
@@ -150,7 +152,7 @@ def pack_index(entries: list[Entry], slots: int) -> bytes:
 
 def unpack_index(raw: bytes, slots: int) -> list[Entry]:
     if raw[:8] != INDEX_MAGIC:
-        raise ValueError("index magic missing")
+        raise EvidenceFormatError("index magic missing")
     return [unpack_entry(n, raw[64 + n * ENTRY_LEN : 128 + n * ENTRY_LEN]) for n in range(slots)]
 
 

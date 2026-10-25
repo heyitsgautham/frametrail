@@ -7,6 +7,7 @@ from pathlib import Path
 
 from . import dvr, intake, nvr
 from .clocks import stamp
+from .records import Seizure
 from .segments import EXAMINER
 
 _LOG_KIND = {
@@ -46,7 +47,7 @@ def sources(
     paths: dict[str, Path],
     before: dict,
     after: dict,
-    seizure: dict,
+    seizure: dict[str, Seizure],
     disk: dvr.Disk,
     runs: list[nvr.Run],
     our_frames: int,
@@ -62,7 +63,7 @@ def sources(
             "sizeBytes": before["EV-001"].size,
             "md5": before["EV-001"].md5,
             "sha256": before["EV-001"].sha256,
-            "acquiredAt": seizure["EV-001"]["reference"],
+            "acquiredAt": seizure["EV-001"].reference,
             "acquiredBy": EXAMINER,
             "writeBlocked": after["EV-001"].sha256 == before["EV-001"].sha256,
             "hashSeconds": round(before["EV-001"].seconds, 3),
@@ -100,7 +101,7 @@ def sources(
             "sizeBytes": before["EV-002"].size,
             "md5": before["EV-002"].md5,
             "sha256": before["EV-002"].sha256,
-            "acquiredAt": seizure["EV-002"]["reference"],
+            "acquiredAt": seizure["EV-002"].reference,
             "acquiredBy": EXAMINER,
             "writeBlocked": after["EV-002"].sha256 == before["EV-002"].sha256,
             "hashSeconds": round(before["EV-002"].seconds, 3),

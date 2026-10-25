@@ -9,14 +9,19 @@ from pathlib import Path
 
 import numpy as np
 
+from .errors import ToolError
+
 FFMPEG = shutil.which("ffmpeg") or "ffmpeg"
 FFPROBE = shutil.which("ffprobe") or "ffprobe"
 
 
 def run(*args: str | Path, stdin: bytes | None = None) -> bytes:
-    out = subprocess.run([str(a) for a in args], input=stdin, capture_output=True, check=False)
+    try:
+        out = subprocess.run([str(a) for a in args], input=stdin, capture_output=True, check=False)
+    except FileNotFoundError as e:
+        raise ToolError(f"{Path(str(args[0])).name} is not on PATH; install FFmpeg") from e
     if out.returncode != 0:
-        raise RuntimeError(f"{args[0]} failed: {out.stderr.decode(errors='replace')[-800:]}")
+        raise ToolError(f"{args[0]} failed: {out.stderr.decode(errors='replace')[-800:]}")
     return out.stdout
 
 

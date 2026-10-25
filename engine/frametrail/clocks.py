@@ -8,13 +8,13 @@ an offset and drift per recorder, which the seizure record then checks to the se
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
 
 import numpy as np
 
 from . import dvr, nvr, osd
 from .dhav import epoch_ms, from_ms
 from .media import decode_gray
+from .records import Planted, Seizure
 
 DAY_MS = 86_400_000
 
@@ -106,17 +106,17 @@ def fit(disk: dvr.Disk, runs: list[nvr.Run]) -> Clocks:
     return Clocks(font_accuracy, font_seg, dvr_fit, t0_dvr, nvr_fit, t0_nvr, c01_check)
 
 
-def _seizure_block(s: dict, fit: osd.Fit, t0: int) -> dict:
-    shown = epoch_ms(datetime.fromisoformat(s["dvrShown"]))
-    ref = epoch_ms(datetime.fromisoformat(s["reference"]))
+def _seizure_block(s: Seizure, fit: osd.Fit, t0: int) -> dict:
+    shown = epoch_ms(s.shown_at())
+    ref = epoch_ms(s.reference_at())
     dvr_minus_ref = (shown - ref) / 1000
     predicted = -(fit.offset_ms + fit.drift_ppm * (shown - t0) / 1e6) / 1000
     return {
-        "dvrShown": s["dvrShown"],
-        "reference": s["reference"],
+        "dvrShown": s.dvr_shown,
+        "reference": s.reference,
         "offsetSec": dvr_minus_ref,
         "resolutionSec": 1.0,
-        "note": s["note"],
+        "note": s.note,
         "agreementSec": round(abs(predicted - dvr_minus_ref), 3),
         "osdPredictedSec": round(predicted, 3),
     }
@@ -134,7 +134,7 @@ def _cross_check(fit: osd.Fit) -> dict:
     }
 
 
-def cameras(c: Clocks, seizure: dict, truth: dict) -> list[dict]:
+def cameras(c: Clocks, seizure: dict[str, Seizure], truth: Planted) -> list[dict]:
     cams = [
         {
             "id": "CAM-01",
@@ -171,8 +171,8 @@ def cameras(c: Clocks, seizure: dict, truth: dict) -> list[dict]:
                 "reference": False,
                 "method": "Seizure record sets the offset to the second; the on-screen clock, "
                 "read from the pixels, refines it to the frame and measures drift",
-                "plantedOffsetSec": truth["nvrOffsetMs"] / 1000,
-                "plantedDriftPpm": truth["nvrDriftPpm"],
+                "plantedOffsetSec": truth.nvr_offset_ms / 1000,
+                "plantedDriftPpm": truth.nvr_drift_ppm,
                 "seizure": _seizure_block(seizure["EV-002"], c.nvr_fit, c.t0_nvr),
                 "crossCheck": _cross_check(c.nvr_fit),
             },
@@ -184,7 +184,7 @@ def cameras(c: Clocks, seizure: dict, truth: dict) -> list[dict]:
     return cams
 
 
-def alignment(c: Clocks, truth: dict) -> list[dict]:
+def alignment(c: Clocks, truth: Planted) -> list[dict]:
     f = c.nvr_fit
     return [
         {
@@ -193,7 +193,7 @@ def alignment(c: Clocks, truth: dict) -> list[dict]:
             "offsetSec": round(f.offset_ms / 1000, 3),
             "uncertaintySec": round(f.uncertainty_ms / 1000, 3),
             "score": round(1 - f.rejected / max(f.used + f.rejected, 1), 3),
-            "plantedSec": truth["nvrOffsetMs"] / 1000,
+            "plantedSec": truth.nvr_offset_ms / 1000,
             "driftPpm": round(f.drift_ppm, 1),
             "curve": [[round(x, 2), round(y, 4)] for x, y in f.points],
             "method": "Seizure record, refined by the on-screen clock read from the pixels",

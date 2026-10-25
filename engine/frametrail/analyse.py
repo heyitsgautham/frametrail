@@ -31,16 +31,16 @@ _log = events.get("analyse")
 def analyse(root: Path, run_detection: bool = True) -> dict:
     fx = root / "data" / "local" / "fixtures"
     clips = root / "data" / "local" / "clips"
-    clips.mkdir(parents=True, exist_ok=True)
     out_path = root / "data" / "demo" / "derived" / "case.json"
-    out_path.parent.mkdir(parents=True, exist_ok=True)
     paths = {"EV-001": fx / "EV-001_dvr-disk.img", "EV-002": fx / "EV-002_nvr-export.dav"}
-    # Check every input before touching the evidence, so a bad case file changes nothing.
+    # Check every input before touching the evidence or the disk, so a bad case changes nothing.
     for p in paths.values():
         if not p.is_file():
             raise CaseFileError(f"{p.name} is missing from {fx}; run `frametrail fixtures`")
     seizure = records.load_seizure(fx / "seizure.json", list(paths))
     truth = records.load_planted(fx / "truth.json")
+    clips.mkdir(parents=True, exist_ok=True)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     log = custody.Log()
     tool = version()
 

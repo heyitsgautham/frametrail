@@ -31,6 +31,7 @@ def test_missing_evidence_is_an_error_message_not_a_traceback(tmp_path, capsys):
     assert err.startswith("frametrail: error: EV-001_dvr-disk.img is missing")
     assert "run `frametrail fixtures`" in err
     assert "Traceback" not in err
+    assert not (tmp_path / "data").exists(), "a stopped run leaves no folders behind"
 
 
 def test_a_bad_seizure_record_fails_before_the_evidence_is_made_read_only(case, capsys):

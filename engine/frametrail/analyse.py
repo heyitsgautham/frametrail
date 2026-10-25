@@ -11,11 +11,13 @@ detect finds people for triage. This module runs them in order and adds up the s
 from __future__ import annotations
 
 import json
+import logging
 import os
 from datetime import datetime
 from pathlib import Path
 
 from . import clocks, custody, detect, dvr, intake, nvr, records, sources
+from . import log as events
 from .adapters import ADAPTERS
 from .dhav import epoch_ms
 from .errors import CaseFileError
@@ -23,6 +25,7 @@ from .media import probe_frames, version
 from .segments import EXAMINER, Extractor, now
 
 CASE_ID = "FT-26-014"
+_log = events.get("analyse")
 
 
 def analyse(root: Path, run_detection: bool = True) -> dict:
@@ -43,14 +46,44 @@ def analyse(root: Path, run_detection: bool = True) -> dict:
 
     # Intake: hash first, then work only on bytes read through read-only handles.
     before = {k: intake.digest(p) for k, p in paths.items()}
+    for k, d in before.items():
+        events.event(
+            _log,
+            "evidence hashed",
+            source=k,
+            bytes=d.size,
+            sha256=d.sha256,
+            seconds=round(d.seconds, 3),
+        )
     for p in paths.values():
         os.chmod(p, 0o444)
     img = paths["EV-001"].read_bytes()
     dav = paths["EV-002"].read_bytes()
     disk = dvr.parse(img)
+    states = [f.state for f in disk.found]
+    events.event(
+        _log,
+        "disk parsed",
+        source="EV-001",
+        indexed=states.count("indexed"),
+        carved=states.count("recovered-unindexed") + states.count("partial"),
+        overwritten=states.count("overwritten"),
+        rejected=len(disk.rejected),
+        log_records=len(disk.logs),
+        initialised=disk.reformat is not None,
+    )
     runs = nvr.parse(dav)
     ffmpeg_frames = probe_frames(paths["EV-002"], "dhav")
     our_frames = sum(len(r.frames) for r in runs)
+    events.event(
+        _log,
+        "export parsed",
+        logging.INFO if our_frames == ffmpeg_frames else logging.WARNING,
+        source="EV-002",
+        runs=len(runs),
+        frames=our_frames,
+        ffmpeg_frames=ffmpeg_frames,
+    )
 
     for k, d in before.items():
         seized = seizure[k].reference
@@ -58,10 +91,31 @@ def analyse(root: Path, run_detection: bool = True) -> dict:
         log.add(now(), EXAMINER, "Acquired read-only; MD5 and SHA-256 recorded", k, d.sha256)
 
     clk = clocks.fit(disk, runs)
+    for cam, fit in (("CAM-01", clk.dvr_fit), ("CAM-02", clk.nvr_fit)):
+        events.event(
+            _log,
+            "clock fitted",
+            camera=cam,
+            offset_ms=round(fit.offset_ms, 1),
+            drift_ppm=round(fit.drift_ppm, 1),
+            frames_read=fit.used,
+            misreads=fit.rejected,
+        )
     cams = clocks.cameras(clk, seizure, truth)
 
     ex = Extractor(clips, log, tool, {k: (paths[k], d) for k, d in before.items()})
     segments = ex.disk(disk, img) + ex.export(runs, dav, clk.to_ref_nvr)
+    clipped = [s for s in segments if "clip" in s]
+    for s in clipped:
+        if not s["remuxIdentical"]:
+            events.event(_log, "clip differs from its source", logging.WARNING, segment=s["id"])
+    events.event(
+        _log,
+        "segments extracted",
+        segments=len(segments),
+        clips=len(clipped),
+        identical=sum(bool(s["remuxIdentical"]) for s in clipped),
+    )
 
     detections = []
     if run_detection:
@@ -73,10 +127,19 @@ def analyse(root: Path, run_detection: bool = True) -> dict:
             "detections",
             intake.sha256(json.dumps(detections, sort_keys=True).encode()),
         )
+        events.event(_log, "people detected", markers=len(detections), model=detect.MODEL["name"])
 
     # Write block check: the evidence must hash the same after the analysis as before it.
     after = {k: intake.digest(p) for k, p in paths.items()}
     for k in paths:
+        same = after[k].sha256 == before[k].sha256
+        events.event(
+            _log,
+            "write block checked",
+            logging.INFO if same else logging.ERROR,
+            source=k,
+            unchanged=same,
+        )
         log.add(
             now(),
             "frametrail",
@@ -127,6 +190,7 @@ def analyse(root: Path, run_detection: bool = True) -> dict:
         "tools": {"ffmpeg": tool, "model": detect.MODEL},
     }
     out_path.write_text(json.dumps(case, indent=1))
+    events.event(_log, "case written", path=str(out_path), custody_events=len(log.events))
     return case
 
 

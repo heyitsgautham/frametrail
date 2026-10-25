@@ -44,6 +44,10 @@ pnpm engine:fixtures   # download 43 MB of CAVIAR footage, build both evidence f
 pnpm engine:analyse    # run the case, rewrite data/demo/derived/case.json, export the clips
 ```
 
+The engine logs each step to stderr and prints the case stats to stdout.
+`uv run --project engine frametrail --log-format json analyse` writes the steps as one JSON object per line instead.
+A missing or malformed input stops the run with `frametrail: error:` and the file or field to fix, and exits 2.
+
 ## Docker
 
 ```sh

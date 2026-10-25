@@ -12,6 +12,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
+from . import log as events
 from .clocks import stamp
 from .dhav import epoch_ms
 
@@ -19,6 +20,7 @@ MODEL = {"name": "YOLOX-S", "version": "0.1.1rc0 ONNX", "licence": "Apache-2.0"}
 URL = "https://github.com/Megvii-BaseDetection/YOLOX/releases/download/0.1.1rc0/yolox_s.onnx"
 SIZE = 640
 PERSON = 0
+_log = events.get("detect")
 
 
 class Detector:
@@ -70,6 +72,7 @@ def detect_people(root: Path, clips: Path, segments: list[dict], cams: list[dict
         import urllib.request
 
         model.parent.mkdir(parents=True, exist_ok=True)
+        events.event(_log, "downloading detector", url=URL, to=str(model))
         urllib.request.urlretrieve(URL, model)
     det = Detector(model)
     thumbs = clips / "detections"

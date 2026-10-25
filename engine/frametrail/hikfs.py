@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import struct
 from dataclasses import dataclass
+from typing import TypedDict
 
 from .errors import EvidenceFormatError
 
@@ -124,8 +125,22 @@ def _text(raw: bytes) -> str:
 def unpack_master(sector: bytes) -> Master:
     if sector[0x10 : 0x10 + len(SIGNATURE)] != SIGNATURE:
         raise EvidenceFormatError("no master signature")
-    f = _MASTER.unpack_from(sector, 0x30)
-    return Master(*f[:9], _text(f[9]), _text(f[10]))
+    cap, log_at, log_len, data_at, block, count, index_at, index_len, init_s, model, fw = (
+        _MASTER.unpack_from(sector, 0x30)
+    )
+    return Master(
+        cap,
+        log_at,
+        log_len,
+        data_at,
+        block,
+        count,
+        index_at,
+        index_len,
+        init_s,
+        _text(model),
+        _text(fw),
+    )
 
 
 def pack_entry(e: Entry) -> bytes:
@@ -175,7 +190,15 @@ def pack_imkh(channel: int, fps: int, start_ms: int, frames: int) -> bytes:
     return _IMKH.pack(IMKH, channel, 0x1B, fps, start_ms, frames).ljust(IMKH_LEN, b"\0")
 
 
-def unpack_imkh(raw: bytes) -> dict | None:
+class SegmentHeader(TypedDict):
+    channel: int
+    codec: int
+    fps: int
+    start_ms: int
+    frames: int
+
+
+def unpack_imkh(raw: bytes) -> SegmentHeader | None:
     if raw[:4] != IMKH or len(raw) < IMKH_LEN:
         return None
     _m, ch, codec, fps, start, frames = _IMKH.unpack_from(raw)

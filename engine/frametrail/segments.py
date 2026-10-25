@@ -24,8 +24,14 @@ def now() -> str:
 
 def frame_hashes(stream: bytes | Path, fmt: str | None) -> list[str]:
     """MD5 of every decoded frame, the way FFmpeg's framemd5 muxer reports them."""
-    args = ["-f", fmt, "-i", "pipe:0"] if fmt else ["-i", stream]
-    out = ffmpeg(*args, "-map", "0:v", "-f", "framemd5", "pipe:1", stdin=stream if fmt else None)
+    if fmt:
+        assert isinstance(stream, bytes), "a raw stream needs its format named"
+        out = ffmpeg(
+            "-f", fmt, "-i", "pipe:0", "-map", "0:v", "-f", "framemd5", "pipe:1", stdin=stream
+        )
+    else:
+        assert isinstance(stream, Path), "a file is decoded from its own container"
+        out = ffmpeg("-i", stream, "-map", "0:v", "-f", "framemd5", "pipe:1")
     return [ln.rsplit(",", 1)[1].strip() for ln in out.decode().splitlines() if ln and ln[0] != "#"]
 
 

@@ -1,3 +1,4 @@
+import dataclasses
 import json
 import os
 import shutil
@@ -5,7 +6,7 @@ import stat
 
 import pytest
 
-from frametrail import cli, dvr, media
+from frametrail import cli, clocks, dvr, media
 from frametrail.errors import EvidenceFormatError, ToolError
 from frametrail.fixture import synthetic
 
@@ -59,3 +60,8 @@ def test_a_failing_tool_is_still_a_runtime_error_for_older_callers():
     with pytest.raises(RuntimeError, match="failed"):
         media.ffmpeg("-i", "/nonexistent/input.mp4", "-f", "null", "-")
     assert shutil.which(media.FFMPEG)
+
+
+def test_a_disk_with_no_dated_segment_cannot_teach_the_clock_font(disk):
+    with pytest.raises(EvidenceFormatError, match="learn the on-screen clock font"):
+        clocks.fit(dataclasses.replace(disk, found=[]), [])

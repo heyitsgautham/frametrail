@@ -13,6 +13,7 @@ import tempfile
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import NotRequired, TypedDict
 
 from . import hikfs
 from .errors import EvidenceFormatError
@@ -36,6 +37,37 @@ class Found:
     how: str = ""  # how the time was established
     note: str = ""
     evidence: list[str] = field(default_factory=list)
+    pts: float | None = None  # first keyframe's PTS in a headerless tail, to date it
+
+
+class BlockRun(TypedDict):
+    """A stretch of consecutive blocks in one state, for the disk map."""
+
+    start: int
+    count: int
+    state: str
+    segmentId: NotRequired[str]
+    lost: NotRequired[str]
+
+
+class Rejected(TypedDict):
+    """A segment header the carver found but would not trust."""
+
+    byteStart: int
+    byteEnd: int
+    claimedFrames: int
+    decodedFrames: int
+    reason: str
+
+
+class Reformat(TypedDict):
+    """Proof the disk was initialised: when, why, and the time reversal along the disk."""
+
+    at: int
+    evidence: list[str]
+    blockOrder: list[int]
+    times: list[int]
+    keys: list[str]
 
 
 @dataclass
@@ -46,10 +78,10 @@ class Disk:
     entries: list[hikfs.Entry]
     logs: list[hikfs.LogRecord]
     found: list[Found]
-    runs: list[dict]
+    runs: list[BlockRun]
     candidates: int
-    rejected: list[dict]
-    reformat: dict | None
+    rejected: list[Rejected]
+    reformat: Reformat | None
 
 
 def decoded_frames(ps: bytes) -> int:
@@ -157,7 +189,9 @@ def parse(img: bytes) -> Disk:
             owner[b] = key
 
     # Carve: walk every block the index does not claim.
-    candidates, rejected, carved = 0, [], []
+    candidates = 0
+    rejected: list[Rejected] = []
+    carved: list[Found] = []
     b = 0
     while b < m.block_count:
         if b in owner or not any(img[base + b * B : base + (b + 1) * B]):
@@ -212,7 +246,7 @@ def parse(img: bytes) -> Disk:
                 f = Found(
                     "", "partial", 1, 0, 0, o + pack + skip, o + len(raw), b, ps, decoded_frames(ps)
                 )
-                f.pts = pts  # type: ignore[attr-defined]
+                f.pts = pts
                 carved.append(f)
         b = end
 
@@ -221,18 +255,19 @@ def parse(img: bytes) -> Disk:
     carved.sort(key=lambda f: f.first_block)
     # Every whole segment's stream starts at the same PTS; measure it on one we have.
     whole = next((f for f in found + carved if f.state != "partial" and f.ps), None)
-    origin = first_keyframe(whole.ps)[1] if whole else 0.0
+    whole_key = first_keyframe(whole.ps) if whole else None
+    origin = whole_key[1] if whole_key else 0.0
     sys_blocks = base // B
     for i, f in enumerate(carved):
         if f.state == "partial":
-            into = f.pts - origin  # type: ignore[attr-defined]
+            into = (f.pts or 0.0) - origin
             f.evidence.append(
                 f"Block {f.first_block + sys_blocks} has video but no segment header; its first "
                 f"keyframe is {into:.2f} s into a segment, so the segment's head is missing"
             )
-            nxt = carved[i + 1] if i + 1 < len(carved) else None
-            if nxt:
-                f.end_ms = nxt.start_ms
+            follows = carved[i + 1] if i + 1 < len(carved) else None
+            if follows:
+                f.end_ms = follows.start_ms
                 f.start_ms = f.end_ms - f.frames * 40
                 f.how = "Abuts the next carved segment; checked against the on-screen clock"
             f.note = "The head of this segment and everything before it were overwritten."
@@ -253,7 +288,7 @@ def parse(img: bytes) -> Disk:
 
 def _reformat(
     m: hikfs.Master, logs: list[hikfs.LogRecord], entries: list[hikfs.Entry], found: list[Found]
-) -> tuple[dict | None, Found | None]:
+) -> tuple[Reformat | None, Found | None]:
     video = sorted((f for f in found if f.frames), key=lambda f: f.first_block)
     init_ms = m.init_s * 1000
     reversal = [(a, b) for a, b in zip(video, video[1:], strict=False) if b.start_ms < a.start_ms]
@@ -294,13 +329,13 @@ def _reformat(
             how="From the recorder log and the surviving tail",
         )
         last = (end - 1 - m.data_at) // m.block_size + sys_blocks
-        holders = [f.key for f in holders]
+        keys = ", ".join(f.key for f in holders)
         lost.note = (
             "Recorded before initialisation, then overwritten when recording restarted at "
-            f"block 0. These blocks now hold {', '.join(holders)}."
+            f"block 0. These blocks now hold {keys}."
         )
         lost.evidence = [
-            f"Segment headers of {', '.join(holders)}, recorded after initialisation, sit in "
+            f"Segment headers of {keys}, recorded after initialisation, sit in "
             f"blocks {sys_blocks} to {last}",
             *partial.evidence,
         ]
@@ -315,7 +350,7 @@ def _reformat(
 
 def _runs(
     m: hikfs.Master, owner: dict[int, str], found: list[Found], lost: Found | None
-) -> list[dict]:
+) -> list[BlockRun]:
     state_of = {f.key: f.state for f in found}
     lost_blocks: set[int] = set()
     if lost:
@@ -329,12 +364,12 @@ def _runs(
             labels.append((state_of.get(seg, "indexed"), seg))
         else:
             labels.append(("free", None))
-    runs: list[dict] = []
+    runs: list[BlockRun] = []
     for i, (state, seg) in enumerate(labels):
         if runs and runs[-1]["state"] == state and runs[-1].get("segmentId") == seg:
             runs[-1]["count"] += 1
             continue
-        item: dict = {"start": i, "count": 1, "state": state}
+        item: BlockRun = {"start": i, "count": 1, "state": state}
         if seg:
             item["segmentId"] = seg
         if state == "overwritten":

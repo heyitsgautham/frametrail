@@ -22,7 +22,7 @@ _LOG_KIND = {
 }
 
 
-def _vendor(ident: dict) -> dict:
+def _vendor(ident: intake.Identity) -> dict:
     return {
         "family": ident["family"],
         "confidence": 1.0 if ident["matched"] else 0.0,
@@ -31,10 +31,10 @@ def _vendor(ident: dict) -> dict:
     }
 
 
-def _prefix(runs: list[dict]) -> list[dict]:
+def _prefix(runs: list[dvr.BlockRun]) -> list[dict]:
     out = []
-    for r in runs:
-        r = dict(r)
+    for run in runs:
+        r = dict(run)
         if "segmentId" in r:
             r["segmentId"] = f"EV-001-{r['segmentId']}"
         if "lost" in r:

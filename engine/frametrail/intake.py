@@ -6,6 +6,7 @@ import hashlib
 import time
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TypedDict
 
 CHUNK = 1 << 20
 
@@ -49,7 +50,21 @@ SIGNATURES: list[tuple[bytes, int | None, str]] = [
 ]
 
 
-def identify(path: Path) -> dict:
+class Signature(TypedDict):
+    offset: int
+    hex: str
+    ascii: str
+
+
+class Identity(TypedDict):
+    """Which recorder family wrote a file, from the first signature found in its head."""
+
+    family: str
+    signature: Signature
+    matched: str
+
+
+def identify(path: Path) -> Identity:
     with open(path, "rb") as f:
         head = f.read(CHUNK)
     for sig, at, family in SIGNATURES:

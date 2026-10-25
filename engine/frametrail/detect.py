@@ -77,7 +77,7 @@ def detect_people(root: Path, clips: Path, segments: list[dict], cams: list[dict
     det = Detector(model)
     thumbs = clips / "detections"
     thumbs.mkdir(exist_ok=True)
-    out = []
+    out: list[dict] = []
     for s in segments:
         if "clip" not in s:
             continue

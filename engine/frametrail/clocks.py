@@ -8,11 +8,13 @@ an offset and drift per recorder, which the seizure record then checks to the se
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
 import numpy as np
 
 from . import dvr, nvr, osd
 from .dhav import epoch_ms, from_ms
+from .errors import EvidenceFormatError
 from .media import decode_gray
 from .records import Planted, Seizure
 
@@ -43,10 +45,10 @@ def _labels(f: dvr.Found, n: int) -> list[str]:
     return [osd.text_at((f.start_ms + i * 40) % DAY_MS) for i in range(n)]
 
 
-def _learn_font(disk: dvr.Disk) -> tuple[float, dvr.Found, object]:
+def _learn_font(disk: dvr.Disk) -> tuple[float, dvr.Found, np.ndarray]:
     dated = [f for f in disk.found if f.ps and f.state in ("indexed", "recovered-unindexed")]
     grey = {f.key: decode_gray(f.ps, "mpeg", 384, 288)[:, :10] for f in dated}
-    best = (-1.0, None, None)
+    best: tuple[float, dvr.Found, np.ndarray] | None = None
     for f in dated:
         font_try = osd.learn(grey[f.key], _labels(f, len(grey[f.key])))
         hits = total = 0
@@ -56,14 +58,18 @@ def _learn_font(disk: dvr.Disk) -> tuple[float, dvr.Found, object]:
             want = _labels(g, len(grey[g.key]))
             for i in range(0, len(want), 25):
                 x = osd.read(grey[g.key][i], font_try)
-                hits += bool(x) and osd.text_at(x[0]) == want[i]
+                hits += x is not None and osd.text_at(x[0]) == want[i]
                 total += 1
-        if hits / total > best[0]:
+        if best is None or hits / total > best[0]:
             best = (hits / total, f, font_try)
+    if best is None:
+        raise EvidenceFormatError("no header-dated segment to learn the on-screen clock font from")
     return best
 
 
-def _read_points(frames: np.ndarray, raw: np.ndarray, every: int, font) -> tuple[list, list]:
+def _read_points(
+    frames: np.ndarray, raw: np.ndarray, every: int, font: np.ndarray
+) -> tuple[list, list]:
     r, o = [], []
     for i in range(0, len(frames), every):
         x = osd.read(frames[i], font)
@@ -95,9 +101,9 @@ def fit(disk: dvr.Disk, runs: list[nvr.Run]) -> Clocks:
     )
 
     nvr_r, nvr_o = [], []
-    for r in runs:
-        fr = decode_gray(r.annexb, "h264", 384, 288)[:, :10]
-        raw = np.array([x.raw_ms for x in r.frames])[: len(fr)]
+    for run in runs:
+        fr = decode_gray(run.annexb, "h264", 384, 288)[:, :10]
+        raw = np.array([x.raw_ms for x in run.frames])[: len(fr)]
         a, b = _read_points(fr, raw, 25, font)
         nvr_r += a
         nvr_o += b
@@ -135,7 +141,7 @@ def _cross_check(fit: osd.Fit) -> dict:
 
 
 def cameras(c: Clocks, seizure: dict[str, Seizure], truth: Planted) -> list[dict]:
-    cams = [
+    cams: list[dict[str, Any]] = [
         {
             "id": "CAM-01",
             "name": "Corridor",

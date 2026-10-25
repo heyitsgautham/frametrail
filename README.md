@@ -63,12 +63,12 @@ Its healthcheck calls `GET /health`, which answers 503 when `case.json` is missi
 pnpm engine:test   # engine tests with coverage, failing under 80 percent
 pnpm engine:lint   # ruff check and ruff format --check
 pnpm check         # private names, typecheck, Biome lint and format check
-pnpm test:unit     # web helper tests with coverage, failing under 80 percent of lines
+pnpm test:unit     # web screen and helper tests in vitest, failing under 90 percent of lines
 pnpm test:e2e      # browser checks on every screen and /health, against a running `pnpm start`
 ```
 
-`pnpm test:unit` needs Node 22.8 or later for its coverage floor.
-Node only counts the files the tests load, so the floor covers the pure helpers in `apps/web/src/lib/` and not the screens, which the browser checks cover.
+`pnpm test:unit` renders every screen with Testing Library in jsdom, from the committed demo case and with no network.
+Its coverage counts every file in `apps/web/src/lib/` and `apps/web/src/components/`, loaded or not, and fails under 90 percent of lines or 80 percent of branches.
 
 The engine tests need no download.
 `engine/frametrail/fixture/synthetic.py` builds a 6 MB disk and a 1.4 MB export in about 5 seconds, with the clock burned into frames it draws itself.

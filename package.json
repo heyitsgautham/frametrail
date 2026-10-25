@@ -14,7 +14,7 @@
     "lint": "biome check .",
     "format": "biome format --write .",
     "test:e2e": "tsx --test apps/web/e2e/*.test.ts",
-    "test:unit": "node --import tsx --test --experimental-test-coverage --test-coverage-include='apps/web/src/lib/**' --test-coverage-exclude='**/*.test.ts' --test-coverage-lines=80 apps/web/src/lib/*.test.ts",
+    "test:unit": "pnpm --filter @frametrail/web test",
     "check:names": "tsx scripts/private-names.ts",
     "check": "pnpm check:names && pnpm typecheck && pnpm lint",
     "record": "tsx recording/record.ts",

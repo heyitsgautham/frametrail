@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { test } from "node:test";
+import { test } from "vitest";
 import { makeAxis } from "./axis";
 
 test("one burst fills the width, padded on both sides", () => {

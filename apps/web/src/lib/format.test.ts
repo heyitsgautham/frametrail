@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { test } from "node:test";
+import { test } from "vitest";
 import { bytes, clock, day, hex, media, secs, short } from "./format";
 
 test("bytes picks the largest unit and one decimal below 100", () => {

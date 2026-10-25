@@ -19,7 +19,7 @@ Run the same checks CI runs.
 pnpm engine:lint   # ruff check and ruff format --check
 pnpm engine:test   # engine tests, fails under 80 percent coverage
 pnpm check         # private names, typecheck, Biome lint and format check
-pnpm test:unit     # web helper tests, fails under 80 percent line coverage
+pnpm test:unit     # web screen and helper tests, fails under 90 percent line coverage
 pnpm build         # production build of the workbench
 ```
 
@@ -35,7 +35,8 @@ Engine tests live in `engine/tests/` and run on the synthetic case from `engine/
 Add to the synthetic case when a test needs evidence it does not plant yet, and keep it small enough to build in a few seconds.
 Tests that need the real CAVIAR footage go in `engine/tests/test_caviar.py`, which skips them until `pnpm engine:fixtures` has run.
 
-A pure helper in `apps/web/src/lib/` gets a `node:test` file next to it, named `<module>.test.ts`.
+A helper in `apps/web/src/lib/` or a screen in `apps/web/src/components/` gets a vitest file next to it, named `<module>.test.ts` or `<module>.test.tsx`.
+Screen tests render with Testing Library against the demo case from `apps/web/test/demo.ts`.
 A change to a screen gets a check in `apps/web/e2e/routes.test.ts`.
 
 The engine opens evidence read-only and hashes it before and after.

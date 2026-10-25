@@ -48,7 +48,7 @@ jobs:
         run: pnpm build
       - name: Typecheck
         run: pnpm typecheck
-      - name: Unit tests with coverage, failing under 80 percent of lines
+      - name: Screen and helper tests with coverage, failing under 90 percent of lines
         run: pnpm test:unit
       - name: Chromium for the browser checks
         run: pnpm exec playwright install --with-deps chromium

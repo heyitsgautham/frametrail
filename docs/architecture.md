@@ -22,6 +22,9 @@ engine/frametrail
   sources.py   evidence hashes, vendor, on-disk structures, the recorder log and the wipe
   adapters.py  the vendor families read today and the ones still to come
   analyse.py   runs the steps in order, adds up the stats, writes case.json
+  records.py   seizure.json and truth.json, checked into frozen records before any evidence is read
+  errors.py    the errors an examiner can act on; the CLI prints them and exits 2
+  log.py       one structured event per step, as text or JSON lines on stderr
         |
         v
 data/demo/derived/case.json + data/local/clips/*.mp4

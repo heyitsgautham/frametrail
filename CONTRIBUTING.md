@@ -17,6 +17,7 @@ Run the same checks CI runs.
 
 ```sh
 pnpm engine:lint   # ruff check and ruff format --check
+pnpm engine:typecheck   # mypy over the engine
 pnpm engine:test   # engine tests, fails under 80 percent coverage
 pnpm check         # private names, typecheck, Biome lint and format check
 pnpm test:unit     # web screen and helper tests, fails under 90 percent line coverage

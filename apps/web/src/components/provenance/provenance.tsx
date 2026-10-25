@@ -143,13 +143,32 @@ export function Provenance({ c }: { c: Case }) {
   );
 }
 
+type RehashState = "idle" | "running" | "match" | "differ" | "missing" | "failed";
+
+const RESULT: Record<RehashState, string> = {
+  idle: "",
+  running: "",
+  match: "SHA-256 matches. Unchanged since export.",
+  differ: "SHA-256 differs from the value at export.",
+  missing: "This clip is not on this machine yet. Run pnpm engine:analyse to export it, then re-hash.",
+  failed: "Could not read the clip, so nothing was compared. Try again.",
+};
+
 function Detail({ node, seg, steps }: { node: ProvNode; seg?: Segment; steps: number }) {
-  const [check, setCheck] = useState<"idle" | "running" | "match" | "differ">("idle");
+  const [check, setCheck] = useState<RehashState>("idle");
   const file = media(seg?.clip);
   async function rehash() {
     if (!file || !node.sha256) return;
     setCheck("running");
-    const buf = await (await fetch(file, { cache: "no-store" })).arrayBuffer();
+    let buf: ArrayBuffer;
+    try {
+      const res = await fetch(file, { cache: "no-store" });
+      // A clip that is not on this machine says nothing about tampering, so it is not hashed.
+      if (!res.ok) return setCheck(res.status === 404 ? "missing" : "failed");
+      buf = await res.arrayBuffer();
+    } catch {
+      return setCheck("failed");
+    }
     const d = await crypto.subtle.digest("SHA-256", buf);
     const hex = [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, "0")).join("");
     await new Promise((r) => setTimeout(r, 700));
@@ -194,17 +213,21 @@ function Detail({ node, seg, steps }: { node: ProvNode; seg?: Segment; steps: nu
           {check === "running" ? "Hashing the clip…" : "Re-hash this clip"}
         </button>
         <AnimatePresence>
-          {(check === "match" || check === "differ") && (
+          {check !== "idle" && check !== "running" && (
             <motion.div
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               data-testid="rehash-result"
               className={cn(
                 "rounded-md border px-3 py-2 text-[14px] font-semibold",
-                check === "match" ? "border-teal/50 bg-teal/10 text-teal" : "border-red/50 bg-red/10 text-red",
+                check === "match"
+                  ? "border-teal/50 bg-teal/10 text-teal"
+                  : check === "differ"
+                    ? "border-red/50 bg-red/10 text-red"
+                    : "border-line-2 bg-panel-2 text-ink-2",
               )}
             >
-              {check === "match" ? "SHA-256 matches. Unchanged since export." : "SHA-256 differs from the value at export."}
+              {RESULT[check]}
             </motion.div>
           )}
         </AnimatePresence>

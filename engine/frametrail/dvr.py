@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import NotRequired, TypedDict
 
 from . import hikfs
-from .carve import Found, Rejected, carve, decoded_frames
+from .carve import Found, Rejected, carve, decoded_frames, image_blocks
 from .errors import EvidenceFormatError
 from .media import ffmpeg
 
@@ -75,14 +75,16 @@ def disk_bytes(m: hikfs.Master) -> int:
     return max(m.capacity, m.data_at + m.block_count * m.block_size)
 
 
-def _geometry_problem(m: hikfs.Master) -> str | None:
-    """Why a master sector's layout cannot be right, or None if it can be read."""
+def _geometry_problem(m: hikfs.Master, size: int) -> str | None:
+    """Why a master sector's layout cannot be right for an image of `size` bytes, or None."""
     if m.block_size < hikfs.IMKH_LEN:
         return (
             f"gives a data block size of {m.block_size} bytes, too small to hold a segment header"
         )
     if m.index_len < 64:
         return f"gives an index of {m.index_len} bytes, smaller than the index header"
+    if m.data_at >= size:
+        return f"puts the data area at {m.data_at:#x}, past the end of the {size}-byte image"
     return None
 
 
@@ -111,7 +113,7 @@ def _master(img: bytes) -> tuple[hikfs.Master, int, bool]:
             problems.append(f"the master sector at {at:#x} is cut off by the end of the image")
             continue
         m = hikfs.unpack_master(sector)
-        problem = _geometry_problem(m)
+        problem = _geometry_problem(m, len(img))
         if problem:
             problems.append(f"the master sector at {at:#x} {problem}")
             continue
@@ -128,6 +130,7 @@ def parse(img: bytes) -> Disk:
     copy_b = img[m.index_at + m.index_len : m.index_at + 2 * m.index_len]
     entries, index_at = _index(img, m)
     B, base = m.block_size, m.data_at
+    limit = image_blocks(m, len(img))
     found: list[Found] = []
     owner: dict[int, str] = {}
 
@@ -150,7 +153,7 @@ def parse(img: bytes) -> Disk:
             how="Index entry, Unix epoch time",
         )
         found.append(f)
-        for b in range(e.first_block, e.first_block + e.block_count):
+        for b in range(e.first_block, min(e.first_block + e.block_count, limit)):
             owner[b] = key
 
     short_by = max(0, disk_bytes(m) - len(img))
@@ -170,7 +173,7 @@ def parse(img: bytes) -> Disk:
     reformat, lost = _reformat(m, logs, entries, index_at, found)
     if lost:
         found.append(lost)
-    runs = _runs(m, owner, found, lost)
+    runs = _runs(m, owner, found, lost, limit)
     return Disk(
         m,
         master_at,
@@ -294,14 +297,16 @@ def _reformat(
 
 
 def _runs(
-    m: hikfs.Master, owner: dict[int, str], found: list[Found], lost: Found | None
+    m: hikfs.Master, owner: dict[int, str], found: list[Found], lost: Found | None, limit: int
 ) -> list[BlockRun]:
+    """Runs of blocks in one state across the whole disk. Blocks past the end of the image,
+    `limit` onwards, form one free run instead of one label each."""
     state_of = {f.key: f.state for f in found}
     lost_blocks: set[int] = set()
     if lost:
-        lost_blocks = set(range(0, -(-(lost.byte_end - m.data_at) // m.block_size)))
+        lost_blocks = set(range(0, min(-(-(lost.byte_end - m.data_at) // m.block_size), limit)))
     labels: list[tuple[str, str | None]] = [("system", None)] * (m.data_at // m.block_size)
-    for b in range(m.block_count):
+    for b in range(limit):
         seg = owner.get(b)
         if b in lost_blocks:
             labels.append(("overwritten", seg))
@@ -320,4 +325,9 @@ def _runs(
         if state == "overwritten":
             item["lost"] = "X01"
         runs.append(item)
+    rest = m.block_count - limit
+    if rest and runs and runs[-1]["state"] == "free" and "segmentId" not in runs[-1]:
+        runs[-1]["count"] += rest
+    elif rest:
+        runs.append({"start": len(labels), "count": rest, "state": "free"})
     return runs

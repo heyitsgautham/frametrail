@@ -191,21 +191,28 @@ def cut_after(ps: bytes, frames: int) -> int | None:
     return units[frames]
 
 
+def image_blocks(m: hikfs.Master, size: int) -> int:
+    """Data blocks an image of `size` bytes holds at least part of, up to the master's count.
+    A damaged master can claim billions of blocks; only the ones in the image are walked."""
+    return max(0, min(m.block_count, -(-(size - m.data_at) // m.block_size)))
+
+
 def carve(img: bytes, m: hikfs.Master, owner: dict[int, str], indexed: list[Found]) -> Carving:
     """Carve every block not in `owner`. `indexed` gives a whole segment to measure PTS on."""
     B, base = m.block_size, m.data_at
+    limit = image_blocks(m, len(img))
     candidates = 0
     rejected: list[Rejected] = []
     carved: list[Found] = []
     b = 0
-    while b < m.block_count:
+    while b < limit:
         if b in owner or not any(img[base + b * B : base + (b + 1) * B]):
             b += 1
             continue
         o = base + b * B
         head = hikfs.unpack_imkh(img[o : o + hikfs.IMKH_LEN])
         end = b + 1
-        while end < m.block_count and end not in owner:
+        while end < limit and end not in owner:
             nxt = base + end * B
             if hikfs.unpack_imkh(img[nxt : nxt + hikfs.IMKH_LEN]) or not any(img[nxt : nxt + B]):
                 break

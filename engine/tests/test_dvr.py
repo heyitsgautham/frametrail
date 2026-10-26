@@ -242,3 +242,23 @@ def test_an_image_that_ends_inside_the_master_sector_is_refused_with_a_message()
     img = bytes(hikfs.MASTER_AT + 0x10) + hikfs.SIGNATURE + bytes(10)
     with pytest.raises(EvidenceFormatError, match="at 0x200 is cut off by the end of the image"):
         dvr.parse(img)
+
+
+def test_a_master_claiming_billions_of_blocks_walks_only_the_blocks_in_the_image(synth, disk):
+    # A damaged block count of 2^32 - 1 used to walk, and label, every one of those blocks.
+    both = [hikfs.MASTER_AT, hikfs.BACKUP_MASTER_AT]
+    huge = dvr.parse(with_master(synth.image, both, block_count=2**32 - 1))
+    assert [(f.key, f.state) for f in huge.found] == [(f.key, f.state) for f in disk.found]
+    last = huge.runs[-1]
+    assert last["state"] == "free"
+    assert (
+        last["start"] + last["count"] == huge.master.data_at // huge.master.block_size + 2**32 - 1
+    )
+
+
+def test_a_data_area_past_the_end_of_the_image_is_refused(synth):
+    both = [hikfs.MASTER_AT, hikfs.BACKUP_MASTER_AT]
+    with pytest.raises(
+        EvidenceFormatError, match="puts the data area at 0x10000000000, past the end"
+    ):
+        dvr.parse(with_master(synth.image, both, data_at=2**40))

@@ -1,6 +1,6 @@
 [project]
 name = "frametrail"
-version = "0.1.0"
+version = "0.2.0"
 description = "Read-only intake, recovery, timeline and provenance for recorder evidence"
 requires-python = ">=3.12,<3.13"
 dependencies = [

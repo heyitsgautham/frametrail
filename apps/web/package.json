@@ -1,6 +1,6 @@
 {
   "name": "@frametrail/web",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "NEXT_TELEMETRY_DISABLED=1 next dev --port 3150",

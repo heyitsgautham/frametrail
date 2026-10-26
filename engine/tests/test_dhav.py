@@ -103,3 +103,13 @@ def test_dhav_round_trip_through_ffmpeg(tmp_path):
     assert [f.raw_ms - START for f in run.frames[:3]] == [0, 40, 80]
     assert run.byte_end == len(dav)
     assert run.annexb == b"".join(aus)
+
+
+def test_a_frame_whose_extension_overruns_it_is_dropped():
+    # Byte 22 is the extension length. Claiming more extension bytes than the frame holds
+    # used to yield a frame with an empty payload instead of rejecting it.
+    bad = bytearray(frame(0, START, payload=b"P0"))
+    bad[22] = 200
+    good = frame(1, START + 40, payload=b"P1")
+    frames = dhav.parse(bytes(bad) + good)
+    assert [f.number for f in frames] == [1]

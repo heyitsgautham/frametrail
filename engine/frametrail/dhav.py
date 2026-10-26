@@ -99,7 +99,7 @@ def parse(data: bytes) -> list[Frame]:
         end = pos + length
         ok = (
             kind in (I_FRAME, P_FRAME)
-            and length >= HEAD_LEN + 8
+            and length >= HEAD_LEN + ext_len + 8  # header, extensions and trailer fit
             and end <= len(data)
             and data[end - 8 : end - 4] == b"dhav"
         )

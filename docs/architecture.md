@@ -86,6 +86,7 @@ A candidate is kept only if FFmpeg decodes the frame count its header claims, gi
 If it decodes more, the run went on into older footage, as it does when no index marks where a segment ends.
 `carve.frame_units` then walks the program stream's packs and the H.264 access units in it, and the segment is cut where its last claimed frame ends.
 The demo disk holds a decoy header over random bytes, and the carver rejects it because 0 frames decode.
+A header whose start time falls outside 1970 to 2106, the range of the recorder's 32-bit times, is damaged and rejected too.
 A segment whose head was overwritten is carved from its first keyframe and marked partial.
 
 ### 5. Proving the disk was re-initialised

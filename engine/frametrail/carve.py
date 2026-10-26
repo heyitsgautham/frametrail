@@ -14,6 +14,10 @@ from typing import TypedDict
 from . import hikfs
 from .media import FFPROBE, run
 
+# Index entries and log records hold Unix seconds in 32 bits, so every time the recorder
+# writes falls between 1970 and 2106. A header time outside that range is damage.
+LATEST_MS = (1 << 32) * 1000
+
 
 @dataclass
 class Found:
@@ -231,7 +235,18 @@ def carve(img: bytes, m: hikfs.Master, owner: dict[int, str], indexed: list[Foun
                 raw = raw[: hikfs.IMKH_LEN + cut]
                 frames = decoded_frames(ps)
                 end = -(-(o + len(raw) - base) // B)
-            if frames and abs(frames - head["frames"]) <= 1:
+            if not 0 <= head["start_ms"] < LATEST_MS:
+                rejected.append(
+                    {
+                        "byteStart": o,
+                        "byteEnd": o + len(raw),
+                        "claimedFrames": head["frames"],
+                        "decodedFrames": frames,
+                        "reason": "Segment header found, but its start time is no date the "
+                        "recorder can write",
+                    }
+                )
+            elif frames and abs(frames - head["frames"]) <= 1:
                 f = Found(
                     "",
                     "recovered-unindexed",

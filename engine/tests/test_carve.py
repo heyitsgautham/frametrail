@@ -86,3 +86,30 @@ def test_frame_units_skips_other_video_streams_and_junk_between_packets():
     ps = one + other + junk + two
     # Only stream 0xE0 counts; the second frame's packet starts its own unit after the junk.
     assert carve.frame_units(ps) == [0, len(one) + len(other) + len(junk)]
+
+
+def test_a_header_whose_start_time_is_no_real_date_is_rejected(disk, synth):
+    # Damage to the high bytes of a header's start time gave a year past 9999, and dating
+    # the clip later stopped the whole run with an OverflowError.
+    c05 = next(f for f in disk.found if f.key == "C05")
+    raw = bytearray(synth.image)
+    raw[c05.byte_start + 8 : c05.byte_start + 16] = (1 << 62).to_bytes(8, "little")
+    found = carve.carve(bytes(raw), disk.master, {}, [])
+    assert c05.byte_start not in [f.byte_start for f in found.found]
+    (r,) = [r for r in found.rejected if r["byteStart"] == c05.byte_start]
+    assert r["decodedFrames"] == c05.frames
+    assert "start time" in r["reason"]
+
+
+def test_a_disk_with_an_impossible_header_time_still_runs(tmp_path):
+    from frametrail import cli
+    from frametrail.fixture import synthetic
+
+    fx = tmp_path / "data" / "local" / "fixtures"
+    synthetic.build(fx)
+    img = fx / "EV-001_dvr-disk.img"
+    raw = bytearray(img.read_bytes())
+    at = next(f for f in dvr.parse(bytes(raw)).found if f.key == "C05").byte_start
+    raw[at + 8 : at + 16] = (1 << 62).to_bytes(8, "little")
+    img.write_bytes(bytes(raw))
+    assert cli.main(["analyse", "--no-detect"], root=tmp_path) == 0

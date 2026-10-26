@@ -16,7 +16,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 
-from . import clocks, custody, detect, dvr, intake, nvr, records, sources
+from . import clocks, custody, detect, dvr, hikfs, intake, nvr, records, sources
 from . import log as events
 from .adapters import ADAPTERS
 from .dhav import epoch_ms
@@ -72,6 +72,15 @@ def analyse(root: Path, run_detection: bool = True) -> dict:
         log_records=len(disk.logs),
         initialised=disk.reformat is not None,
     )
+    if disk.master_at != hikfs.MASTER_AT:
+        events.event(
+            _log,
+            "master sector read from its backup",
+            logging.WARNING,
+            source="EV-001",
+            primary=hex(hikfs.MASTER_AT),
+            read_from=hex(disk.master_at),
+        )
     runs = nvr.parse(dav)
     ffmpeg_frames = probe_frames(paths["EV-002"], "dhav")
     our_frames = sum(len(r.frames) for r in runs)

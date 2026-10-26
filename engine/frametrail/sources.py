@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from . import dvr, intake, nvr
+from . import dvr, hikfs, intake, nvr
 from .clocks import stamp
 from .records import Seizure
 from .segments import EXAMINER
@@ -40,6 +40,21 @@ def _prefix(runs: list[dvr.BlockRun]) -> list[dict]:
         if "lost" in r:
             r["lost"] = f"EV-001-{r['lost']}"
         out.append(r)
+    return out
+
+
+def _master_sector(disk: dvr.Disk) -> dict:
+    m = disk.master
+    out: dict = {
+        "offset": hikfs.MASTER_AT,
+        "backupOffset": m.log_at + m.log_len,
+        "backupMatches": disk.backup_matches,
+        "initialisedAt": stamp(m.init_s * 1000),
+    }
+    if disk.master_at != hikfs.MASTER_AT:
+        # The primary was wiped or moved; say so, and where the geometry was read instead.
+        out["primaryIntact"] = False
+        out["readFrom"] = disk.master_at
     return out
 
 
@@ -78,12 +93,7 @@ def sources(
                 "runs": _prefix(disk.runs),
             },
             "structures": {
-                "masterSector": {
-                    "offset": 0x200,
-                    "backupOffset": m.log_at + m.log_len,
-                    "backupMatches": disk.backup_matches,
-                    "initialisedAt": stamp(m.init_s * 1000),
-                },
+                "masterSector": _master_sector(disk),
                 "index": {
                     "offset": m.index_at,
                     "copies": 2,

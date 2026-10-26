@@ -109,3 +109,25 @@ def test_a_changed_backup_index_is_reported(synth):
     disk = dvr.parse(bytes(img))
     assert not disk.index_copies_match
     assert disk.backup_matches
+
+
+def wipe_primary_master(image: bytes) -> bytes:
+    img = bytearray(image)
+    img[hikfs.MASTER_AT : hikfs.MASTER_AT + hikfs.MASTER_LEN] = bytes(hikfs.MASTER_LEN)
+    return bytes(img)
+
+
+def test_an_intact_master_is_read_where_the_layout_puts_it(disk):
+    assert disk.master_at == hikfs.MASTER_AT
+
+
+def test_a_wiped_primary_master_is_read_from_its_backup_and_does_not_match_it(synth, disk):
+    wiped = dvr.parse(wipe_primary_master(synth.image))
+    # The backup was read, so the geometry and every result are the same as on the intact disk.
+    assert wiped.master_at == hikfs.BACKUP_MASTER_AT
+    assert wiped.master == disk.master
+    assert [(f.key, f.state, f.start_ms) for f in wiped.found] == [
+        (f.key, f.state, f.start_ms) for f in disk.found
+    ]
+    # The primary is gone, so it cannot be said to match its backup.
+    assert not wiped.backup_matches

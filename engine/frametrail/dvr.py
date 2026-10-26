@@ -73,6 +73,7 @@ class Reformat(TypedDict):
 @dataclass
 class Disk:
     master: hikfs.Master
+    master_at: int  # MASTER_AT, or the backup's offset when the primary is wiped
     backup_matches: bool
     index_copies_match: bool
     entries: list[hikfs.Entry]
@@ -146,17 +147,27 @@ def to_mp4(stream: bytes, fmt: str) -> bytes:
         return dst.read_bytes()
 
 
-def parse(img: bytes) -> Disk:
+def _master(img: bytes) -> tuple[hikfs.Master, int, bool]:
+    """The master sector, the offset it was read from, and whether its backup matches it.
+
+    The primary sits at MASTER_AT. If it is wiped, the first signature left on the disk is
+    the backup's, which is read instead; there is then no primary for it to match."""
+    sector = img[hikfs.MASTER_AT : hikfs.MASTER_AT + hikfs.MASTER_LEN]
+    if sector[0x10 : 0x10 + len(hikfs.SIGNATURE)] == hikfs.SIGNATURE:
+        m = hikfs.unpack_master(sector)
+        backup_at = m.log_at + m.log_len
+        return m, hikfs.MASTER_AT, img[backup_at : backup_at + hikfs.MASTER_LEN] == sector
     sig = img.find(hikfs.SIGNATURE)
     if sig < 0x10:
         raise EvidenceFormatError(
             "no Hikvision-style master sector signature; this is not a disk image FrameTrail reads"
         )
     at = sig - 0x10
-    sector = img[at : at + hikfs.MASTER_LEN]
-    m = hikfs.unpack_master(sector)
-    backup_at = m.log_at + m.log_len
-    backup_ok = img[backup_at : backup_at + hikfs.MASTER_LEN] == sector
+    return hikfs.unpack_master(img[at : at + hikfs.MASTER_LEN]), at, False
+
+
+def parse(img: bytes) -> Disk:
+    m, master_at, backup_ok = _master(img)
     logs = hikfs.unpack_logs(img[m.log_at : m.log_at + m.log_len], m.log_at)
     slots = (m.index_len - 64) // hikfs.ENTRY_LEN
     copy_a = img[m.index_at : m.index_at + m.index_len]
@@ -282,7 +293,17 @@ def parse(img: bytes) -> Disk:
         found.append(lost)
     runs = _runs(m, owner, found, lost)
     return Disk(
-        m, backup_ok, copy_a == copy_b, entries, logs, found, runs, candidates, rejected, reformat
+        m,
+        master_at,
+        backup_ok,
+        copy_a == copy_b,
+        entries,
+        logs,
+        found,
+        runs,
+        candidates,
+        rejected,
+        reformat,
     )
 
 

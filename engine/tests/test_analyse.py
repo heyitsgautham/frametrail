@@ -80,3 +80,28 @@ def test_provenance_links_every_clip_back_to_a_source(analysed):
         while at in parent:
             at = parent[at]
         assert nodes[at]["kind"] == "source"
+
+
+def test_a_wiped_primary_master_is_reported_in_the_case(tmp_path):
+    from frametrail.analyse import analyse
+    from frametrail.fixture import synthetic
+
+    fx = tmp_path / "data" / "local" / "fixtures"
+    synthetic.build(fx)
+    img = fx / "EV-001_dvr-disk.img"
+    raw = bytearray(img.read_bytes())
+    raw[0x200:0x300] = bytes(0x100)
+    img.write_bytes(bytes(raw))
+    case = analyse(tmp_path, run_detection=False)
+    master = case["sources"][0]["structures"]["masterSector"]
+    assert master["offset"] == 0x200
+    assert master["backupMatches"] is False
+    assert master["primaryIntact"] is False
+    assert master["readFrom"] == master["backupOffset"]
+
+
+def test_an_intact_master_adds_no_damage_fields(analysed):
+    _, case = analysed
+    master = case["sources"][0]["structures"]["masterSector"]
+    assert master["backupMatches"] is True
+    assert "primaryIntact" not in master and "readFrom" not in master

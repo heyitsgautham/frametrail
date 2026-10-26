@@ -47,4 +47,31 @@ describe("GET /clips/[...path]", () => {
     expect((await get("C99.mp4")).status).toBe(404);
     expect((await get("../../package.json")).status).toBe(404);
   });
+
+  test("answers a byte range with 206 and the matching slice", async () => {
+    const res = await get("C01.mp4", "bytes=100-199");
+    expect(res.status).toBe(206);
+    expect(res.headers.get("content-range")).toBe("bytes 100-199/1000");
+    expect(Buffer.from(await res.arrayBuffer()).equals(BYTES.subarray(100, 200))).toBe(true);
+  });
+
+  test("answers an open-ended range, a suffix range and a range past the end", async () => {
+    expect((await get("C01.mp4", "bytes=900-")).headers.get("content-range")).toBe("bytes 900-999/1000");
+    expect((await get("C01.mp4", "bytes=-100")).headers.get("content-range")).toBe("bytes 900-999/1000");
+    expect((await get("C01.mp4", "bytes=990-5000")).headers.get("content-range")).toBe("bytes 990-999/1000");
+  });
+
+  test("answers 416 for a range that starts past the end", async () => {
+    const res = await get("C01.mp4", "bytes=1000-");
+    expect(res.status).toBe(416);
+    expect(res.headers.get("content-range")).toBe("bytes */1000");
+  });
+
+  test("ignores a Range header that names no valid range and sends the whole clip", async () => {
+    for (const range of ["bytes=-", "bytes=500-100", "items=0-10"]) {
+      const res = await get("C01.mp4", range);
+      expect(res.status, range).toBe(200);
+      expect(res.headers.get("content-length"), range).toBe("1000");
+    }
+  });
 });

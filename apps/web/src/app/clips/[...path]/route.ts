@@ -11,6 +11,15 @@ const TYPES: Record<string, string> = {
   ".webp": "image/webp",
 };
 
+// The first range of a "bytes=" header. A header that names no valid range, such as "bytes=-"
+// or "bytes=500-100", is ignored and the whole file is sent, as RFC 9110 section 14.2 allows.
+function byteRange(header: string | null): RegExpExecArray | null {
+  const m = /^bytes=(\d*)-(\d*)(?:,|$)/.exec(header ?? "");
+  if (!m || (!m[1] && !m[2])) return null;
+  if (m[1] && m[2] && Number(m[2]) < Number(m[1])) return null;
+  return m;
+}
+
 // Clips and stills the engine wrote to data/local/clips. Video needs byte ranges to seek.
 export async function GET(req: Request, { params }: { params: Promise<{ path: string[] }> }) {
   const rel = (await params).path.join("/");
@@ -26,7 +35,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ path: st
     return new Response("not found", { status: 404 });
   }
   const type = TYPES[path.extname(file).toLowerCase()] ?? "application/octet-stream";
-  const range = /bytes=(\d*)-(\d*)/.exec(req.headers.get("range") ?? "");
+  const range = byteRange(req.headers.get("range"));
   const head = { "Content-Type": type, "Accept-Ranges": "bytes", "Cache-Control": "no-store" };
   if (!range) {
     const body = Readable.toWeb(createReadStream(file)) as ReadableStream;

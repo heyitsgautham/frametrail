@@ -147,23 +147,47 @@ def to_mp4(stream: bytes, fmt: str) -> bytes:
         return dst.read_bytes()
 
 
+def _geometry_problem(m: hikfs.Master) -> str | None:
+    """Why a master sector's layout cannot be right, or None if it can be read."""
+    if m.block_size < hikfs.IMKH_LEN:
+        return (
+            f"gives a data block size of {m.block_size} bytes, too small to hold a segment header"
+        )
+    if m.index_len < 64:
+        return f"gives an index of {m.index_len} bytes, smaller than the index header"
+    return None
+
+
 def _master(img: bytes) -> tuple[hikfs.Master, int, bool]:
     """The master sector, the offset it was read from, and whether its backup matches it.
 
-    The primary sits at MASTER_AT. If it is wiped, the first signature left on the disk is
-    the backup's, which is read instead; there is then no primary for it to match."""
-    sector = img[hikfs.MASTER_AT : hikfs.MASTER_AT + hikfs.MASTER_LEN]
-    if sector[0x10 : 0x10 + len(hikfs.SIGNATURE)] == hikfs.SIGNATURE:
-        m = hikfs.unpack_master(sector)
-        backup_at = m.log_at + m.log_len
-        return m, hikfs.MASTER_AT, img[backup_at : backup_at + hikfs.MASTER_LEN] == sector
+    The primary sits at MASTER_AT. If it is wiped, or its layout cannot be right, the next
+    copy on the disk with a readable layout is used instead, normally the backup after the
+    log area. A primary that was not used cannot be said to match its backup."""
+    copies: list[int] = []
+    if img[hikfs.MASTER_AT + 0x10 :].startswith(hikfs.SIGNATURE):
+        copies.append(hikfs.MASTER_AT)
     sig = img.find(hikfs.SIGNATURE)
-    if sig < 0x10:
+    while sig >= 0x10 and len(copies) < 8:
+        if sig - 0x10 not in copies:
+            copies.append(sig - 0x10)
+        sig = img.find(hikfs.SIGNATURE, sig + 1)
+    if not copies:
         raise EvidenceFormatError(
             "no Hikvision-style master sector signature; this is not a disk image FrameTrail reads"
         )
-    at = sig - 0x10
-    return hikfs.unpack_master(img[at : at + hikfs.MASTER_LEN]), at, False
+    problems = []
+    for at in copies:
+        sector = img[at : at + hikfs.MASTER_LEN]
+        m = hikfs.unpack_master(sector)
+        problem = _geometry_problem(m)
+        if problem:
+            problems.append(f"the master sector at {at:#x} {problem}")
+            continue
+        backup_at = m.log_at + m.log_len
+        matches = at == hikfs.MASTER_AT and img[backup_at : backup_at + hikfs.MASTER_LEN] == sector
+        return m, at, matches
+    raise EvidenceFormatError("; ".join(problems) + "; no copy of it can be read")
 
 
 def parse(img: bytes) -> Disk:

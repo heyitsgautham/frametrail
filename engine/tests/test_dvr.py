@@ -1,7 +1,10 @@
 """The carver and wipe detection, on the synthetic disk: six segments recorded, the disk
 initialised, two segments recorded again from block 0 over the first one and a half."""
 
+import pytest
+
 from frametrail import dvr, hikfs
+from frametrail.errors import EvidenceFormatError
 
 
 def by_state(disk: dvr.Disk, state: str) -> list[dvr.Found]:
@@ -131,3 +134,33 @@ def test_a_wiped_primary_master_is_read_from_its_backup_and_does_not_match_it(sy
     ]
     # The primary is gone, so it cannot be said to match its backup.
     assert not wiped.backup_matches
+
+
+def with_master(image: bytes, offsets: list[int], **changes: int) -> bytes:
+    img = bytearray(image)
+    m = hikfs.unpack_master(image[hikfs.MASTER_AT : hikfs.MASTER_AT + hikfs.MASTER_LEN])
+    sector = hikfs.pack_master(hikfs.Master(**{**m.__dict__, **changes}))
+    for at in offsets:
+        img[at : at + hikfs.MASTER_LEN] = sector
+    return bytes(img)
+
+
+def test_a_primary_master_with_an_impossible_block_size_falls_back_to_the_backup(synth, disk):
+    damaged = dvr.parse(with_master(synth.image, [hikfs.MASTER_AT], block_size=0))
+    assert damaged.master_at == hikfs.BACKUP_MASTER_AT
+    assert damaged.master == disk.master
+    assert not damaged.backup_matches
+    assert len(damaged.found) == len(disk.found)
+
+
+def test_no_readable_master_stops_with_the_field_named(synth):
+    both = [hikfs.MASTER_AT, hikfs.BACKUP_MASTER_AT]
+    with pytest.raises(EvidenceFormatError, match=r"at 0x200 gives a data block size of 0 bytes"):
+        dvr.parse(with_master(synth.image, both, block_size=0))
+    with pytest.raises(EvidenceFormatError, match=r"at 0x18000 gives an index of 10 bytes"):
+        dvr.parse(with_master(synth.image, both, index_len=10))
+
+
+def test_a_disk_with_no_master_signature_is_refused():
+    with pytest.raises(EvidenceFormatError, match="not a disk image FrameTrail reads"):
+        dvr.parse(bytes(0x200000))

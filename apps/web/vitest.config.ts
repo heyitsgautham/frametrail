@@ -19,7 +19,7 @@ export default defineConfig({
     include: ["src/**/*.test.{ts,tsx}"],
     coverage: {
       provider: "v8",
-      include: ["src/lib/**", "src/components/**"],
+      include: ["src/lib/**", "src/components/**", "src/app/**/route.ts"],
       exclude: ["**/*.test.*", "src/lib/types.ts"],
       reporter: ["text-summary", "text"],
       thresholds: { lines: 90, statements: 90, functions: 90, branches: 80 },

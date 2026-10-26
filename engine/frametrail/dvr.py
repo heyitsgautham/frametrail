@@ -137,6 +137,35 @@ def first_keyframe(ps: bytes) -> tuple[int, float] | None:
     return None
 
 
+def _cut_after(ps: bytes, frames: int) -> int | None:
+    """Bytes the first `frames` frames of a stream take: up to the pack carrying the next
+    frame. None if the stream holds no frame after them or cannot be read."""
+    try:
+        out = run(
+            FFPROBE,
+            "-v",
+            "error",
+            "-f",
+            "mpeg",
+            "-select_streams",
+            "v:0",
+            "-show_entries",
+            "packet=pos",
+            "-of",
+            "csv=p=0",
+            "pipe:0",
+            stdin=ps,
+        )
+    except RuntimeError:
+        return None
+    # One line per frame, in order; a frame the demuxer cannot place reads N/A.
+    after = [int(p) for p in out.decode().split()[frames:] if p.isdigit()]
+    if not after:
+        return None
+    cut = ps.rfind(b"\x00\x00\x01\xba", 0, after[0] + 1)
+    return cut if cut > 0 else None
+
+
 def to_mp4(stream: bytes, fmt: str) -> bytes:
     """Remux without re-encoding, so every coded frame is carried over as it was.
     faststart needs a seekable output, so this goes through a temporary folder."""
@@ -245,6 +274,15 @@ def parse(img: bytes) -> Disk:
             candidates += 1
             ps = raw[hikfs.IMKH_LEN :]
             frames = decoded_frames(ps)
+            cut = _cut_after(ps, head["frames"]) if frames > head["frames"] else None
+            if cut is not None:
+                # The run went on past the segment's last frame into older footage, as it
+                # does when no index marks the segment's end. Stop the segment where its
+                # header says, and walk on from the next block for whatever follows.
+                ps = ps[:cut]
+                raw = raw[: hikfs.IMKH_LEN + cut]
+                frames = decoded_frames(ps)
+                end = -(-(o + len(raw) - base) // B)
             if frames and abs(frames - head["frames"]) <= 1:
                 f = Found(
                     "",

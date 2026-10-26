@@ -199,3 +199,21 @@ def test_with_no_readable_index_the_carver_still_runs_and_finds_the_wipe(synth, 
     assert any(f.start_ms == first.start_ms for f in by_state(blind, "recovered-unindexed"))
     assert blind.reformat and blind.reformat["at"] == synth.truth["initialisedAt"]
     assert any("Neither index copy" in e for e in blind.reformat["evidence"])
+
+
+def test_with_no_index_a_carved_segment_stops_at_its_header_frame_count(synth, disk):
+    # With no index, nothing marks where a segment recorded after initialisation ends, and
+    # its last block runs straight into the older footage behind it.
+    blind = dvr.parse(with_index(synth.image, 2))
+    whole = [f for f in disk.found if f.state in ("indexed", "recovered-unindexed")]
+    carved = by_state(blind, "recovered-unindexed")
+    assert [(f.start_ms, f.frames, f.byte_start, f.byte_end) for f in carved] == [
+        (f.start_ms, f.frames, f.byte_start, f.byte_end) for f in whole
+    ]
+    # So the headless tail behind them is found and dated exactly as on the indexed disk,
+    # and the only rejected header is the decoy.
+    ((tail,), (was,)) = by_state(blind, "partial"), by_state(disk, "partial")
+    assert (tail.start_ms, tail.end_ms, tail.frames) == (was.start_ms, was.end_ms, was.frames)
+    assert [r["byteStart"] for r in blind.rejected] == [synth.truth["decoyByte"]]
+    (lost,) = by_state(blind, "overwritten")
+    assert "C01, C02" in lost.note

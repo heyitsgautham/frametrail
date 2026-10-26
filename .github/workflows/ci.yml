@@ -12,12 +12,17 @@ jobs:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v7
       # FFmpeg's packages come from the cache after the first run, so a slow Ubuntu mirror
-      # cannot hold the job past its limit before a single test runs.
+      # cannot hold the job past its limit before a single test runs. The key names the
+      # Ubuntu release, so a new runner image starts a fresh cache instead of reusing
+      # packages built for the old one.
+      - name: Read Ubuntu release
+        id: ubuntu
+        run: echo "release=$(lsb_release -rs)" >> "$GITHUB_OUTPUT"
       - name: Cache FFmpeg packages
         uses: actions/cache@v6
         with:
           path: ~/apt-archives
-          key: ffmpeg-debs-${{ runner.os }}-v1
+          key: ffmpeg-debs-${{ runner.os }}-${{ steps.ubuntu.outputs.release }}-v1
       # FFmpeg, for the DHAV round trip through FFmpeg's own demuxer.
       - name: Install FFmpeg
         run: |

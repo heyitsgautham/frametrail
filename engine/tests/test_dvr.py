@@ -262,3 +262,22 @@ def test_a_data_area_past_the_end_of_the_image_is_refused(synth):
         EvidenceFormatError, match="puts the data area at 0x10000000000, past the end"
     ):
         dvr.parse(with_master(synth.image, both, data_at=2**40))
+
+
+def test_an_index_length_past_its_blocks_is_cut_to_them_and_noted(synth, disk):
+    # Slot 0's length field, damaged to about 5e16 bytes, made the overwritten range span
+    # that many bytes and the disk map try to label every block in it.
+    img = bytearray(synth.image)
+    length_at = hikfs.INDEX_AT + 64 + 24  # slot 0, after the fields before its length
+    img[length_at : length_at + 8] = (52635820645249064).to_bytes(8, "little")
+    damaged = dvr.parse(bytes(img))
+    n01 = by_state(damaged, "indexed")[0]
+    was = by_state(disk, "indexed")[0]
+    assert n01.byte_end == n01.byte_start + 11 * hikfs.BLOCK
+    # The last block's slack can hold a frame of older footage, so it may decode one more.
+    assert n01.frames in (was.frames, was.frames + 1)
+    assert "more than its 11 blocks hold" in n01.note
+    assert (
+        damaged.runs[-1]["start"] + damaged.runs[-1]["count"]
+        == disk.runs[-1]["start"] + disk.runs[-1]["count"]
+    )

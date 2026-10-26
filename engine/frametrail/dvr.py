@@ -137,7 +137,10 @@ def parse(img: bytes) -> Disk:
     for e in (e for e in entries if e.in_use):
         key = f"N{len(found) + 1:02d}"
         a = base + e.first_block * B
-        raw = img[a : a + e.length]
+        # A damaged length can run far past the blocks the entry claims; the extent stops at
+        # the entry's last block, so it never takes in the segments after it.
+        length = min(e.length, e.block_count * B)
+        raw = img[a : a + length]
         ps = raw[hikfs.IMKH_LEN :] if hikfs.unpack_imkh(raw) else b""
         f = Found(
             key,
@@ -146,12 +149,17 @@ def parse(img: bytes) -> Disk:
             e.start_ms,
             e.end_ms,
             a,
-            a + e.length,
+            a + length,
             e.first_block,
             ps,
             decoded_frames(ps),
             how="Index entry, Unix epoch time",
         )
+        if length < e.length:
+            f.note = (
+                f"Its index entry gives a length of {e.length} bytes, more than its "
+                f"{e.block_count} blocks hold; the extent stops at its last block."
+            )
         found.append(f)
         for b in range(e.first_block, min(e.first_block + e.block_count, limit)):
             owner[b] = key

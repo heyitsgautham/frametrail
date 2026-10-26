@@ -3,7 +3,8 @@ import { after, before, test } from "node:test";
 import { type Browser, chromium } from "playwright";
 
 // Smoke test against a running build (pnpm build && pnpm start): every screen renders its
-// key element with no page error and no request outside the app.
+// key element with no page error, no request outside the app, and nothing the content
+// security policy had to block.
 const BASE = process.env.FT_URL ?? "http://localhost:3150";
 const ROUTES: [string, string][] = [
   ["/intake", "disk-map"],
@@ -32,10 +33,14 @@ for (const [route, testId] of ROUTES) {
     const errors: string[] = [];
     const away: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
+    page.on("console", (m) => {
+      if (/Content Security Policy/i.test(m.text())) errors.push(m.text());
+    });
     page.on("request", (r) => {
       if (!r.url().startsWith(BASE) && !r.url().startsWith("data:") && !r.url().startsWith("blob:")) away.push(r.url());
     });
-    await page.goto(BASE + route, { waitUntil: "networkidle" });
+    const res = await page.goto(BASE + route, { waitUntil: "networkidle" });
+    assert.match(res?.headers()["content-security-policy"] ?? "", /default-src 'self'/);
     await page.getByTestId(testId).first().waitFor({ timeout: 10_000 });
     assert.deepEqual(errors, []);
     assert.deepEqual(away, []);

@@ -217,3 +217,22 @@ def test_with_no_index_a_carved_segment_stops_at_its_header_frame_count(synth, d
     assert [r["byteStart"] for r in blind.rejected] == [synth.truth["decoyByte"]]
     (lost,) = by_state(blind, "overwritten")
     assert "C01, C02" in lost.note
+
+
+def test_a_complete_image_is_not_short(disk):
+    assert disk.short_by == 0
+
+
+def test_an_image_cut_short_says_how_much_is_missing(synth, disk):
+    cut = dvr.parse(synth.image[:3_000_000])
+    assert cut.short_by == len(synth.image) - 3_000_000
+    # What lies before the cut is still found as on the whole image.
+    kept = [f.key for f in disk.found if f.byte_end <= 3_000_000 and f.state != "overwritten"]
+    assert set(kept) <= {f.key for f in cut.found}
+
+
+def test_an_indexed_segment_past_the_end_of_the_image_is_flagged(synth):
+    cut = dvr.parse(synth.image[:1_300_000])
+    n01, n02 = by_state(cut, "indexed")
+    assert n01.frames > 0 and "past the end of the image" in n01.note
+    assert n02.frames == 0 and f"{cut.short_by} bytes shorter" in n02.note

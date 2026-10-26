@@ -81,6 +81,14 @@ def analyse(root: Path, run_detection: bool = True) -> dict:
             primary=hex(hikfs.MASTER_AT),
             read_from=hex(disk.master_at),
         )
+    if disk.short_by:
+        events.event(
+            _log,
+            "image shorter than the disk it records",
+            logging.WARNING,
+            source="EV-001",
+            missing_bytes=disk.short_by,
+        )
     if disk.index_at != disk.master.index_at:
         events.event(
             _log,

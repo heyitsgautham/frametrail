@@ -55,6 +55,7 @@ class Disk:
     candidates: int
     rejected: list[Rejected]
     reformat: Reformat | None
+    short_by: int = 0  # bytes the image lacks against the disk size the master records
 
 
 def to_mp4(stream: bytes, fmt: str) -> bytes:
@@ -66,6 +67,12 @@ def to_mp4(stream: bytes, fmt: str) -> bytes:
         rate = ["-framerate", "25"] if fmt == "h264" else []
         ffmpeg("-f", fmt, *rate, "-i", src, "-c", "copy", "-movflags", "+faststart", dst)
         return dst.read_bytes()
+
+
+def disk_bytes(m: hikfs.Master) -> int:
+    """How long an image of the whole disk is: the capacity the master records, or the end
+    of its data area if that is further."""
+    return max(m.capacity, m.data_at + m.block_count * m.block_size)
 
 
 def _geometry_problem(m: hikfs.Master) -> str | None:
@@ -143,6 +150,14 @@ def parse(img: bytes) -> Disk:
         for b in range(e.first_block, e.first_block + e.block_count):
             owner[b] = key
 
+    short_by = max(0, disk_bytes(m) - len(img))
+    for f in found:
+        if f.byte_end > len(img):
+            f.note = (
+                f"The index places it past the end of the image, which is {short_by} bytes "
+                f"shorter than the disk; {f.frames} frames could be read."
+            )
+
     carving = carve(img, m, owner, found)
     for f in carving.found:
         for blk in range(f.first_block, -(-(f.byte_end - base) // B)):
@@ -166,6 +181,7 @@ def parse(img: bytes) -> Disk:
         carving.candidates,
         carving.rejected,
         reformat,
+        short_by,
     )
 
 

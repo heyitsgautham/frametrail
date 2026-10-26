@@ -74,6 +74,14 @@ def _index(disk: dvr.Disk) -> dict:
     return out
 
 
+def _image(disk: dvr.Disk) -> dict:
+    """Only for an image shorter than the disk its master records, as when an acquisition
+    stopped early: how many bytes are missing, so nothing past them is taken as absent."""
+    if not disk.short_by:
+        return {}
+    return {"image": {"expectedBytes": dvr.disk_bytes(disk.master), "shortBy": disk.short_by}}
+
+
 def sources(
     paths: dict[str, Path],
     before: dict,
@@ -113,6 +121,7 @@ def sources(
                 "index": _index(disk),
                 "log": {"offset": m.log_at, "records": len(disk.logs)},
                 "carving": {"candidates": disk.candidates, "rejected": disk.rejected},
+                **_image(disk),
             },
         },
         {

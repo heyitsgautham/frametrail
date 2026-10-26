@@ -105,3 +105,22 @@ def test_an_intact_master_adds_no_damage_fields(analysed):
     master = case["sources"][0]["structures"]["masterSector"]
     assert master["backupMatches"] is True
     assert "primaryIntact" not in master and "readFrom" not in master
+
+
+def test_a_short_image_is_reported_in_the_case(tmp_path):
+    from frametrail.analyse import analyse
+    from frametrail.fixture import synthetic
+
+    fx = tmp_path / "data" / "local" / "fixtures"
+    synthetic.build(fx)
+    img = fx / "EV-001_dvr-disk.img"
+    whole = img.read_bytes()
+    img.write_bytes(whole[:3_000_000])
+    case = analyse(tmp_path, run_detection=False)
+    image = case["sources"][0]["structures"]["image"]
+    assert image == {"expectedBytes": len(whole), "shortBy": len(whole) - 3_000_000}
+
+
+def test_a_complete_image_adds_no_image_field(analysed):
+    _, case = analysed
+    assert "image" not in case["sources"][0]["structures"]

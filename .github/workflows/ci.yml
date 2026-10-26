@@ -11,7 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
-      - name: FFmpeg, for the DHAV round trip through FFmpeg's own demuxer
+      # FFmpeg, for the DHAV round trip through FFmpeg's own demuxer.
+      - name: Install FFmpeg
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
       - name: Install
         run: uv sync --project engine --frozen --python 3.12
@@ -21,9 +22,10 @@ jobs:
           uv run --project engine ruff format --check engine
       - name: Typecheck
         run: uv run --project engine mypy --config-file engine/pyproject.toml engine/frametrail
-      - name: Tests with coverage, failing under 80 percent (CAVIAR footage tests skip)
+      # pytest with coverage, failing under 80 percent. The three CAVIAR footage tests skip.
+      - name: Test
         run: uv run --project engine pytest engine/tests -q -rs
-      - name: Dependency audit
+      - name: Audit
         run: |
           uv export --project engine --frozen --format requirements-txt --no-emit-project -o "$RUNNER_TEMP/requirements.txt"
           uvx pip-audit@2.10.1 --disable-pip -r "$RUNNER_TEMP/requirements.txt"
@@ -40,21 +42,23 @@ jobs:
           cache: pnpm
       - name: Install
         run: pnpm install --frozen-lockfile
-      - name: Dependency audit
+      - name: Audit
         run: pnpm audit --audit-level=high
       - name: Private names
         run: pnpm check:names
       - name: Lint
         run: pnpm lint
-      - name: Production build
+      - name: Build
         run: pnpm build
       - name: Typecheck
         run: pnpm typecheck
-      - name: Screen and helper tests with coverage, failing under 90 percent of lines
+      # vitest with coverage, failing under 90 percent of lines or 80 percent of branches.
+      - name: Test
         run: pnpm test:unit
-      - name: Chromium for the browser checks
+      - name: Install Chromium
         run: pnpm exec playwright install --with-deps chromium
-      - name: Browser checks against the production build
+      # Every screen and /health, in Chromium, against the production build.
+      - name: E2E
         run: |
           pnpm start > "$RUNNER_TEMP/next.log" 2>&1 &
           for i in $(seq 1 60); do curl -sf -o /dev/null http://localhost:3150/intake && break; sleep 1; done
@@ -67,7 +71,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Secret scan over the full history
+      - name: Secret scan
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

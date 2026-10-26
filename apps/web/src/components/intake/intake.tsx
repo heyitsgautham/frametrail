@@ -190,11 +190,13 @@ function HexStrip({ sig, lit }: { sig: Source["vendor"]["signature"]; lit: boole
   const rows: string[][] = [];
   for (let i = 0; i < bytesArr.length; i += 16) rows.push(bytesArr.slice(i, i + 16));
   return (
-    <div className="scanline mt-4 rounded-md border border-line bg-[#0a0c0d] px-4 py-3 font-mono text-[16px]">
+    // Offset, 16 bytes and their ASCII need about 725 px at 16 px type. Under 1536 px of
+    // window the strip tightens to fit, and under 1440 px it scrolls inside its box.
+    <div className="scanline mt-4 overflow-x-auto rounded-md border border-line bg-[#0a0c0d] px-4 py-3 font-mono text-[14px] 2xl:text-[16px]">
       {rows.map((r, i) => (
-        <div key={i} className="flex gap-6">
+        <div key={i} className="flex gap-4 2xl:gap-6">
           <span className="text-ink-3">{hex(sig.offset + i * 16)}</span>
-          <span className="flex gap-2">
+          <span className="flex gap-1.5 2xl:gap-2">
             {r.map((b, j) => (
               <motion.span
                 key={j}

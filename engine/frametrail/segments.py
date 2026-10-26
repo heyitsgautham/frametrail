@@ -99,7 +99,10 @@ class Extractor:
             }
         )
         self.edges.append([sid, ext_id])
-        if not stream:
+        if stream and not frames:
+            # The bytes are there but hold no video FFmpeg can decode, as after a bad sector.
+            seg["lost"] = ["The video bytes do not decode, so no clip was exported"]
+        if not stream or not frames:
             return seg
         mp4 = dvr.to_mp4(stream, fmt)
         clip = self.clips / f"{seg_id}.mp4"

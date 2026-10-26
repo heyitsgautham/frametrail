@@ -46,7 +46,8 @@ def _labels(f: dvr.Found, n: int) -> list[str]:
 
 
 def _learn_font(disk: dvr.Disk) -> tuple[float, dvr.Found, np.ndarray]:
-    dated = [f for f in disk.found if f.ps and f.state in ("indexed", "recovered-unindexed")]
+    # Only segments whose video decodes can show their on-screen clock.
+    dated = [f for f in disk.found if f.frames and f.state in ("indexed", "recovered-unindexed")]
     if len(dated) < 2:
         # One segment teaches the font and every other one checks it; with fewer than two
         # there is nothing to check the font against, so no reading can be trusted.
@@ -90,7 +91,7 @@ def fit(disk: dvr.Disk, runs: list[nvr.Run]) -> Clocks:
 
     dvr_r, dvr_o, c01_r, c01_o = [], [], [], []
     for f in disk.found:
-        if not f.ps or f is font_seg:
+        if not f.frames or f is font_seg:
             continue
         fr = decode_gray(f.ps, "mpeg", 384, 288)[:, :10]
         raw = f.start_ms + np.arange(len(fr)) * 40

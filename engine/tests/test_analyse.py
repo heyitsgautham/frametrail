@@ -124,3 +124,26 @@ def test_a_short_image_is_reported_in_the_case(tmp_path):
 def test_a_complete_image_adds_no_image_field(analysed):
     _, case = analysed
     assert "image" not in case["sources"][0]["structures"]
+
+
+def test_an_indexed_segment_whose_video_does_not_decode_does_not_stop_the_run(tmp_path):
+    import random
+
+    from frametrail.analyse import analyse
+    from frametrail.fixture import synthetic
+
+    fx = tmp_path / "data" / "local" / "fixtures"
+    synthetic.build(fx)
+    img = fx / "EV-001_dvr-disk.img"
+    raw = bytearray(img.read_bytes())
+    # Keep N01's segment header and replace its video with noise, as a bad sector would.
+    rng = random.Random(3)
+    start = 0x100000 + 40
+    raw[start : start + 300_000] = bytes(rng.randrange(256) for _ in range(300_000))
+    img.write_bytes(bytes(raw))
+    case = analyse(tmp_path, run_detection=False)
+    n01 = next(s for s in case["segments"] if s["id"] == "EV-001-N01")
+    assert n01["frames"] == 0 and "clip" not in n01
+    assert any("do not decode" in line for line in n01["lost"])
+    # The other dated segments still teach and check the clock font.
+    assert abs(case["stats"]["offsetErrorMs"]) < 40

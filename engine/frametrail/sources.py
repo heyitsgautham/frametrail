@@ -58,6 +58,22 @@ def _master_sector(disk: dvr.Disk) -> dict:
     return out
 
 
+def _index(disk: dvr.Disk) -> dict:
+    m = disk.master
+    out: dict = {
+        "offset": m.index_at,
+        "copies": 2,
+        "copiesMatch": disk.index_copies_match,
+        "entries": sum(e.in_use for e in disk.entries),
+    }
+    # Only a damaged index adds fields, so an intact disk's case reads as it always has.
+    if disk.index_at is None:
+        out["readable"] = False
+    elif disk.index_at != m.index_at:
+        out["readFrom"] = disk.index_at
+    return out
+
+
 def sources(
     paths: dict[str, Path],
     before: dict,
@@ -94,12 +110,7 @@ def sources(
             },
             "structures": {
                 "masterSector": _master_sector(disk),
-                "index": {
-                    "offset": m.index_at,
-                    "copies": 2,
-                    "copiesMatch": disk.index_copies_match,
-                    "entries": sum(e.in_use for e in disk.entries),
-                },
+                "index": _index(disk),
                 "log": {"offset": m.log_at, "records": len(disk.logs)},
                 "carving": {"candidates": disk.candidates, "rejected": disk.rejected},
             },

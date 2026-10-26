@@ -164,3 +164,38 @@ def test_no_readable_master_stops_with_the_field_named(synth):
 def test_a_disk_with_no_master_signature_is_refused():
     with pytest.raises(EvidenceFormatError, match="not a disk image FrameTrail reads"):
         dvr.parse(bytes(0x200000))
+
+
+def with_index(image: bytes, copies: int) -> bytes:
+    """Zero the primary index copy, or both."""
+    img = bytearray(image)
+    img[hikfs.INDEX_AT : hikfs.INDEX_AT + copies * hikfs.INDEX_LEN] = bytes(
+        copies * hikfs.INDEX_LEN
+    )
+    return bytes(img)
+
+
+def test_an_intact_index_is_read_from_the_primary_copy(disk):
+    assert disk.index_at == hikfs.INDEX_AT
+
+
+def test_a_damaged_primary_index_is_read_from_the_backup_copy(synth, disk):
+    damaged = dvr.parse(with_index(synth.image, 1))
+    assert damaged.index_at == hikfs.INDEX_AT + hikfs.INDEX_LEN
+    assert not damaged.index_copies_match
+    assert [(f.key, f.state, f.start_ms) for f in damaged.found] == [
+        (f.key, f.state, f.start_ms) for f in disk.found
+    ]
+    assert damaged.reformat
+    assert any("backup index copy lists only 2" in e for e in damaged.reformat["evidence"])
+
+
+def test_with_no_readable_index_the_carver_still_runs_and_finds_the_wipe(synth, disk):
+    blind = dvr.parse(with_index(synth.image, 2))
+    assert blind.index_at is None and blind.entries == []
+    assert not by_state(blind, "indexed")
+    # The first segment recorded after initialisation is carved from its header instead.
+    first = by_state(disk, "indexed")[0]
+    assert any(f.start_ms == first.start_ms for f in by_state(blind, "recovered-unindexed"))
+    assert blind.reformat and blind.reformat["at"] == synth.truth["initialisedAt"]
+    assert any("Neither index copy" in e for e in blind.reformat["evidence"])

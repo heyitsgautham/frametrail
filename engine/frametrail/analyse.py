@@ -81,6 +81,15 @@ def analyse(root: Path, run_detection: bool = True) -> dict:
             primary=hex(hikfs.MASTER_AT),
             read_from=hex(disk.master_at),
         )
+    if disk.index_at != disk.master.index_at:
+        events.event(
+            _log,
+            "index read from its backup" if disk.index_at else "no index copy readable",
+            logging.WARNING,
+            source="EV-001",
+            primary=hex(disk.master.index_at),
+            read_from=hex(disk.index_at) if disk.index_at else None,
+        )
     runs = nvr.parse(dav)
     ffmpeg_frames = probe_frames(paths["EV-002"], "dhav")
     our_frames = sum(len(r.frames) for r in runs)

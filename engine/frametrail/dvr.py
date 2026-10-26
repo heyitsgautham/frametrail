@@ -76,6 +76,7 @@ class Disk:
     master_at: int  # MASTER_AT, or the backup's offset when the primary is wiped
     backup_matches: bool
     index_copies_match: bool
+    index_at: int | None  # the index copy read: m.index_at, the backup after it, or None
     entries: list[hikfs.Entry]
     logs: list[hikfs.LogRecord]
     found: list[Found]
@@ -193,10 +194,9 @@ def _master(img: bytes) -> tuple[hikfs.Master, int, bool]:
 def parse(img: bytes) -> Disk:
     m, master_at, backup_ok = _master(img)
     logs = hikfs.unpack_logs(img[m.log_at : m.log_at + m.log_len], m.log_at)
-    slots = (m.index_len - 64) // hikfs.ENTRY_LEN
     copy_a = img[m.index_at : m.index_at + m.index_len]
     copy_b = img[m.index_at + m.index_len : m.index_at + 2 * m.index_len]
-    entries = hikfs.unpack_index(copy_a, slots)
+    entries, index_at = _index(img, m)
     B, base = m.block_size, m.data_at
     found: list[Found] = []
     owner: dict[int, str] = {}
@@ -312,7 +312,7 @@ def parse(img: bytes) -> Disk:
             owner.setdefault(blk, f.key)
     found += carved
 
-    reformat, lost = _reformat(m, logs, entries, found)
+    reformat, lost = _reformat(m, logs, entries, index_at, found)
     if lost:
         found.append(lost)
     runs = _runs(m, owner, found, lost)
@@ -321,6 +321,7 @@ def parse(img: bytes) -> Disk:
         master_at,
         backup_ok,
         copy_a == copy_b,
+        index_at,
         entries,
         logs,
         found,
@@ -331,8 +332,37 @@ def parse(img: bytes) -> Disk:
     )
 
 
+def _index(img: bytes, m: hikfs.Master) -> tuple[list[hikfs.Entry], int | None]:
+    """The entries of the first index copy whose header is intact, and where it sits.
+
+    The recorder keeps a backup copy right after the primary for when the primary is damaged.
+    With neither readable there are no entries, and the carver still walks every block."""
+    slots = (m.index_len - 64) // hikfs.ENTRY_LEN
+    for at in (m.index_at, m.index_at + m.index_len):
+        raw = img[at : at + m.index_len]
+        if raw[: len(hikfs.INDEX_MAGIC)] == hikfs.INDEX_MAGIC:
+            return hikfs.unpack_index(raw, slots), at
+    return [], None
+
+
+def _index_line(m: hikfs.Master, entries: list[hikfs.Entry], index_at: int | None) -> str:
+    listed = sum(e.in_use for e in entries)
+    if index_at is None:
+        return "Neither index copy can be read, so every segment here was carved"
+    if index_at != m.index_at:
+        return (
+            f"The backup index copy lists only {listed} segments, all after it; "
+            "the primary copy is damaged"
+        )
+    return f"Both index copies list only {listed} segments, all after it"
+
+
 def _reformat(
-    m: hikfs.Master, logs: list[hikfs.LogRecord], entries: list[hikfs.Entry], found: list[Found]
+    m: hikfs.Master,
+    logs: list[hikfs.LogRecord],
+    entries: list[hikfs.Entry],
+    index_at: int | None,
+    found: list[Found],
 ) -> tuple[Reformat | None, Found | None]:
     video = sorted((f for f in found if f.frames), key=lambda f: f.first_block)
     init_ms = m.init_s * 1000
@@ -350,7 +380,7 @@ def _reformat(
         f"The master sector records the disk as initialised at Unix time {m.init_s} "
         f"({datetime.fromtimestamp(m.init_s, UTC):%Y-%m-%d %H:%M:%S} recorder time)",
         f"{len(older)} carved segments are older than that; the index lists none of them",
-        f"Both index copies list only {sum(e.in_use for e in entries)} segments, all after it",
+        _index_line(m, entries, index_at),
     ]
     if rec:
         evidence.append(f'Recorder log at byte {rec.offset:#x}: "{rec.text}"')
@@ -360,8 +390,16 @@ def _reformat(
         # Everything between the first data block and the surviving tail was overwritten
         # by footage recorded after initialisation.
         started = [r.ms for r in logs if r.type == 3 and r.ms < partial.start_ms]
-        holders = [f for f in found if f.state == "indexed"]
-        end = max(f.byte_end for f in holders)
+        # The footage recorded after initialisation now sits in those blocks: the indexed
+        # segments, or the carved ones when the index could not be read.
+        holders = [
+            f
+            for f in found
+            if f.state in ("indexed", "recovered-unindexed")
+            and f.start_ms >= init_ms
+            and f.first_block < partial.first_block
+        ]
+        end = max((f.byte_end for f in holders), default=partial.byte_start)
         lost = Found(
             "X01",
             "overwritten",
@@ -374,14 +412,20 @@ def _reformat(
             how="From the recorder log and the surviving tail",
         )
         last = (end - 1 - m.data_at) // m.block_size + sys_blocks
-        keys = ", ".join(f.key for f in holders)
+        keys = ", ".join(f.key for f in holders) or "no footage FrameTrail can read"
         lost.note = (
             "Recorded before initialisation, then overwritten when recording restarted at "
             f"block 0. These blocks now hold {keys}."
         )
         lost.evidence = [
-            f"Segment headers of {keys}, recorded after initialisation, sit in "
-            f"blocks {sys_blocks} to {last}",
+            *(
+                [
+                    f"Segment headers of {keys}, recorded after initialisation, sit in "
+                    f"blocks {sys_blocks} to {last}"
+                ]
+                if holders
+                else []
+            ),
             *partial.evidence,
         ]
     return {

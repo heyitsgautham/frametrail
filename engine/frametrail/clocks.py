@@ -58,7 +58,12 @@ def _learn_font(disk: dvr.Disk) -> tuple[float, dvr.Found, np.ndarray]:
     grey = {f.key: decode_gray(f.ps, "mpeg", 384, 288)[:, :10] for f in dated}
     best: tuple[float, dvr.Found, np.ndarray] | None = None
     for f in dated:
-        font_try = osd.learn(grey[f.key], _labels(f, len(grey[f.key])))
+        try:
+            font_try = osd.learn(grey[f.key], _labels(f, len(grey[f.key])))
+        except ValueError:
+            # Too short to show every digit, as a segment cut off by the end of the image
+            # is. It cannot teach the font, but it still checks a font another one taught.
+            continue
         hits = total = 0
         for g in dated:
             if g is f:
@@ -70,7 +75,11 @@ def _learn_font(disk: dvr.Disk) -> tuple[float, dvr.Found, np.ndarray]:
                 total += 1
         if best is None or hits / total > best[0]:
             best = (hits / total, f, font_try)
-    assert best is not None  # dated holds two or more segments
+    if best is None:
+        raise EvidenceFormatError(
+            f"none of the {len(dated)} dated segments shows every digit of the on-screen clock, "
+            "so no segment can teach its font"
+        )
     return best
 
 

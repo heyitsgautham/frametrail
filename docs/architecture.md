@@ -116,6 +116,7 @@ The offset is recorder time minus reference time.
 Each camera stores its method, offset, drift, uncertainty and the agreement between the two methods.
 
 The font is learned from one segment dated by its index entry or header and checked on the others, so the disk needs at least two such segments whose video decodes.
+A segment too short to show every digit, such as one cut off by the end of the image, only checks a font another segment taught.
 Each recorder also needs at least 3 readings to fit a line.
 Short of either, the run stops with exit code 2 and says which is missing.
 

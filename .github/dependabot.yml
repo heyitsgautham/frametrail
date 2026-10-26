@@ -8,6 +8,16 @@ updates:
     groups:
       minor-and-patch:
         update-types: [minor, patch]
+    ignore:
+      # A new major of these changes the compiler or the animations, so it needs the
+      # screen-by-screen pixel checks first and is upgraded by hand.
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
+      - dependency-name: motion
+        update-types: ["version-update:semver-major"]
+      # The Node types follow the Node major the workbench runs on, 24, not the newest one.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
 
   # Python engine: engine/pyproject.toml and engine/uv.lock
   - package-ecosystem: uv

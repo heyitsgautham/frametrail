@@ -1,9 +1,10 @@
 "use client";
 
-import { Check, Fingerprint, HardDrive, Lock, Package } from "lucide-react";
+import { Check, Fingerprint, HardDrive, Lock, Package, TriangleAlert } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useState } from "react";
 import { Label, PageHead, Panel } from "@/components/shell";
+import { damage } from "@/lib/damage";
 import { bytes, hex, STATE_COLOR, STATE_LABEL } from "@/lib/format";
 import type { Source, State } from "@/lib/types";
 import { useDone, useProgress } from "@/lib/use-done";
@@ -20,6 +21,7 @@ export function Intake({ sources }: { sources: Source[] }) {
   const [phase, setPhase] = useState<Phase>("idle");
   const hashing = useProgress(phase !== "idle", 3600, done);
   const mapping = useProgress(phase === "mapped", 4200, done);
+  const damaged = useMemo(() => damage(disk), [disk]);
 
   useEffect(() => {
     if (done) setPhase("mapped");
@@ -97,6 +99,20 @@ export function Intake({ sources }: { sources: Source[] }) {
               )}
             </div>
           </Panel>
+
+          {phase === "mapped" && damaged.length > 0 && (
+            <Panel className="border-red/50 p-5" data-testid="damage">
+              <Label className="text-red">Damage found on the disk</Label>
+              <ul className="mt-3 flex flex-col gap-2.5">
+                {damaged.map((line) => (
+                  <li key={line} className="flex gap-2.5 text-[14px] leading-snug text-ink-2">
+                    <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0 text-red" />
+                    {line}
+                  </li>
+                ))}
+              </ul>
+            </Panel>
+          )}
 
           <Panel className="p-5">
             <Label>Other exhibits in this case</Label>

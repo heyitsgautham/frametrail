@@ -40,4 +40,27 @@ describe("Intake", () => {
     expect(screen.queryByText("Recovered, not in index")).toBeNull();
     expect(screen.queryByText("Overwritten")).toBeNull();
   });
+
+  test("an intact disk shows no damage panel", () => {
+    finished();
+    render(<Intake sources={demo.sources} />);
+    expect(screen.queryByTestId("damage")).toBeNull();
+  });
+
+  test("a damaged disk lists what was wrong once the disk is mapped", () => {
+    const hurt = {
+      ...disk,
+      structures: {
+        index: { offset: 0x20000, copiesMatch: true, entries: 0, readable: false },
+        image: { expectedBytes: 4194304, shortBy: 4096 },
+      },
+    };
+    render(<Intake sources={[hurt, ...demo.sources.filter((s) => s !== disk)]} />);
+    expect(screen.queryByTestId("damage")).toBeNull(); // nothing is known before the read
+    finished();
+    render(<Intake sources={[hurt]} />);
+    const panel = screen.getAllByTestId("damage").at(-1)!;
+    expect(within(panel).getAllByRole("listitem")).toHaveLength(2);
+    expect(within(panel).getByText(/Neither copy of the index can be read/)).toBeTruthy();
+  });
 });

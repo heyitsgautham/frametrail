@@ -34,6 +34,29 @@ const source = z.looseObject({
     })
     .optional(),
   hashSeconds: z.number(),
+  structures: z
+    .looseObject({
+      masterSector: z
+        .looseObject({
+          offset: count,
+          backupOffset: count,
+          backupMatches: z.boolean(),
+          primaryIntact: z.boolean().optional(),
+          readFrom: count.optional(),
+        })
+        .optional(),
+      index: z
+        .looseObject({
+          offset: count,
+          copiesMatch: z.boolean(),
+          entries: count,
+          readFrom: count.optional(),
+          readable: z.boolean().optional(),
+        })
+        .optional(),
+      image: z.looseObject({ expectedBytes: count, shortBy: count }).optional(),
+    })
+    .optional(),
 });
 
 const camera = z.looseObject({

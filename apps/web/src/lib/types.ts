@@ -61,6 +61,14 @@ export interface Source {
   };
   blocks?: { blockSize: number; total: number; runs: { start: number; count: number; state: State; segmentId?: string }[] };
   hashSeconds: number;
+  structures?: Structures;
+}
+
+/** What the engine read of a disk's own structures. The damage fields appear only when found. */
+export interface Structures {
+  masterSector?: { offset: number; backupOffset: number; backupMatches: boolean; primaryIntact?: boolean; readFrom?: number };
+  index?: { offset: number; copiesMatch: boolean; entries: number; readFrom?: number; readable?: boolean };
+  image?: { expectedBytes: number; shortBy: number };
 }
 
 export interface Camera {

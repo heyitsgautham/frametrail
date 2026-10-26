@@ -11,6 +11,10 @@ const STATUS: Record<Adapter["status"], { label: string; cls: string }> = {
   "next-phase": { label: "Next phase", cls: "bg-panel-2 text-ink-3 border-line" },
 };
 
+// Under 1440 px the fixed columns narrow, or they leave the adapter's steps under 100 px
+// and every step wraps inside its own chip.
+const COLS = "grid grid-cols-[120px_140px_1fr_150px_240px] min-[1440px]:grid-cols-[150px_170px_1fr_170px_330px]";
+
 // One adapter per recorder family. Each says exactly what it has been tested on, so
 // "supports Dahua" never quietly means every model and firmware.
 export default function Page() {
@@ -20,7 +24,7 @@ export default function Page() {
       <PageHead kicker="Step 8 · Vendor adapters" title="Honest about coverage" />
       <div className="px-8">
         <Panel className="overflow-hidden" data-testid="vendor-matrix">
-          <div className="grid grid-cols-[150px_170px_1fr_170px_330px] items-center gap-4 border-b border-line bg-panel-2 px-5 py-3">
+          <div className={`${COLS} items-center gap-4 border-b border-line bg-panel-2 px-5 py-3`}>
             <Label>Vendor</Label>
             <Label>Format</Label>
             <Label>What the adapter does</Label>
@@ -31,14 +35,18 @@ export default function Page() {
             <div
               key={a.vendor}
               data-testid={`vendor-${a.vendor}`}
-              className="grid grid-cols-[150px_170px_1fr_170px_330px] items-center gap-4 border-b border-line/60 px-5 py-3 last:border-0"
+              className={`${COLS} items-center gap-4 border-b border-line/60 px-5 py-3 last:border-0`}
             >
               <span className="text-[16px] font-semibold text-ink">{a.vendor}</span>
               <span className="font-mono text-[13px] text-ink-2">{a.family}</span>
               <span className="flex flex-wrap gap-1.5">
                 {a.ops.length ? (
                   a.ops.map((o) => (
-                    <span key={o} className="rounded border border-teal/30 bg-teal/[0.07] px-2 py-0.5 text-[12.5px] text-ink-2">
+                    <span
+                      key={o}
+                      data-testid="adapter-step"
+                      className="rounded border border-teal/30 bg-teal/[0.07] px-2 py-0.5 text-[12.5px] text-ink-2"
+                    >
                       {o}
                     </span>
                   ))

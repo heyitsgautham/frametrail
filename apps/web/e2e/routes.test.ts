@@ -94,6 +94,20 @@ for (const width of [1280, 1440, 1920]) {
   });
 }
 
+test("every adapter step on the vendors screen stays on one line at 1280 px", async () => {
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  await page.goto(`${BASE}/vendors`, { waitUntil: "networkidle" });
+  const wrapped = await page
+    .getByTestId("adapter-step")
+    .evaluateAll((els) =>
+      els
+        .filter((el) => el.getBoundingClientRect().height > Number.parseFloat(getComputedStyle(el).lineHeight) * 1.5 + 6)
+        .map((el) => el.textContent),
+    );
+  assert.deepEqual(wrapped, []);
+  await page.close();
+});
+
 test("health reports the case the screens read", async () => {
   const res = await fetch(`${BASE}/health`);
   assert.equal(res.status, 200);

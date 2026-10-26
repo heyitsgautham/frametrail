@@ -47,6 +47,13 @@ def _labels(f: dvr.Found, n: int) -> list[str]:
 
 def _learn_font(disk: dvr.Disk) -> tuple[float, dvr.Found, np.ndarray]:
     dated = [f for f in disk.found if f.ps and f.state in ("indexed", "recovered-unindexed")]
+    if len(dated) < 2:
+        # One segment teaches the font and every other one checks it; with fewer than two
+        # there is nothing to check the font against, so no reading can be trusted.
+        raise EvidenceFormatError(
+            f"the disk has {len(dated)} segment(s) dated by an index or segment header; "
+            "reading the on-screen clock needs two, one to learn the font and one to check it"
+        )
     grey = {f.key: decode_gray(f.ps, "mpeg", 384, 288)[:, :10] for f in dated}
     best: tuple[float, dvr.Found, np.ndarray] | None = None
     for f in dated:
@@ -62,8 +69,7 @@ def _learn_font(disk: dvr.Disk) -> tuple[float, dvr.Found, np.ndarray]:
                 total += 1
         if best is None or hits / total > best[0]:
             best = (hits / total, f, font_try)
-    if best is None:
-        raise EvidenceFormatError("no header-dated segment to learn the on-screen clock font from")
+    assert best is not None  # dated holds two or more segments
     return best
 
 
@@ -94,12 +100,19 @@ def fit(disk: dvr.Disk, runs: list[nvr.Run]) -> Clocks:
         else:
             dvr_r += r
             dvr_o += o
+    if len(dvr_r) < 3:
+        raise EvidenceFormatError(
+            f"the on-screen clock read in only {len(dvr_r)} disk frame(s) outside the font "
+            "segment; fitting the recorder clock needs at least 3"
+        )
     t0_dvr = min(dvr_r)
     dvr_fit = osd.fit(np.array(dvr_r), np.array(dvr_o), t0_dvr)
     c01_check = (
         osd.fit(np.array(c01_r), np.array(c01_o), min(c01_r)).offset_ms if len(c01_r) > 3 else None
     )
 
+    if not runs:
+        raise EvidenceFormatError("the export holds no DHAV frames to fit its clock from")
     nvr_r, nvr_o = [], []
     for run in runs:
         fr = decode_gray(run.annexb, "h264", 384, 288)[:, :10]
@@ -107,6 +120,11 @@ def fit(disk: dvr.Disk, runs: list[nvr.Run]) -> Clocks:
         a, b = _read_points(fr, raw, 25, font)
         nvr_r += a
         nvr_o += b
+    if len(nvr_r) < 3:
+        raise EvidenceFormatError(
+            f"the on-screen clock read in only {len(nvr_r)} export frame(s); "
+            "fitting the recorder clock needs at least 3"
+        )
     t0_nvr = runs[0].start_ms
     nvr_fit = osd.fit(np.array(nvr_r), np.array(nvr_o), t0_nvr)
     return Clocks(font_accuracy, font_seg, dvr_fit, t0_dvr, nvr_fit, t0_nvr, c01_check)

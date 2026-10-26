@@ -64,5 +64,5 @@ def test_a_failing_tool_is_still_a_runtime_error_for_older_callers():
 
 
 def test_a_disk_with_no_dated_segment_cannot_teach_the_clock_font(disk):
-    with pytest.raises(EvidenceFormatError, match="learn the on-screen clock font"):
+    with pytest.raises(EvidenceFormatError, match="has 0 segment"):
         clocks.fit(dataclasses.replace(disk, found=[]), [])

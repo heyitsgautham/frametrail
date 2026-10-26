@@ -148,6 +148,7 @@ The workbench reads only those, so everything on screen traces to one analysis r
 - [OEM comparison](docs/oem-comparison.md)
 - [User manual](docs/user-manual.md)
 - [The two evidence fixtures](docs/fixtures.md)
+- [Security: reporting a problem, and what the code protects](SECURITY.md)
 
 ## Credits
 

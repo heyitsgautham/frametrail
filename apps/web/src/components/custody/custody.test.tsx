@@ -27,7 +27,11 @@ describe("entryHash without crypto.subtle", () => {
   });
 });
 
-describe("Custody", () => {
+// Recomputing 18 SHA-256 hashes took up to 3 s when the whole suite ran under load, so these
+// tests wait up to 10 s for the result, inside a 15 s test limit.
+const CHECKED = { timeout: 10_000 };
+
+describe("Custody", { timeout: 15_000 }, () => {
   test("says it is checking until the chain has been verified", () => {
     render(<Custody events={demo.custody} />);
     expect(screen.getByTestId("chain-status").textContent).toBe(`Checking ${demo.custody.length} entries`);
@@ -35,7 +39,7 @@ describe("Custody", () => {
 
   test("verifies the stored chain on open", async () => {
     render(<Custody events={demo.custody} />);
-    expect(await screen.findByText(`All ${demo.custody.length} entries verify`)).toBeTruthy();
+    expect(await screen.findByText(`All ${demo.custody.length} entries verify`, {}, CHECKED)).toBeTruthy();
     expect(screen.getAllByTestId(/^entry-/)).toHaveLength(demo.custody.length);
   });
 
@@ -43,13 +47,13 @@ describe("Custody", () => {
     render(<Custody events={demo.custody} />);
     const target = Math.min(demo.custody.length - 2, Math.max(1, Math.floor(demo.custody.length / 2)));
     await userEvent.click(screen.getByTestId("tamper"));
-    expect(await screen.findByText(`Chain broken at entry ${target + 1}`)).toBeTruthy();
+    expect(await screen.findByText(`Chain broken at entry ${target + 1}`, {}, CHECKED)).toBeTruthy();
     expect((screen.getByTestId("tamper") as HTMLButtonElement).disabled).toBe(true);
   });
 
   test("calls a chain with a broken link intact only in its links", async () => {
     const events = demo.custody.map((e, i) => (i === 2 ? { ...e, action: "Edited after the fact" } : e));
     render(<Custody events={events} />);
-    expect(await screen.findByText("Links intact")).toBeTruthy();
+    expect(await screen.findByText("Links intact", {}, CHECKED)).toBeTruthy();
   });
 });

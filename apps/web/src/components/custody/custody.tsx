@@ -93,14 +93,15 @@ export function Custody({ events }: { events: CustodyEvent[] }) {
                     backgroundColor: m === "altered" ? "rgba(240,86,74,.16)" : m === "after" ? "rgba(240,86,74,.07)" : "rgba(0,0,0,0)",
                   }}
                   className={cn(
-                    "grid grid-cols-[22px_36px_92px_1fr_120px_170px] items-center gap-3 rounded-md border px-3 py-[5px]",
+                    // Under 1440 px the short hash column gives 50 px to the action, which truncates.
+                    "grid grid-cols-[22px_36px_92px_1fr_120px_120px] items-center gap-3 rounded-md border px-3 py-[5px] min-[1440px]:grid-cols-[22px_36px_92px_1fr_120px_170px]",
                     m === "ok" ? "border-line" : "border-red/50",
                   )}
                 >
                   {m === "ok" ? <Link2 className="h-4 w-4 text-ink-3" /> : <Link2Off className="h-4 w-4 text-red" />}
                   <span className="font-mono text-[13px] text-ink-3">#{e.seq}</span>
                   <span className="font-mono text-[13px] text-ink-2">{/\d{2}:\d{2}:\d{2}/.exec(e.at)?.[0]}</span>
-                  <span className="truncate text-[14px] text-ink">
+                  <span className="truncate text-[14px] text-ink" title={`${e.action} · ${e.objectId}`}>
                     {e.action} <span className="text-ink-3">· {e.objectId}</span>
                   </span>
                   <span className={cn("text-[14px]", m === "altered" ? "font-semibold text-red" : "text-ink-2")}>{e.actor}</span>

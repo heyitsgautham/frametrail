@@ -51,6 +51,13 @@ describe("Custody", { timeout: 15_000 }, () => {
     expect((screen.getByTestId("tamper") as HTMLButtonElement).disabled).toBe(true);
   });
 
+  test("names each entry's full action and exhibit where the row cuts it short", () => {
+    render(<Custody events={demo.custody} />);
+    const e = demo.custody[1]!;
+    const action = screen.getByTestId(`entry-${e.seq}`).querySelector(".truncate");
+    expect(action?.getAttribute("title")).toBe(`${e.action} · ${e.objectId}`);
+  });
+
   test("calls a chain with a broken link intact only in its links", async () => {
     const events = demo.custody.map((e, i) => (i === 2 ? { ...e, action: "Edited after the fact" } : e));
     render(<Custody events={events} />);

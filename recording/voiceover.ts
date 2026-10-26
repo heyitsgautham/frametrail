@@ -58,12 +58,21 @@ const ONES = [
 ];
 const TENS = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
 
+const SCALES: [number, string][] = [
+  [1e9, "billion"],
+  [1e6, "million"],
+  [1e3, "thousand"],
+];
+
 // How a number is said aloud, so a line's pace counts what the reader actually says.
 export function sayNumber(n: number): string {
   if (n < 20) return ONES[n]!;
   if (n < 100) return TENS[Math.floor(n / 10)]! + (n % 10 ? ` ${ONES[n % 10]}` : "");
   if (n < 1000) return `${ONES[Math.floor(n / 100)]} hundred${n % 100 ? ` ${sayNumber(n % 100)}` : ""}`;
-  return `${sayNumber(Math.floor(n / 1000))} thousand${n % 1000 ? ` ${sayNumber(n % 1000)}` : ""}`;
+  for (const [size, name] of SCALES) {
+    if (n >= size) return `${sayNumber(Math.floor(n / size))} ${name}${n % size ? ` ${sayNumber(n % size)}` : ""}`;
+  }
+  return String(n);
 }
 
 // The line as it is spoken, names and numbers spelled out.

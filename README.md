@@ -74,7 +74,7 @@ pnpm engine:typecheck   # mypy over the engine
 pnpm check         # private names, typecheck, Biome lint and format check
 pnpm test:unit     # web screen and helper tests in vitest, failing under 95 percent of lines
 pnpm test:recording   # the script the demo recorder injects, run against a stub DOM
-pnpm test:e2e      # browser checks on every screen and /health, against a running `pnpm start`
+pnpm test:e2e      # browser checks on every screen, layout checks down to 1280 px and /health, against a running `pnpm start`
 ```
 
 `pnpm test:unit` renders every screen with Testing Library in jsdom, from the committed demo case and with no network.
@@ -94,18 +94,18 @@ pnpm verify
 `scripts/verify-fresh-clone.sh` clones the committed HEAD into an empty temporary folder and runs every step above there.
 It installs from both lockfiles, then runs `pnpm check`, the engine lint and typecheck, both test suites and the production build.
 It stops at the first failing step with the end of its log, and deletes the clone either way unless you pass `--keep`.
-A passing run ends like this, in about two minutes:
+A passing run ends like this:
 
 ```
 Web coverage
-Statements   : 94.1% ( 639/679 )
-Branches     : 87.82% ( 548/624 )
-Functions    : 93.82% ( 228/243 )
-Lines        : 95.63% ( 526/550 )
+Statements   : 97.3% ( 722/742 )
+Branches     : 89.36% ( 580/649 )
+Functions    : 96.4% ( 241/250 )
+Lines        : 98.67% ( 595/603 )
 
 Engine coverage
-TOTAL                                 1281    120    91%
-89 passed, 3 skipped in 33.02s
+TOTAL                                 1473     69    95%
+141 passed, 3 skipped in 70.38s (0:01:10)
 
 All steps passed.
 ```

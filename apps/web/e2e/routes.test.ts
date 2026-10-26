@@ -123,6 +123,16 @@ test("the seizure clocks fit their half of the card at 1280 px", async () => {
   await page.close();
 });
 
+test("the vendor signature shows whole, without scrolling, at 1280 px", async () => {
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  await page.goto(`${BASE}/intake`, { waitUntil: "networkidle" });
+  const hidden = await page
+    .getByTestId("hex-strip")
+    .evaluateAll((els) => els.filter((el) => el.checkVisibility()).map((el) => el.scrollWidth - el.clientWidth));
+  assert.deepEqual(hidden, [0]);
+  await page.close();
+});
+
 test("health reports the case the screens read", async () => {
   const res = await fetch(`${BASE}/health`);
   assert.equal(res.status, 200);

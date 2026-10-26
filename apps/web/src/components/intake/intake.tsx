@@ -149,7 +149,13 @@ export function Intake({ sources }: { sources: Source[] }) {
                 )}
               </AnimatePresence>
             </div>
-            <HexStrip sig={disk.vendor.signature} lit={phase === "identified" || phase === "mapped"} />
+            {/* Sixteen bytes a row need about 640 px, so under 1440 px the strip shows eight. */}
+            <div className="min-[1440px]:hidden">
+              <HexStrip sig={disk.vendor.signature} lit={phase === "identified" || phase === "mapped"} perRow={8} />
+            </div>
+            <div className="hidden min-[1440px]:block">
+              <HexStrip sig={disk.vendor.signature} lit={phase === "identified" || phase === "mapped"} perRow={16} />
+            </div>
             <div className="mt-4 grid grid-cols-3 gap-4 text-[14px]">
               <Fact k="Signature at" v={hex(disk.vendor.signature.offset)} on={phase !== "idle" && phase !== "hashing"} />
               <Fact k="Model" v={disk.vendor.model ?? "Not recorded"} on={phase !== "idle" && phase !== "hashing"} />
@@ -185,30 +191,33 @@ function Fact({ k, v, on }: { k: string; v: string; on: boolean }) {
   );
 }
 
-function HexStrip({ sig, lit }: { sig: Source["vendor"]["signature"]; lit: boolean }) {
+function HexStrip({ sig, lit, perRow }: { sig: Source["vendor"]["signature"]; lit: boolean; perRow: 8 | 16 }) {
   const bytesArr = sig.hex.trim().split(/\s+/);
   const rows: string[][] = [];
-  for (let i = 0; i < bytesArr.length; i += 16) rows.push(bytesArr.slice(i, i + 16));
+  for (let i = 0; i < bytesArr.length; i += perRow) rows.push(bytesArr.slice(i, i + perRow));
   return (
     // Offset, 16 bytes and their ASCII need about 725 px at 16 px type. Under 1536 px of
-    // window the strip tightens to fit, and under 1440 px it scrolls inside its box.
-    <div className="scanline mt-4 overflow-x-auto rounded-md border border-line bg-[#0a0c0d] px-4 py-3 font-mono text-[14px] 2xl:text-[16px]">
+    // window the strip tightens to fit, and it scrolls inside its box if it still cannot.
+    <div
+      className="scanline mt-4 overflow-x-auto rounded-md border border-line bg-[#0a0c0d] px-4 py-3 font-mono text-[14px] 2xl:text-[16px]"
+      data-testid="hex-strip"
+    >
       {rows.map((r, i) => (
         <div key={i} className="flex gap-4 2xl:gap-6">
-          <span className="text-ink-3">{hex(sig.offset + i * 16)}</span>
+          <span className="text-ink-3">{hex(sig.offset + i * perRow)}</span>
           <span className="flex gap-1.5 2xl:gap-2">
             {r.map((b, j) => (
               <motion.span
                 key={j}
                 animate={{ color: lit ? "#f4b400" : "#737874" }}
-                transition={{ delay: lit ? (i * 16 + j) * 0.04 : 0, duration: 0.25 }}
+                transition={{ delay: lit ? (i * perRow + j) * 0.04 : 0, duration: 0.25 }}
               >
                 {b}
               </motion.span>
             ))}
           </span>
           <motion.span animate={{ color: lit ? "#eceae4" : "#3a3f44" }} transition={{ delay: lit ? 0.6 : 0 }}>
-            {sig.ascii.slice(i * 16, i * 16 + 16)}
+            {sig.ascii.slice(i * perRow, (i + 1) * perRow)}
           </motion.span>
         </div>
       ))}

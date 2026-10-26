@@ -39,8 +39,6 @@ def analyse(root: Path, run_detection: bool = True) -> dict:
             raise CaseFileError(f"{p.name} is missing from {fx}; run `frametrail fixtures`")
     seizure = records.load_seizure(fx / "seizure.json", list(paths))
     truth = records.load_planted(fx / "truth.json")
-    clips.mkdir(parents=True, exist_ok=True)
-    out_path.parent.mkdir(parents=True, exist_ok=True)
     log = custody.Log()
     tool = version()
 
@@ -129,6 +127,9 @@ def analyse(root: Path, run_detection: bool = True) -> dict:
         )
     cams = clocks.cameras(clk, seizure, truth)
 
+    # Every step that can stop the run on bad evidence is done, so the output folders can exist.
+    clips.mkdir(parents=True, exist_ok=True)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     ex = Extractor(clips, log, tool, {k: (paths[k], d) for k, d in before.items()})
     segments = ex.disk(disk, img) + ex.export(runs, dav, clk.to_ref_nvr)
     clipped = [s for s in segments if "clip" in s]

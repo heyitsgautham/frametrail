@@ -66,3 +66,15 @@ def test_a_failing_tool_is_still_a_runtime_error_for_older_callers():
 def test_a_disk_with_no_dated_segment_cannot_teach_the_clock_font(disk):
     with pytest.raises(EvidenceFormatError, match="has 0 segment"):
         clocks.fit(dataclasses.replace(disk, found=[]), [])
+
+
+def test_evidence_that_cannot_be_read_leaves_no_output_folders(tmp_path, capsys):
+    # The inputs exist and the case files parse, but the disk image is not one FrameTrail
+    # reads. The run used to create data/local/clips first, which made /health report clips.
+    fx = tmp_path / "data" / "local" / "fixtures"
+    synthetic.build(fx)
+    (fx / "EV-001_dvr-disk.img").write_bytes(bytes(0x200000))
+    assert cli.main(["analyse", "--no-detect"], root=tmp_path) == 2
+    assert "not a disk image FrameTrail reads" in capsys.readouterr().err
+    assert not (tmp_path / "data" / "local" / "clips").exists()
+    assert not (tmp_path / "data" / "demo").exists()

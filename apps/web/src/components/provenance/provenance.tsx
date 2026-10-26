@@ -97,22 +97,25 @@ export function Provenance({ c }: { c: Case }) {
                     return (
                       <motion.div
                         key={`${sel}-${n.id}`}
-                        className="flex min-w-0 flex-1 items-stretch"
+                        // A step with an arrow starts from the arrow's width and the last starts
+                        // from zero, so every card ends up the same width.
+                        className={cn("flex min-w-0 items-stretch", last ? "flex-[1_1_0%]" : "flex-[1_1_4rem] 2xl:flex-[1_1_92px]")}
                         initial={{ opacity: 0, x: -14 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.25 * i, duration: 0.4 }}
                       >
                         <div
+                          data-testid="chain-card"
                           className={cn(
-                            "flex min-h-[330px] min-w-0 flex-1 flex-col gap-3 rounded-md border p-5",
+                            "flex min-h-[330px] min-w-0 flex-1 flex-col gap-3 rounded-md border p-4 2xl:p-5",
                             last ? "border-amber bg-[#2a2410]" : "border-teal/50 bg-[#12241f]",
                           )}
                         >
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
                             <Icon className={cn("h-6 w-6 shrink-0", last ? "text-amber" : "text-teal")} />
                             <Label>{STAGE[n.kind]}</Label>
                           </div>
-                          <div className="text-[18px] font-semibold leading-snug text-ink">{n.label}</div>
+                          <div className="break-words text-[16px] font-semibold leading-snug text-ink 2xl:text-[18px]">{n.label}</div>
                           {n.tool && <div className="font-mono text-[12px] text-ink-3">{n.tool}</div>}
                           {n.sha256 && (
                             <div className="mt-auto">
@@ -122,7 +125,7 @@ export function Provenance({ c }: { c: Case }) {
                           )}
                         </div>
                         {!last && (
-                          <div className="flex w-[92px] shrink-0 flex-col items-center justify-center gap-1 px-1 text-center">
+                          <div className="flex w-16 shrink-0 flex-col items-center justify-center gap-1 px-1 text-center 2xl:w-[92px]">
                             <ArrowRight className="h-6 w-6 text-teal" />
                             <span className="text-[13px] leading-tight text-ink-2">{chain[i + 1]?.op ?? "read"}</span>
                           </div>
@@ -179,7 +182,7 @@ function Detail({ node, seg, steps }: { node: ProvNode; seg?: Segment; steps: nu
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: 0.25 * steps }}
-      className="grid grid-cols-[1fr_1fr_340px] gap-5 [&>*]:min-h-[190px]"
+      className="grid grid-cols-[1fr_1fr_260px] gap-5 2xl:grid-cols-[1fr_1fr_340px] [&>*]:min-h-[190px]"
     >
       <Panel className="p-5">
         <Label>Kept by the export</Label>

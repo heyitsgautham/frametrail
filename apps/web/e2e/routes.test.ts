@@ -71,6 +71,29 @@ test("triage notice keeps its icon and model line whole at 1280 px", async () =>
   await page.close();
 });
 
+// The provenance chain shares one row between four cards and three arrows. Each card must
+// get the same width, and nothing in a card may run past its border, down to 1280 px.
+for (const width of [1280, 1440, 1920]) {
+  test(`provenance cards are equal and hold their content at ${width} px`, async () => {
+    const page = await browser.newPage({ viewport: { width, height: 900 }, reducedMotion: "reduce" });
+    // ?done opens the screen with the first carved clip already traced.
+    await page.goto(`${BASE}/provenance?done`, { waitUntil: "networkidle" });
+    const cards = page.getByTestId("chain-card");
+    await cards.nth(3).waitFor();
+    const measured = await cards.evaluateAll((els) =>
+      els.map((el) => {
+        const box = el.getBoundingClientRect();
+        const spill = Math.max(...Array.from(el.querySelectorAll("*")).map((c) => c.getBoundingClientRect().right - box.right));
+        return { width: box.width, spill };
+      }),
+    );
+    const widths = measured.map((m) => m.width);
+    assert.ok(Math.max(...widths) - Math.min(...widths) < 1, `card widths ${widths.map(Math.round).join(", ")}`);
+    for (const m of measured) assert.ok(m.spill <= 0, `content runs ${Math.round(m.spill)} px past a card`);
+    await page.close();
+  });
+}
+
 test("health reports the case the screens read", async () => {
   const res = await fetch(`${BASE}/health`);
   assert.equal(res.status, 200);

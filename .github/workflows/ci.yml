@@ -13,7 +13,7 @@ jobs:
       - uses: astral-sh/setup-uv@v6
       # FFmpeg, for the DHAV round trip through FFmpeg's own demuxer.
       - name: Install FFmpeg
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
       - name: Install
         run: uv sync --project engine --frozen --python 3.12
       - name: Lint

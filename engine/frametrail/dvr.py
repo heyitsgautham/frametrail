@@ -107,6 +107,9 @@ def _master(img: bytes) -> tuple[hikfs.Master, int, bool]:
     problems = []
     for at in copies:
         sector = img[at : at + hikfs.MASTER_LEN]
+        if len(sector) < hikfs.MASTER_LEN:
+            problems.append(f"the master sector at {at:#x} is cut off by the end of the image")
+            continue
         m = hikfs.unpack_master(sector)
         problem = _geometry_problem(m)
         if problem:

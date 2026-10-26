@@ -236,3 +236,9 @@ def test_an_indexed_segment_past_the_end_of_the_image_is_flagged(synth):
     n01, n02 = by_state(cut, "indexed")
     assert n01.frames > 0 and "past the end of the image" in n01.note
     assert n02.frames == 0 and f"{cut.short_by} bytes shorter" in n02.note
+
+
+def test_an_image_that_ends_inside_the_master_sector_is_refused_with_a_message():
+    img = bytes(hikfs.MASTER_AT + 0x10) + hikfs.SIGNATURE + bytes(10)
+    with pytest.raises(EvidenceFormatError, match="at 0x200 is cut off by the end of the image"):
+        dvr.parse(img)

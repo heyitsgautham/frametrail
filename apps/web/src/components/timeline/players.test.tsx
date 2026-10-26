@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { clock, secs } from "@/lib/format";
 import { demo } from "../../../test/demo";
@@ -37,7 +37,8 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-const flush = () => act(() => new Promise((r) => setTimeout(r, 50)));
+// The players start once both seeks land; the reference clock then shows the moment.
+const started = () => waitFor(() => expect(screen.getByTestId("ref-clock").textContent).toBe(clock(t, true)));
 const video = (camId: string) => screen.getByTestId(`player-${camId}`) as HTMLVideoElement;
 
 function players(sync: boolean, carved = true) {
@@ -56,22 +57,20 @@ describe("SyncPlayers", () => {
   test("seeks both players to the moment and runs the reference clock from the lead", async () => {
     const play = vi.spyOn(HTMLMediaElement.prototype, "play");
     render(players(true));
-    await flush();
+    await started();
     expect(video(cams[0]!.id).currentTime).toBeCloseTo(t - secs(a.refStart), 3);
     expect(video(cams[1]!.id).currentTime).toBeCloseTo(t - secs(b.refStart), 3);
     expect(play).toHaveBeenCalledTimes(2);
-    expect(screen.getByTestId("ref-clock").textContent).toBe(clock(t, true));
   });
 
   test("pulls a player that drifts more than a tenth of a second back to the lead", async () => {
     render(players(true));
-    await flush();
+    await started();
     const lead = video(cams[0]!.id);
     const follower = video(cams[1]!.id);
     times.set(lead, times.get(lead)! + 2);
     times.set(follower, 0);
-    await flush();
-    expect(follower.currentTime).toBeCloseTo(t + 2 - secs(b.refStart), 3);
+    await waitFor(() => expect(follower.currentTime).toBeCloseTo(t + 2 - secs(b.refStart), 3));
   });
 
   test("before carving, the disk camera shows the hole and only the export plays", () => {
@@ -89,7 +88,7 @@ describe("SyncPlayers", () => {
   test("stops following the lead once it unmounts", async () => {
     const cancel = vi.spyOn(window, "cancelAnimationFrame");
     const { unmount } = render(players(true));
-    await flush();
+    await started();
     unmount();
     expect(cancel).toHaveBeenCalled();
   });

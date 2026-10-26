@@ -18,7 +18,10 @@ export async function GET(req: Request, { params }: { params: Promise<{ path: st
   if (!file.startsWith(CLIPS + path.sep)) return new Response("not found", { status: 404 });
   let size: number;
   try {
-    size = statSync(file).size;
+    const st = statSync(file);
+    // A folder such as detections/ has a size too, but reading it fails after the headers go out.
+    if (!st.isFile()) return new Response("not found", { status: 404 });
+    size = st.size;
   } catch {
     return new Response("not found", { status: 404 });
   }

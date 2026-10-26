@@ -22,7 +22,7 @@ jobs:
           uv run --project engine ruff format --check engine
       - name: Typecheck
         run: uv run --project engine mypy --config-file engine/pyproject.toml engine/frametrail
-      # pytest with coverage, failing under 80 percent. The three CAVIAR footage tests skip.
+      # pytest with coverage, failing under 90 percent. The three CAVIAR footage tests skip.
       - name: Test
         run: uv run --project engine pytest engine/tests -q -rs
       - name: Audit
@@ -52,7 +52,7 @@ jobs:
         run: pnpm build
       - name: Typecheck
         run: pnpm typecheck
-      # vitest with coverage, failing under 90 percent of lines or 80 percent of branches.
+      # vitest with coverage, failing under 95 percent of lines or 85 percent of branches.
       - name: Test
         run: pnpm test:unit
       - name: Install Chromium

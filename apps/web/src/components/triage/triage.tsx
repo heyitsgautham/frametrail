@@ -75,14 +75,14 @@ export function Triage({ c }: { c: Case }) {
         </div>
       </PageHead>
       <div className="flex flex-col gap-5 px-8">
-        <Panel className="flex items-center gap-4 border-amber/40 bg-amber/[0.06] px-5 py-3 text-[14px] text-ink-2">
-          <Sparkles className="h-5 w-5 text-amber" />
+        <Panel className="flex items-center gap-4 border-amber/40 bg-amber/[0.06] px-5 py-3 text-[14px] text-ink-2" data-testid="ai-notice">
+          <Sparkles className="h-5 w-5 shrink-0 text-amber" />
           <span>
             <b className="text-amber">AI-assisted findings.</b> For triage, not proof. The full footage stays available and every marker
             needs an examiner&apos;s verdict.
           </span>
           {model && (
-            <span className="ml-auto font-mono text-[13px] text-ink-3">
+            <span className="ml-auto shrink-0 whitespace-nowrap font-mono text-[13px] text-ink-3" data-testid="ai-model">
               {model.name} {model.version} · {model.licence} · runs offline
             </span>
           )}

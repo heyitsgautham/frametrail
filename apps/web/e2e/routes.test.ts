@@ -56,6 +56,21 @@ test("custody tamper breaks the chain", async () => {
   await page.close();
 });
 
+// A 1280 px laptop leaves the triage notice too narrow for its text and model line on one row.
+// The icon must keep its 20 px and the model line must stay on one line, not wrap mid-name.
+test("triage notice keeps its icon and model line whole at 1280 px", async () => {
+  const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+  await page.goto(`${BASE}/triage`, { waitUntil: "networkidle" });
+  const notice = page.getByTestId("ai-notice");
+  const icon = await notice.locator("svg").first().boundingBox();
+  assert.equal(Math.round(icon?.width ?? 0), 20);
+  const model = page.getByTestId("ai-model");
+  const box = await model.boundingBox();
+  const lineHeight = await model.evaluate((el) => Number.parseFloat(getComputedStyle(el).lineHeight));
+  assert.ok((box?.height ?? 0) < lineHeight * 1.5, `model line wraps to ${box?.height} px`);
+  await page.close();
+});
+
 test("health reports the case the screens read", async () => {
   const res = await fetch(`${BASE}/health`);
   assert.equal(res.status, 200);

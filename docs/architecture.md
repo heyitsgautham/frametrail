@@ -61,6 +61,7 @@ An unknown file matches no signature and is reported as unsupported, never pushe
 
 `dvr.parse` reads the master sector, checks it against its backup copy, reads the system log records (`RATS`), and reads both index copies (`HIKBTREE`).
 Each in-use index entry becomes an indexed segment with its channel, start and end time, first block and length.
+A log record of a type FrameTrail does not name is listed as `unknown`, with the text the recorder wrote.
 Times on the disk are Unix epoch values in recorder time.
 FrameTrail keeps them exactly as stored.
 

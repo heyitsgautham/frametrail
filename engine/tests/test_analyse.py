@@ -147,3 +147,24 @@ def test_an_indexed_segment_whose_video_does_not_decode_does_not_stop_the_run(tm
     assert any("do not decode" in line for line in n01["lost"])
     # The other dated segments still teach and check the clock font.
     assert abs(case["stats"]["offsetErrorMs"]) < 40
+
+
+def test_a_log_record_of_a_type_frametrail_does_not_know_is_listed_as_unknown(tmp_path):
+    from frametrail import hikfs
+    from frametrail.analyse import analyse
+    from frametrail.fixture import synthetic
+
+    fx = tmp_path / "data" / "local" / "fixtures"
+    synthetic.build(fx)
+    img = fx / "EV-001_dvr-disk.img"
+    raw = bytearray(img.read_bytes())
+    # Recorders log more kinds of event than the eight FrameTrail names. The second record
+    # gets type 74, which used to stop the run with a KeyError.
+    second = raw.index(hikfs.RATS, hikfs.LOG_AT + 1)
+    raw[second + 10] = 74
+    img.write_bytes(bytes(raw))
+    case = analyse(tmp_path, run_detection=False)
+    row = case["log"][1]
+    assert row["type"] == "unknown"
+    assert row["byteOffset"] == second and row["text"]
+    assert [r["type"] for r in case["log"]].count("unknown") == 1

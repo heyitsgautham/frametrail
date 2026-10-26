@@ -151,7 +151,8 @@ def log_rows(disk: dvr.Disk) -> list[dict]:
             "seq": n + 1,
             "rawTime": stamp(r.ms),
             "refTime": stamp(r.ms),
-            "type": _LOG_KIND[r.type],
+            # Recorders log more kinds of event than these; the record's own text still says which.
+            "type": _LOG_KIND.get(r.type, "unknown"),
             "text": r.text,
             "sourceId": "EV-001",
             "byteOffset": r.offset,

@@ -1,5 +1,6 @@
 import { existsSync } from "node:fs";
 import { CLIPS, loadCase } from "@/lib/data";
+import { log } from "@/lib/log";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,8 @@ export function GET() {
     const c = loadCase();
     return Response.json({ status: "ok", case: c.id, segments: c.segments.length, clips: existsSync(CLIPS) });
   } catch (e) {
-    return Response.json({ status: "error", error: e instanceof Error ? e.message : String(e) }, { status: 503 });
+    const error = e instanceof Error ? e.message : String(e);
+    log.warn({ error }, "health check failed");
+    return Response.json({ status: "error", error }, { status: 503 });
   }
 }

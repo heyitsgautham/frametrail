@@ -4,6 +4,9 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, test, vi } from "vitest";
 
+const warn = vi.hoisted(() => vi.fn());
+vi.mock("@/lib/log", () => ({ log: { warn } }));
+
 // data.ts reads FT_CASE when it loads, so each case gets a fresh module graph.
 async function health(caseFile?: string) {
   vi.resetModules();
@@ -21,6 +24,7 @@ function scratch(name: string, body: string): string {
 
 afterEach(() => {
   vi.unstubAllEnvs();
+  warn.mockClear();
 });
 
 describe("GET /health", () => {
@@ -29,6 +33,7 @@ describe("GET /health", () => {
     expect(status).toBe(200);
     expect(body).toMatchObject({ status: "ok", case: "FT-26-014" });
     expect(body.segments).toBeGreaterThan(0);
+    expect(warn).not.toHaveBeenCalled();
   });
 
   test("answers 503 naming the field when the case file is damaged", async () => {
@@ -37,6 +42,7 @@ describe("GET /health", () => {
     expect(body.status).toBe("error");
     expect(body.error).toContain("case.json is not a case file FrameTrail can show");
     expect(body.error).toContain("id:");
+    expect(warn).toHaveBeenCalledWith({ error: body.error }, "health check failed");
   });
 
   test("answers 503 saying how to make a case when there is none", async () => {

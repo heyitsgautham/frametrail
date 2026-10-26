@@ -108,6 +108,21 @@ test("every adapter step on the vendors screen stays on one line at 1280 px", as
   await page.close();
 });
 
+test("the seizure clocks fit their half of the card at 1280 px", async () => {
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  await page.goto(`${BASE}/timeline`, { waitUntil: "networkidle" });
+  const spill = await page.getByTestId("clock-value").evaluateAll((els) =>
+    els.map((el) => {
+      const text = document.createRange();
+      text.selectNodeContents(el);
+      return Math.round(text.getBoundingClientRect().right - el.getBoundingClientRect().right);
+    }),
+  );
+  assert.equal(spill.length, 4);
+  for (const px of spill) assert.ok(px <= 0, `a time runs ${px} px past its half of the card`);
+  await page.close();
+});
+
 test("health reports the case the screens read", async () => {
   const res = await fetch(`${BASE}/health`);
   assert.equal(res.status, 200);

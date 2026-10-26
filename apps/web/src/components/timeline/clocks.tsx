@@ -15,14 +15,19 @@ export function ClockCard({ cam, c, aligned }: { cam: Camera; c: Case; aligned: 
         {cam.name} · {src?.vendor.family}
       </Label>
       {z ? (
+        // At 28 px a time needs 134 px, more than half a card holds below a 1366 px window.
         <div className="mt-3 grid grid-cols-2 gap-3">
           <div>
             <div className="text-[12px] text-ink-3">Recorder screen at seizure</div>
-            <div className="font-mono text-[28px] leading-tight text-ink tabular">{clock(secs(z.dvrShown))}</div>
+            <div className="font-mono text-[22px] leading-tight text-ink tabular min-[1366px]:text-[28px]" data-testid="clock-value">
+              {clock(secs(z.dvrShown))}
+            </div>
           </div>
           <div>
             <div className="text-[12px] text-ink-3">Reference clock</div>
-            <div className="font-mono text-[28px] leading-tight text-teal tabular">{clock(secs(z.reference))}</div>
+            <div className="font-mono text-[22px] leading-tight text-teal tabular min-[1366px]:text-[28px]" data-testid="clock-value">
+              {clock(secs(z.reference))}
+            </div>
           </div>
         </div>
       ) : (
@@ -31,10 +36,12 @@ export function ClockCard({ cam, c, aligned }: { cam: Camera; c: Case; aligned: 
       <motion.div
         initial={false}
         animate={{ opacity: aligned ? 1 : 0.3 }}
-        className="mt-3 flex items-baseline gap-2 text-[14px] text-ink-2"
+        // Each part wraps as a whole, so a narrow card never splits "97.4 s" from "slow".
+        className="mt-3 flex flex-wrap items-baseline gap-x-2 whitespace-nowrap text-[14px] text-ink-2"
+        data-testid="clock-offset"
       >
         {Math.abs(off) < 0.5 ? (
-          <span className="font-mono text-[18px] font-bold text-teal">Matches the reference clock</span>
+          <span className="whitespace-normal font-mono text-[18px] font-bold text-teal">Matches the reference clock</span>
         ) : (
           <>
             Recorder clock is

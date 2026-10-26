@@ -49,3 +49,40 @@ def test_dvr_keeps_found_as_the_carver_type(disk):
     assert dvr.Found is carve.Found
     assert all(isinstance(f, carve.Found) for f in disk.found)
     assert hikfs.IMKH_LEN == 40  # carve cuts headers by this length
+
+
+def mpeg2_pes(payload: bytes, sid: int = 0xE0) -> bytes:
+    head = bytes([0x80, 0x00, 0x00])  # MPEG-2 flags, no PTS, header length 0
+    body = head + payload
+    return b"\x00\x00\x01" + bytes([sid]) + len(body).to_bytes(2, "big") + body
+
+
+MPEG2_PACK = b"\x00\x00\x01\xba" + bytes([0x44]) + bytes(8) + bytes([0xF8])  # 14 bytes
+
+
+def nal(kind: int, first_mb_zero: bool = True) -> bytes:
+    return b"\x00\x00\x01" + bytes([0x60 | kind, 0x80 if first_mb_zero else 0x40]) + b"\x11" * 20
+
+
+def test_frame_units_reads_mpeg2_packs_and_finds_each_access_unit():
+    # Frame 1: SPS, PPS, IDR slice. Frame 2: a slice in two parts. Frame 3: a slice.
+    one = mpeg2_pes(nal(7) + nal(8) + nal(5))
+    two = mpeg2_pes(nal(1) + nal(1, first_mb_zero=False))
+    audio = mpeg2_pes(b"\xff" * 30, sid=0xC0)
+    three = mpeg2_pes(nal(1))
+    ps = MPEG2_PACK + one + two + audio + MPEG2_PACK + three
+    second = len(MPEG2_PACK) + len(one)
+    third = second + len(two) + len(audio)
+    assert carve.frame_units(ps) == [0, second, third]
+    assert carve.cut_after(ps, 2) == third
+    assert carve.cut_after(ps, 3) is None
+
+
+def test_frame_units_skips_other_video_streams_and_junk_between_packets():
+    other = mpeg2_pes(nal(5), sid=0xE1)
+    one = mpeg2_pes(nal(9) + nal(5))
+    junk = b"\x13\x37" * 5
+    two = mpeg2_pes(nal(9) + nal(1))
+    ps = one + other + junk + two
+    # Only stream 0xE0 counts; the second frame's packet starts its own unit after the junk.
+    assert carve.frame_units(ps) == [0, len(one) + len(other) + len(junk)]

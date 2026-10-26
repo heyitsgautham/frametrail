@@ -105,33 +105,90 @@ def first_keyframe(ps: bytes) -> tuple[int, float] | None:
     return None
 
 
+_VCL = (1, 5)  # coded slices
+_PREFIX = (6, 7, 8, 9, 14, 15, 16, 17, 18)  # NAL types that may open an access unit
+
+
+def _units(ps: bytes) -> tuple[bytes, list[tuple[int, int]]]:
+    """The first video stream's elementary bytes, and for each PES packet that carried them
+    (offset in those bytes, offset in ps where the packet's unit starts). A unit starts at
+    its pack header when the packet follows one directly, else at the packet itself."""
+    es = bytearray()
+    chunks: list[tuple[int, int]] = []
+    video: int | None = None
+    unit = -1  # where the current pack began, while nothing else has followed it
+    i = ps.find(b"\x00\x00\x01")
+    while 0 <= i and i + 6 <= len(ps):
+        sid = ps[i + 3]
+        if sid == 0xBA:  # pack header: MPEG-2 has a stuffing count, MPEG-1 is 12 bytes
+            two = ps[i + 4] & 0xC0 == 0x40
+            nxt = i + 14 + (ps[i + 13] & 7) if two else i + 12
+            unit = i
+        elif sid == 0xB9:  # program end
+            nxt = i + 4
+        elif sid == 0xBB or 0xBC <= sid:  # system header and every PES packet
+            nxt = i + 6 + int.from_bytes(ps[i + 4 : i + 6], "big")
+            if 0xE0 <= sid <= 0xEF and (video is None or sid == video):
+                video = sid
+                start = _payload(ps, i)
+                chunks.append((len(es), unit if unit >= 0 else i))
+                es += ps[start:nxt]
+            if sid != 0xBB:
+                unit = -1
+        else:  # a start code inside data the walk could not follow: look for the next one
+            i = ps.find(b"\x00\x00\x01", i + 3)
+            continue
+        i = ps.find(b"\x00\x00\x01", nxt) if nxt <= len(ps) else -1
+        if i != nxt:
+            unit = -1  # bytes between packets: the next packet starts its own unit
+    return bytes(es), chunks
+
+
+def _payload(ps: bytes, i: int) -> int:
+    """Where a PES packet's payload starts, for MPEG-2 and MPEG-1 packet headers."""
+    if ps[i + 6] & 0xC0 == 0x80:
+        return i + 9 + ps[i + 8]
+    k = i + 6
+    while k < len(ps) and ps[k] == 0xFF:
+        k += 1
+    if k < len(ps) and ps[k] & 0xC0 == 0x40:  # buffer size
+        k += 2
+    if k < len(ps):
+        k += {0x20: 5, 0x30: 10}.get(ps[k] & 0xF0, 1)
+    return k
+
+
+def frame_units(ps: bytes) -> list[int]:
+    """For each H.264 access unit in the first video stream, the offset in ps of the unit
+    that carries its first byte. Access units open on a delimiter, SPS, PPS or SEI after a
+    slice, or on a slice whose first macroblock is 0 (H.264 section 7.4.1.2.3)."""
+    es, chunks = _units(ps)
+    out: list[int] = []
+    seen_slice = False
+    n = 0
+    p = es.find(b"\x00\x00\x01")
+    while 0 <= p and p + 4 <= len(es):
+        kind = es[p + 3] & 0x1F
+        first_mb_zero = kind in _VCL and p + 4 < len(es) and es[p + 4] & 0x80
+        opens = (kind in _PREFIX and seen_slice) or (first_mb_zero and seen_slice) or not out
+        if opens and (kind in _PREFIX or kind in _VCL):
+            while n + 1 < len(chunks) and chunks[n + 1][0] <= p + 3:
+                n += 1
+            out.append(chunks[n][1])
+            seen_slice = False
+        if kind in _VCL:
+            seen_slice = True
+        p = es.find(b"\x00\x00\x01", p + 3)
+    return out
+
+
 def cut_after(ps: bytes, frames: int) -> int | None:
-    """Bytes the first `frames` frames of a stream take: up to the pack carrying the next
-    frame. None if the stream holds no frame after them or cannot be read."""
-    try:
-        out = run(
-            FFPROBE,
-            "-v",
-            "error",
-            "-f",
-            "mpeg",
-            "-select_streams",
-            "v:0",
-            "-show_entries",
-            "packet=pos",
-            "-of",
-            "csv=p=0",
-            "pipe:0",
-            stdin=ps,
-        )
-    except RuntimeError:
+    """Bytes the first `frames` frames of a stream take: up to the unit that carries the
+    next frame's first byte. None if the stream holds no frame after them."""
+    units = frame_units(ps)
+    if len(units) <= frames or units[frames] <= 0:
         return None
-    # One line per frame, in order; a frame the demuxer cannot place reads N/A.
-    after = [int(p) for p in out.decode().split()[frames:] if p.isdigit()]
-    if not after:
-        return None
-    cut = ps.rfind(b"\x00\x00\x01\xba", 0, after[0] + 1)
-    return cut if cut > 0 else None
+    return units[frames]
 
 
 def carve(img: bytes, m: hikfs.Master, owner: dict[int, str], indexed: list[Found]) -> Carving:

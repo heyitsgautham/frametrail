@@ -73,8 +73,23 @@ jobs:
         run: |
           pnpm test:unit
           pnpm test:recording
+      # Chromium's system packages come from the cache after the first run, as FFmpeg's do in
+      # the engine job. A slow mirror once took 11 minutes to deliver them.
+      - name: Read Ubuntu release
+        id: ubuntu
+        run: echo "release=$(lsb_release -rs)" >> "$GITHUB_OUTPUT"
+      - name: Cache Chromium packages
+        uses: actions/cache@v6
+        with:
+          path: ~/apt-archives
+          key: chromium-debs-${{ runner.os }}-${{ steps.ubuntu.outputs.release }}-v1
+      # Playwright runs apt-get itself, so a config file points apt at the cached folder.
       - name: Install Chromium
-        run: pnpm exec playwright install --with-deps chromium
+        run: |
+          mkdir -p ~/apt-archives/partial
+          echo "Dir::Cache::Archives \"$HOME/apt-archives\";" | sudo tee /etc/apt/apt.conf.d/99frametrail-archives
+          pnpm exec playwright install --with-deps chromium
+          sudo chown -R "$USER" ~/apt-archives
       # Every screen and /health, in Chromium, against the production build.
       - name: E2E
         run: |

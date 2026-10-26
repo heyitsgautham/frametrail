@@ -64,6 +64,7 @@ Its healthcheck calls `GET /health`, which answers 503 when `case.json` is missi
 ## Test
 
 ```sh
+pnpm test          # web tests, then engine tests, each with its coverage floor
 pnpm engine:test   # engine tests with coverage, failing under 80 percent
 pnpm engine:lint   # ruff check and ruff format --check
 pnpm engine:typecheck   # mypy over the engine
@@ -79,6 +80,33 @@ The engine tests need no download.
 `engine/frametrail/fixture/synthetic.py` builds a 6 MB disk and a 1.4 MB export in about 5 seconds, with the clock burned into frames it draws itself.
 The tests carve that disk, date the tail whose head was recorded over, reject the decoy header, find the wipe and check the custody chain.
 Three more tests in `engine/tests/test_caviar.py` run on the real footage and skip until `pnpm engine:fixtures` has built it.
+
+### Verify a fresh clone
+
+```sh
+pnpm verify
+```
+
+`scripts/verify-fresh-clone.sh` clones the committed HEAD into an empty temporary folder and runs every step above there.
+It installs from both lockfiles, then runs `pnpm check`, the engine lint and typecheck, both test suites and the production build.
+It stops at the first failing step with the end of its log, and deletes the clone either way unless you pass `--keep`.
+A passing run ends like this, in about two minutes:
+
+```
+Web coverage
+Statements   : 94.1% ( 639/679 )
+Branches     : 87.82% ( 548/624 )
+Functions    : 93.82% ( 228/243 )
+Lines        : 95.63% ( 526/550 )
+
+Engine coverage
+TOTAL                                 1281    120    91%
+89 passed, 3 skipped in 33.02s
+
+All steps passed.
+```
+
+The three skips are the CAVIAR footage tests.
 
 CI in `.github/workflows/ci.yml` runs all of the above on every push and pull request, plus pip-audit, `pnpm audit` and a gitleaks scan of the full history.
 

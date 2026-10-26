@@ -24,6 +24,8 @@ pnpm test:unit     # web screen and helper tests, fails under 90 percent line co
 pnpm build         # production build of the workbench
 ```
 
+`pnpm verify` runs the same steps in a fresh clone of HEAD, which catches a file you forgot to commit.
+
 If you changed a screen, start the build with `pnpm start` and run `pnpm test:e2e` against it.
 
 `uv run --project engine ruff format engine` fixes Python formatting.

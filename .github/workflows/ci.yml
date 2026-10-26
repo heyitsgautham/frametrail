@@ -64,6 +64,31 @@ jobs:
           for i in $(seq 1 60); do curl -sf -o /dev/null http://localhost:3150/intake && break; sleep 1; done
           pnpm test:e2e || { cat "$RUNNER_TEMP/next.log"; exit 1; }
 
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: docker compose --profile engine build
+      # The web container must report healthy, which means GET /health answered 200.
+      - name: Smoke test
+        run: |
+          docker compose up -d web
+          for i in $(seq 1 60); do
+            [ "$(docker inspect -f '{{.State.Health.Status}}' "$(docker compose ps -q web)")" = healthy ] && break
+            sleep 2
+          done
+          curl -sf http://localhost:3150/health
+          curl -sf -o /dev/null http://localhost:3150/intake
+          docker compose run --rm engine --help
+      - name: Logs
+        if: failure()
+        run: docker compose logs web
+      - name: Stop
+        if: always()
+        run: docker compose down
+
   secrets:
     runs-on: ubuntu-latest
     timeout-minutes: 10

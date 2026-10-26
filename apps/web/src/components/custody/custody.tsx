@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Label, PageHead, Panel } from "@/components/shell";
 import { short } from "@/lib/format";
+import { sha256Hex } from "@/lib/sha256";
 import type { CustodyEvent } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -17,7 +18,11 @@ export async function entryHash(e: Omit<CustodyEvent, "hash">): Promise<string> 
   const { prev, ...rest } = e as CustodyEvent;
   const { hash: _h, ...body } = rest as CustodyEvent;
   const sorted = Object.fromEntries(Object.entries(body).sort(([a], [b]) => (a < b ? -1 : 1)));
-  const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(prev + JSON.stringify(sorted)));
+  const data = new TextEncoder().encode(prev + JSON.stringify(sorted));
+  // crypto.subtle exists only in a secure context, so over plain HTTP from another machine
+  // the screen hashes in script instead of failing to check anything.
+  if (!globalThis.crypto?.subtle) return sha256Hex(data);
+  const d = await crypto.subtle.digest("SHA-256", data);
   return [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
@@ -67,7 +72,13 @@ export function Custody({ events }: { events: CustodyEvent[] }) {
           )}
         >
           {broken ? <ShieldX className="h-5 w-5" /> : <ShieldCheck className="h-5 w-5" />}
-          {broken ? `Chain broken at entry ${target + 1}` : reproduces === false ? "Links intact" : `All ${rows.length} entries verify`}
+          {broken
+            ? `Chain broken at entry ${target + 1}`
+            : reproduces === null
+              ? `Checking ${rows.length} entries`
+              : reproduces
+                ? `All ${rows.length} entries verify`
+                : "Links intact"}
         </div>
       </PageHead>
       <div className="grid grid-cols-[1fr_300px] gap-5 px-8">

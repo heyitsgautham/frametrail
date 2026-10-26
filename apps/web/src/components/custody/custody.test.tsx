@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, test } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
 import { demo } from "../../../test/demo";
 import { Custody, entryHash } from "./custody";
 
@@ -16,7 +16,23 @@ describe("entryHash", () => {
   });
 });
 
+describe("entryHash without crypto.subtle", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  test("still reproduces the engine's hashes, as over plain HTTP from another machine", async () => {
+    vi.stubGlobal("crypto", {});
+    for (const e of demo.custody) expect(await entryHash(e)).toBe(e.hash);
+  });
+});
+
 describe("Custody", () => {
+  test("says it is checking until the chain has been verified", () => {
+    render(<Custody events={demo.custody} />);
+    expect(screen.getByTestId("chain-status").textContent).toBe(`Checking ${demo.custody.length} entries`);
+  });
+
   test("verifies the stored chain on open", async () => {
     render(<Custody events={demo.custody} />);
     expect(await screen.findByText(`All ${demo.custody.length} entries verify`)).toBeTruthy();

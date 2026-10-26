@@ -54,7 +54,9 @@ jobs:
         run: pnpm typecheck
       # vitest with coverage, failing under 95 percent of lines or 85 percent of branches.
       - name: Test
-        run: pnpm test:unit
+        run: |
+          pnpm test:unit
+          pnpm test:recording
       - name: Install Chromium
         run: pnpm exec playwright install --with-deps chromium
       # Every screen and /health, in Chromium, against the production build.

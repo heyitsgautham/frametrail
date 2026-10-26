@@ -21,6 +21,7 @@ pnpm engine:typecheck   # mypy over the engine
 pnpm engine:test   # engine tests, fails under 90 percent coverage
 pnpm check         # private names, typecheck, Biome lint and format check
 pnpm test:unit     # web screen and helper tests, fails under 95 percent line coverage
+pnpm test:recording   # the demo recorder's in-page overlay
 pnpm build         # production build of the workbench
 ```
 

@@ -64,12 +64,13 @@ Its healthcheck calls `GET /health`, which answers 503 when `case.json` is missi
 ## Test
 
 ```sh
-pnpm test          # web tests, then engine tests, each with its coverage floor
+pnpm test          # web tests, recording overlay tests, then engine tests
 pnpm engine:test   # engine tests with coverage, failing under 90 percent
 pnpm engine:lint   # ruff check and ruff format --check
 pnpm engine:typecheck   # mypy over the engine
 pnpm check         # private names, typecheck, Biome lint and format check
 pnpm test:unit     # web screen and helper tests in vitest, failing under 95 percent of lines
+pnpm test:recording   # the script the demo recorder injects, run against a stub DOM
 pnpm test:e2e      # browser checks on every screen and /health, against a running `pnpm start`
 ```
 

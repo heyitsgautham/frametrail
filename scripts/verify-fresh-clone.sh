@@ -40,6 +40,7 @@ step "check names, typecheck, lint" pnpm check
 step "lint the engine" pnpm engine:lint
 step "typecheck the engine" pnpm engine:typecheck
 step "test the web app" pnpm test:unit
+step "test the recording overlay" pnpm test:recording
 step "test the engine" pnpm engine:test
 step "build the workbench" pnpm build
 

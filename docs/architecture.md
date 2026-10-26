@@ -64,10 +64,25 @@ Each in-use index entry becomes an indexed segment with its channel, start and e
 Times on the disk are Unix epoch values in recorder time.
 FrameTrail keeps them exactly as stored.
 
+A seized disk is often damaged, so each structure has a fallback, and the case says when one was used.
+
+| Damage | What the engine does | What `case.json` adds |
+|---|---|---|
+| Primary master sector wiped, or its block size or index size impossible | Reads the next copy with a readable layout, normally the backup after the log area | `masterSector.primaryIntact: false` and `readFrom` |
+| No copy of the master sector readable | Stops with exit code 2, naming each copy and the bad field | Nothing, no case is written |
+| Primary index copy damaged | Reads the backup copy | `index.readFrom` |
+| Both index copies damaged | Carves every block | `index.readable: false` |
+| Image shorter than the disk the master records | Reads what is there and notes indexed segments that run past the end | `image.expectedBytes` and `shortBy` |
+
+An intact disk adds none of these fields.
+The Intake screen lists whichever it finds.
+
 ### 4. Carving and decode validation
 
-Every block not claimed by an index entry is scanned for segment headers.
-A candidate is kept only if FFmpeg decodes frames from it.
+`carve.carve` scans every block not claimed by an index entry for segment headers.
+A candidate is kept only if FFmpeg decodes the frame count its header claims, give or take one.
+If it decodes more, the run went on into older footage, as it does when no index marks where a segment ends.
+`carve.frame_units` then walks the program stream's packs and the H.264 access units in it, and the segment is cut where its last claimed frame ends.
 The demo disk holds a decoy header over random bytes, and the carver rejects it because 0 frames decode.
 A segment whose head was overwritten is carved from its first keyframe and marked partial.
 
@@ -98,6 +113,10 @@ Each camera's clock keeps its raw time and gains a reference time beside it, nev
 
 The offset is recorder time minus reference time.
 Each camera stores its method, offset, drift, uncertainty and the agreement between the two methods.
+
+The font is learned from one segment dated by its index entry or header and checked on the others, so the disk needs at least two such segments.
+Each recorder also needs at least 3 readings to fit a line.
+Short of either, the run stops with exit code 2 and says which is missing.
 
 ### 7. Person detection
 
@@ -143,6 +162,18 @@ The signature lines stay blank for the examiner.
 | `stats` | Every headline number the workbench and the video show |
 
 Segment states are `indexed`, `recovered-unindexed`, `partial`, `overwritten`, `free` and `system`.
+
+## The workbench
+
+The screens are server components that read `case.json` on every request through `loadCase()`.
+`lib/case-schema.ts` checks the file with zod at that point, so a wrong or damaged file stops with the file and fields named, and the case layout shows that message instead of the screens.
+`GET /health` answers 200 with the case ID, or 503 with the same message.
+
+`src/instrumentation.ts` logs every server error as one pino JSON line on stdout, with the digest Next shows on its error page.
+Errors stay in that local log, since the workbench runs offline.
+
+Every response carries a content security policy that allows only the app's own origin, plus nosniff, `X-Frame-Options: DENY` and `Referrer-Policy: no-referrer`.
+The custody screen recomputes the chain's SHA-256 hashes in the browser, with `crypto.subtle` where the browser allows it and `lib/sha256.ts` over plain HTTP.
 
 ## Running offline
 

@@ -30,6 +30,9 @@ pnpm install --frozen-lockfile    # web app, from pnpm-lock.yaml
 pnpm engine:setup                 # engine, from engine/uv.lock
 ```
 
+The workbench's runtime dependencies are listed in `apps/web/package.json`, and the root `package.json` holds only the shared tooling.
+The engine's are in `engine/pyproject.toml`.
+
 ## Run
 
 ```sh

@@ -11,7 +11,8 @@ seized evidence (disk image, native export)
 engine/frametrail
   intake.py    streamed MD5 + SHA-256, vendor signature scan
   hikfs.py     master sector, system log, index copies, segment headers (Hikvision-style)
-  dvr.py       index parse, carving, decode validation, overwrite ranges, initialisation proof
+  dvr.py       master and index copies, overwrite ranges, initialisation proof
+  carve.py     carving unindexed blocks, decode validation, dating headless tails
   dhav.py      DHAV frame parser and packed-date decoder (Dahua-style)
   nvr.py       continuous recording runs from DHAV frames
   osd.py       reads the burned-in clock from the pixels, fits offset and drift

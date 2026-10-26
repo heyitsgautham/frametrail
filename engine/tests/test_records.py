@@ -38,6 +38,15 @@ def test_seizure_records_parse_into_typed_times(tmp_path):
         (lambda s: s["EV-001"].pop("reference"), "seizure.json EV-001 has no 'reference'"),
         (lambda s: s["EV-001"].update(note=7), "'note' should be str"),
         (lambda s: s["EV-002"].update(dvrShown="yesterday"), "'dvrShown' is not a date and time"),
+        # A time with an offset used to pass here and crash the clock fit with a TypeError.
+        (
+            lambda s: s["EV-002"].update(reference="2004-01-20T11:03:50+05:30"),
+            "'reference' has a UTC offset",
+        ),
+        (
+            lambda s: s["EV-001"].update(dvrShown="2004-01-20T10:34:02Z"),
+            "'dvrShown' has a UTC offset",
+        ),
     ],
 )
 def test_an_incomplete_seizure_record_names_the_file_and_field(tmp_path, change, message):

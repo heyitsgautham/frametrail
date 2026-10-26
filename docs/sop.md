@@ -33,6 +33,7 @@ It follows SWGDE 17-V-002 (Best Practices for Data Acquisition from Digital Vide
    Check the hashes against the ones recorded at acquisition.
 2. Timeline.
    The seizure record for each recorder goes into the case.
+   Write both times as the clocks showed them, with no UTC offset, since the recorder's own times carry none.
    FrameTrail sets each clock's offset from it and cross-checks it against the burned-in clock.
    Review any camera whose two methods disagree.
 3. Recovery.

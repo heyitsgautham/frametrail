@@ -73,9 +73,16 @@ def load_seizure(path: Path, ids: list[str]) -> dict[str, Seizure]:
         )
         for name, read in (("dvrShown", rec.shown_at), ("reference", rec.reference_at)):
             try:
-                read()
+                at = read()
             except ValueError as e:
                 raise CaseFileError(f"{where} {name!r} is not a date and time: {e}") from e
+            # Recorder times on the disk carry no zone, so a seizure time is compared with
+            # them as the clock showed it. An offset would mix the two kinds of time.
+            if at.tzinfo is not None:
+                raise CaseFileError(
+                    f"{where} {name!r} has a UTC offset; write the time as the clock showed it, "
+                    "with no offset or Z"
+                )
         out[k] = rec
     return out
 

@@ -73,6 +73,7 @@ A seized disk is often damaged, so each structure has a fallback, and the case s
 | Primary index copy damaged | Reads the backup copy | `index.readFrom` |
 | Both index copies damaged | Carves every block | `index.readable: false` |
 | Image shorter than the disk the master records | Reads what is there and notes indexed segments that run past the end | `image.expectedBytes` and `shortBy` |
+| Indexed segment whose video bytes do not decode, as after a bad sector | Keeps the segment without a clip and leaves it out of the clock fit | The segment has `frames: 0`, no `clip`, and a `lost` line saying its video does not decode |
 
 An intact disk adds none of these fields.
 The Intake screen lists whichever it finds.
@@ -114,7 +115,7 @@ Each camera's clock keeps its raw time and gains a reference time beside it, nev
 The offset is recorder time minus reference time.
 Each camera stores its method, offset, drift, uncertainty and the agreement between the two methods.
 
-The font is learned from one segment dated by its index entry or header and checked on the others, so the disk needs at least two such segments.
+The font is learned from one segment dated by its index entry or header and checked on the others, so the disk needs at least two such segments whose video decodes.
 Each recorder also needs at least 3 readings to fit a line.
 Short of either, the run stops with exit code 2 and says which is missing.
 

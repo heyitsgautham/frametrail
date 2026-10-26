@@ -37,7 +37,10 @@ def parse(data: bytes) -> list[Run]:
     frames = dhav.parse(data)
     runs: list[list[dhav.Frame]] = []
     for f in frames:
-        if runs and f.raw_ms - runs[-1][-1].raw_ms <= GAP_MS and f.channel == runs[-1][-1].channel:
+        # A run is one stretch of forward time on one channel. A jump of more than GAP_MS, or
+        # any step back, as when the recorder's clock is corrected, starts a new run.
+        step = f.raw_ms - runs[-1][-1].raw_ms if runs else -1
+        if runs and 0 <= step <= GAP_MS and f.channel == runs[-1][-1].channel:
             runs[-1].append(f)
         else:
             runs.append([f])

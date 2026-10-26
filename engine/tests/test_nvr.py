@@ -36,3 +36,19 @@ def test_the_synthetic_export_splits_into_its_planted_runs(synth):
     assert sum(len(r.frames) for r in runs) == synth.truth["nvrFrames"]
     # The export clock is slow by the planted offset at the first frame.
     assert synth.truth["nvrEpochMs"] - runs[0].start_ms == synth.truth["nvrOffsetMs"]
+
+
+def test_a_clock_set_back_mid_recording_starts_a_new_run():
+    # An NTP correction or an operator setting the clock back makes the time jump backwards.
+    data = b"".join(frame(n, START + n * 40) for n in range(5))
+    data += b"".join(frame(5 + n, START - 30_000 + n * 40) for n in range(3))
+    a, b = nvr.parse(data)
+    assert (len(a.frames), a.start_ms, a.end_ms) == (5, START, START + 200)
+    assert (len(b.frames), b.start_ms, b.end_ms) == (3, START - 30_000, START - 30_000 + 120)
+
+
+def test_even_a_small_step_back_starts_a_new_run():
+    data = frame(0, START) + frame(1, START + 40) + frame(2, START - 400)
+    runs = nvr.parse(data)
+    assert [len(r.frames) for r in runs] == [2, 1]
+    assert all(r.end_ms > r.start_ms for r in runs)

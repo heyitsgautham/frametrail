@@ -33,11 +33,11 @@
     "engine:lint": "uv run --project engine ruff check engine && uv run --project engine ruff format --check engine"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.14",
+    "@biomejs/biome": "2.6.3",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@ffprobe-installer/ffprobe": "^2.1.2",
-    "@types/node": "24.13.6",
-    "playwright": "1.63.0",
+    "@types/node": "24.19.2",
+    "playwright": "1.64.1",
     "tsx": "4.23.15",
     "typescript": "5.9.3"
   }
